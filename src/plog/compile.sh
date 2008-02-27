@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# Sourcefiles list
-sourcefile=(ClientBootstrap.java)
+sourcefile=(PLog.java)
 
 clpath=`pwd`"/../"
-dom="[CLIENTBOOTSTRAP]"
+dom="[PLOG]"
 
 # Clean
 echo "$dom Remove .class files"

@@ -1,8 +1,16 @@
 package clientbootstrap;
+
 import java.net.*;
 import java.rmi.server.*;
 import java.rmi.RMISecurityManager;
 
+import plog.*;
+
+/**
+ * Client Minimale per il BootStrap.
+ *
+ * @author Parcman Tm
+ */
 public class ClientBootstrap
 {
 	public static void main(String[] args) throws Exception
@@ -27,19 +35,16 @@ public class ClientBootstrap
 		}
 		catch(MalformedURLException e)
 		{
-			// TODO Gestire l'errore con un messaggio opportuno
-			System.err.println(e);	
+			PLog.err(e, "L'URL fornita non e' corretta.");
 		}
 		catch(ClassNotFoundException e)
 		{
-			// TODO Gestire l'errore con un messaggio opportuno
-			System.err.println(e);
+			PLog.err(e, "Caricamento della classe remota fallito.");
 		}
 		catch(Exception e)
 		{
-			// TODO Gestire l'errore con un messaggio opportuno
 			// Aggiungere eventualmente la gestione delle eccezioni per Class.newInstance
-			System.err.println(e);
+			PLog.err(e, "Impossibile eseguire il BootStrap del Client");
 		}
 	}
 }

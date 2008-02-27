@@ -12,6 +12,7 @@ echo
 
 
 compile clientbootstrap
+compile plog
 
 echo
 echo "Global Compilation end."
