@@ -20,17 +20,17 @@ public class DBUsers
 	/**
 	 * Vettore nomi utenti.
 	 */
-	private Vector<String> userName;
+	private Vector userName;
 
 	/**
 	 * Vettore password utenti.
 	 */
-	private Vector<String> userPassword;
+	private Vector userPassword;
 
 	/**
 	 * Vettore privilegi utenti.
 	 */
-	private Vector<String> userPrivilege;
+	private Vector userPrivilege;
 
 	/**
 	 * Costruttore.
@@ -51,9 +51,20 @@ public class DBUsers
 	 */
 	public void save()
 	{
-		File f = new(dbFile);
-		FileOutputStream fos=new FileOutputStream(f);
-		PrintStream ps=new PrintStream(fos);
+		File f = new File(dbFile);
+		FileOutputStream fos;
+
+		try
+		{
+			fos = new FileOutputStream(f);
+		}
+		catch(FileNotFoundException e)
+		{
+			PLog.err(e, "Errore durante il salvataggio del DB Utenti");
+			return;
+		}
+
+		PrintStream ps = new PrintStream(fos);
 
 		// DTD
 		ps.println("<?xml version=\"1.0\"?>");
@@ -65,23 +76,16 @@ public class DBUsers
 		ps.println("<!ELEMENT PRIVILEGE (#PCDATA)>");
 		ps.println("]>");
 
+		// XML
 		ps.println("<DB_USERS>");
 
-		for (int i=0; i<=this._getSize(); int ++)
+		for (int i=0; i<=this._getSize(); i++)
 		{
-			try
-			{
-				ps.println("<USER>");
-				ps.println("<NAME>" + _getUserName(i) + "</NAME>");
-				ps.println("<PASSWORD>" + _getUserPassword(i) + "</PASSWORD>");
-				ps.println("<PRIVILEGE>" + _getUserPrivilege(i) + "</PRIVILEGE>");
-				ps.println("<USER>");
-			}
-			catch (ArrayIndexOutOfBoundsException e)
-			{
-				PLog.error(e, "DB Inconsistente!!");
-				break;
-			}
+			ps.println("<USER>");
+			ps.println("<NAME>" + _getUserName(i) + "</NAME>");
+			ps.println("<PASSWORD>" + _getUserPassword(i) + "</PASSWORD>");
+			ps.println("<PRIVILEGE>" + _getUserPrivilege(i) + "</PRIVILEGE>");
+			ps.println("<USER>");
 		}
 
 		ps.println("</DB_USERS>");
@@ -110,20 +114,12 @@ public class DBUsers
 	{
 		if (index >= 0 && index < _getSize())
 		{
-			try
-			{
-				userName.removeElementAt(index);
-				userPassword.removeElementAt(index);
-				userPrivilege.removeElementAt(index);
-			}
-			catch (ArrayIndexOutOfBoundsException e)
-			{
-				PLog.error(e, "DB Inconsistente!!");
-				return;
-			}
+			userName.removeElementAt(index);
+			userPassword.removeElementAt(index);
+			userPrivilege.removeElementAt(index);
 		}
 
-		throw new ArrayIndexOutOfBoundsException;
+		throw new ArrayIndexOutOfBoundsException();
 	}
 
 	/**
@@ -157,7 +153,7 @@ public class DBUsers
 		if (index >= 0 && index < userName.size())
 			return (String)userName.elementAt(index);
 
-		throw new ArrayIndexOutOfBoundsException;
+		throw new ArrayIndexOutOfBoundsException();
 	}
 
 	/**
@@ -171,7 +167,7 @@ public class DBUsers
 		if (index >= 0 && index < userPassword.size())
 			return (String)userPassword.elementAt(index);
 
-		throw new ArrayIndexOutOfBoundsException;
+		throw new ArrayIndexOutOfBoundsException();
 	}
 
 	/**
@@ -185,7 +181,7 @@ public class DBUsers
 		if (index >= 0 && index < userPrivilege.size())
 			return (String)userPrivilege.elementAt(index);
 
-		throw new ArrayIndexOutOfBoundsException;
+		throw new ArrayIndexOutOfBoundsException();
 	}
 
 	/** Restituisce il numero di Utenti nel DB.
@@ -194,8 +190,7 @@ public class DBUsers
 	 */
 	private int _getSize()
 	{
+		// I tre vettori userName, userPassword e userPrivilege sono equivalenti
 		return userName.size();
-
-		return -1;
 	}
 }

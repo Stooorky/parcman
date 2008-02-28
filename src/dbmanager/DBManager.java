@@ -1,7 +1,5 @@
 package dbmanager;
 
-import java.io.*;
-
 import plog.*;
 
 /**
@@ -17,24 +15,36 @@ public class DBManager
 	private DBUsers dbUsers;
 
 	/**
+	 * Directory radice del DataBase
+	 */
+	private String dbDirectory;
+
+	/**
 	 * Indice del DataBase Utenti.
 	 */
 	public static int DB_USERS = 1;
 
 	/**
+	 * Nome del file del DataBase Utenti.
+	 */
+	private static String dbUsersFileName = "dbUsers.xml";
+
+	/**
 	 * Costruttore.
 	 *
-	 * @param db_file Path del file DB da gestire
+	 * @param db_file Path della directory radice del DataBase
 	 */
-	public DBManager(String dbFileUsers)
+	public DBManager(String dbDirectory)
 	{
-		dbUsers = new DBUsers(dbFileUsers);
+		this.dbDirectory = dbDirectory;
+
+		dbUsers = new DBUsers(dbDirectory + "/" + dbUsersFileName);
 	}
 
 	/**
 	 * Esegue il salvataggio dei DataBase su file.
 	 */
-	public void save() throws IOException;
+	public void save()
 	{
 		dbUsers.save();
 	}
@@ -44,36 +54,37 @@ public class DBManager
 	 *
 	 * @param db Indice del DB da salvare
 	 */
-	public void save(int db) throws IOException;
+	public void save(int db)
 	{
-		switch(db)
+		if (db == DB_USERS)
 		{
-			case DB_USERS: // Db Utenti
-				PLog.debug("Salvataggio del DB Utenti in corso");
-				dbUsers.save();
-				break;
-			default:
-				PLog.err("Chiave DB non riconosciuta");
+			PLog.debug("Salvataggio del DB Utenti in corso");
+			dbUsers.save();
 		}
+		else
+			PLog.err("Chiave DB errata");
 	}
 
 	/**
-	 * Assegna il campo dbFile.
+	 * Assegna il campo dbDirectory.
 	 *
-	 * @param dbFile Il Path del file DB su disco
+	 * @param dbFile Il Path della Directory radice del DataBase
 	 */
-	private void setDbFile(String dbFile)
+	public void setDbDirectory(String dbDirectory)
 	{
-		this.dbFile = dbFile;
+		this.dbDirectory = dbDirectory;
+
+		// Riassegno il campo dbFile del DataBase Utenti
+		dbUsers.setDbFile(dbDirectory + "/" + dbUsersFileName);
 	}
 
 	/**
-	 * Restituisce il valore del campo dbFile.
+	 * Restituisce il valore del campo dbDirectory.
 	 *
-	 * @return Il Path del file DB su disco
+	 * @return Il Path della directory radice del DataBase
 	 */
-	private String getDbFile()
+	public String getDbDirectory()
 	{
-		return dbFile;
+		return dbDirectory;
 	}
 }
