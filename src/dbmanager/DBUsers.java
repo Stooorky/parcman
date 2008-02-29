@@ -2,6 +2,8 @@ package dbmanager;
 
 import java.io.*;
 import java.util.*;
+import javax.xml.*;
+import javax.xml.parsers.*;
 
 import plog.*;
 
@@ -18,19 +20,9 @@ public class DBUsers
 	private String dbFile;
 
 	/**
-	 * Vettore nomi utenti.
+	 * Vettore utenti.
 	 */
-	private Vector userName;
-
-	/**
-	 * Vettore password utenti.
-	 */
-	private Vector userPassword;
-
-	/**
-	 * Vettore privilegi utenti.
-	 */
-	private Vector userPrivilege;
+	private Vector<UserBean> users;
 
 	/**
 	 * Costruttore.
@@ -41,9 +33,7 @@ public class DBUsers
 	{
 		this.dbFile = dbFile;
 
-		userName = new Vector();
-		userPassword = new Vector();
-		userPrivilege = new Vector();
+		users = new Vector<UserBean>();
 	}
 
 	/**
@@ -79,30 +69,36 @@ public class DBUsers
 		// XML
 		ps.println("<DB_USERS>");
 
-		for (int i=0; i<=this._getSize(); i++)
+		for (int i=0; i<this.getSize(); i++)
 		{
 			ps.println("<USER>");
-			ps.println("<NAME>" + _getUserName(i) + "</NAME>");
-			ps.println("<PASSWORD>" + _getUserPassword(i) + "</PASSWORD>");
-			ps.println("<PRIVILEGE>" + _getUserPrivilege(i) + "</PRIVILEGE>");
+			ps.println("<NAME>" + this.getUserName(i) + "</NAME>");
+			ps.println("<PASSWORD>" + this.getUserPassword(i) + "</PASSWORD>");
+			ps.println("<PRIVILEGE>" + this.getUserPrivilege(i) + "</PRIVILEGE>");
 			ps.println("<USER>");
 		}
 
 		ps.println("</DB_USERS>");
 	}
 
+    /**
+     * Popola il vettore users caricando i dati da dbFile.
+     */
+    public void load()
+    {
+        // SAXParser parser = SAXParserFactory.newSAXParser();
+
+        // parser.pars(dbFile);
+    }
+
 	/**
 	 * Aggiunta di utente al DataBase Utenti.
 	 *
-	 * @param name Nome Utente
-	 * @param password Password Utente
-	 * @param privilege Privilegi Utente
+	 * @param user Bean utente
 	 */
-	public void addUser(String name, String password, String privilege)
+	public void addUser(UserBean user)
 	{
-		userName.add(name);
-		userPassword.add(password);
-		userPrivilege.add(privilege);
+		users.add(user);
 	}
 
 	/**
@@ -110,16 +106,13 @@ public class DBUsers
 	 *
 	 * @param index Index dell'utente da rimuovere
 	 */
-	public void removeUserAt(int index) throws ArrayIndexOutOfBoundsException
+	public void removeUserAt(int index)
+        throws ArrayIndexOutOfBoundsException
 	{
-		if (index >= 0 && index < _getSize())
-		{
-			userName.removeElementAt(index);
-			userPassword.removeElementAt(index);
-			userPrivilege.removeElementAt(index);
-		}
-
-		throw new ArrayIndexOutOfBoundsException();
+		if (index >= 0 && index < getSize())
+			users.removeElementAt(index);
+        else
+		    throw new ArrayIndexOutOfBoundsException();
 	}
 
 	/**
@@ -148,10 +141,11 @@ public class DBUsers
 	 * @param index Indice dell'utente
 	 * @return Nome utente
 	 */
-	private String _getUserName(int index) throws ArrayIndexOutOfBoundsException
+	private String getUserName(int index)
+        throws ArrayIndexOutOfBoundsException
 	{
-		if (index >= 0 && index < userName.size())
-			return (String)userName.elementAt(index);
+		if (index >= 0 && index < this.getSize())
+			return users.elementAt(index).getName();
 
 		throw new ArrayIndexOutOfBoundsException();
 	}
@@ -162,10 +156,11 @@ public class DBUsers
 	 * @param index Indice dell'utente
 	 * @return Password utente
 	 */
-	private String _getUserPassword(int index) throws ArrayIndexOutOfBoundsException
+	private String getUserPassword(int index)
+        throws ArrayIndexOutOfBoundsException
 	{
-		if (index >= 0 && index < userPassword.size())
-			return (String)userPassword.elementAt(index);
+		if (index >= 0 && index < this.getSize())
+			return users.elementAt(index).getPassword();
 
 		throw new ArrayIndexOutOfBoundsException();
 	}
@@ -176,10 +171,11 @@ public class DBUsers
 	 * @param index Indice dell'utente
 	 * @return Privilegi utente
 	 */
-	private String _getUserPrivilege(int index) throws ArrayIndexOutOfBoundsException
+	private String getUserPrivilege(int index)
+        throws ArrayIndexOutOfBoundsException
 	{
-		if (index >= 0 && index < userPrivilege.size())
-			return (String)userPrivilege.elementAt(index);
+		if (index >= 0 && index < this.getSize())
+			return users.elementAt(index).getPrivilege();
 
 		throw new ArrayIndexOutOfBoundsException();
 	}
@@ -188,9 +184,8 @@ public class DBUsers
 	 *
 	 * @return Numero di Utenti registrati nel DataBase Utenti
 	 */
-	private int _getSize()
+	private int getSize()
 	{
-		// I tre vettori userName, userPassword e userPrivilege sono equivalenti
-		return userName.size();
+		return users.size();
 	}
 }
