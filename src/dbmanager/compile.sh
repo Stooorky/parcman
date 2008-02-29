@@ -2,7 +2,8 @@
 
 sourcefile=(DBManager.java \
 	DBUsers.java \
-	UserBean.java)
+	beans/UserBean.java \
+	xmlhandlers/UserContentHandler.java)
 
 clpath=`pwd`"/../"
 dom="[REMOTECLIENT]"

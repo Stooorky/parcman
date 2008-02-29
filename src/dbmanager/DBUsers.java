@@ -7,6 +7,8 @@ import javax.xml.parsers.*;
 
 import plog.*;
 
+import beans.*;
+
 /**
  * Gestore DataBase utenti.
  *
