@@ -1,4 +1,4 @@
-package beans;
+package dbmanager.beans;
 
 import dbmanager.xmlhandlers.*;
 

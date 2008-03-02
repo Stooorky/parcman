@@ -1,10 +1,10 @@
-package xmlhandlers;
-
-import org.xml.sax.*;
-
-import beans.*;
+package dbmanager.xmlhandlers;
 
 import java.util.*;
+import org.xml.sax.*;
+
+import dbmanager.beans.*;
+
 
 /**
  * Xml ContentHandler per il parsing degli users.
@@ -14,10 +14,37 @@ import java.util.*;
 public class UserContentHandler 
     implements ContentHandler
 {
-    private boolean inName, inPass, inPriv;
+    /** 
+     * 'true' se stiamo indagando l'elemento <NAME></NAME>.
+     */
+    private boolean inName;
+
+    /** 
+     * 'true' se stiamo indagando l'elemento <PASSWORD></PASSWORD>.
+     */
+    private boolean inPass;
+
+    /** 
+     * 'true' se stiamo indagando l'elemento <PRIVILEGE></PRIVILEGE>.
+     */
+    private boolean inPriv;
+
+    /** 
+     * Oggetto bean per la memorizzazione di un utente.
+     */
     private UserBean bean;
+
+    /** 
+     * Lista degli utenti registrati.
+     */
     private Vector<UserBean> users;
 
+    /**
+     * Costruttore.
+     * 
+     * @param Lista degli utenti registrati.
+     * @return Istanza dell'oggetto UserContentHandler.
+     */
     public UserContentHandler(Vector<UserBean> user)
     {
 	this.users = users;
