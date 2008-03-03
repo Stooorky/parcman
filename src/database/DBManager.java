@@ -183,6 +183,7 @@ public class DBManager
 	 */
 	public Object call(String dbName, String methodName, Object[] args)
 		throws NoSuchMethodException, 
+		InvocationTargetException,
 		SecurityException,
 		IllegalAccessException,		// lanciata quando il metodo corrente non ha accesso alla definizione della classe richiesta.
 		IllegalArgumentException,	// lanciata quando i parametri passati sono inappropriati per il metodo richiesto.
@@ -214,8 +215,8 @@ public class DBManager
 			}
 		}
 
-        try
-        {
+		try
+		{
             // TODO Warning in fase di compilazione. Controllare se e' evitabile.
 		    Method m = dbClass.getMethod(methodName, argsTypes);
 		    Object returned = m.invoke(db, args);
@@ -225,23 +226,22 @@ public class DBManager
         }
         catch (SecurityException e)
         {
-            PLog.err(e, "Impossibile richiamare il metodo richiesto.");
+            PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
             return null;
         }
         catch (NullPointerException e)
         {
-            PLog.err(e, "Impossibile richiamare il metodo richiesto.");
+            PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
             return null;
         }
         catch (NoSuchMethodException e)
         {
-            PLog.err(e, "Impossibile richiamare il metodo richiesto.");
+            PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
             return null;
         }
         catch (InvocationTargetException e)
         {
-            PLog.err(e, "Impossibile richiamare il metodo richiesto");
-            return null;
+            throw e;
         }
 	}
 }

@@ -19,6 +19,6 @@ public class RemoteClientAdmin implements RemoteClient
 	 */
 	public void run()
 	{
-		PLog.debug("Metodo run di RemoteClientAdmin avviato.");
+		PLog.debug("RemoteClientAdmin.run", "Metodo run di RemoteClientAdmin avviato.");
 	}
 }

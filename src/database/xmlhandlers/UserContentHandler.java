@@ -11,8 +11,7 @@ import plog.*;
  *
  * @author Parcman Tm
  */
-public class UserContentHandler 
-implements ContentHandler
+public class UserContentHandler implements ContentHandler
 {
 	/** 
 	 * 'true' se stiamo indagando l'elemento <NAME></NAME>.
@@ -87,7 +86,8 @@ implements ContentHandler
 			&& !this.users.contains(this.bean))
 		{
 			this.users.add(this.bean);
-            PLog.debug("Caricato nuovo utente: " + this.bean.getName() + " " + this.bean.getPassword() + " " + this.bean.getPrivilege());
+            PLog.debug("UserContentHandler.endElement",
+				"Caricato nuovo utente: " + this.bean.getName() + " " + this.bean.getPassword() + " " + this.bean.getPrivilege());
 		}
 	}
 

@@ -13,10 +13,9 @@ public class PLog
 	 * @param e Eccezione da gestire
 	 * @param str Messaggio di errore
 	 */
-	public static void err(Exception e, String str)
+	public static void err(Exception e, String func, String str)
 	{
-
-		System.err.println("[ERROR] " + str);
+		System.err.println("[ERROR]<" + func + "> " + str);
 		System.err.println(e);
 	}
 
@@ -25,9 +24,9 @@ public class PLog
 	 *
 	 * @param str Messaggio di errore
 	 */
-	public static void err(String str)
+	public static void err(String func, String str)
 	{
-		System.err.println("[ERROR] " + str);
+		System.err.println("[ERROR]<" + func + "> " + str);
 	}
 
 	/**
@@ -35,9 +34,9 @@ public class PLog
 	 *
 	 * @param str Messaggio di debug
 	 */
-	public static void debug(String str)
+	public static void debug(String func, String str)
 	{
-		System.out.println("[DEBUG] " + str);
+		System.out.println("[DEBUG]<" + func + "> " + str);
 	}
 
 	/**

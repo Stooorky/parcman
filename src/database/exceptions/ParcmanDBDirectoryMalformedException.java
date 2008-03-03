@@ -9,5 +9,10 @@ public class ParcmanDBDirectoryMalformedException
     {
         super(message);
     }
+
+	public ParcmanDBDirectoryMalformedException ()
+	{
+
+	}
 }
 

@@ -1,8 +1,10 @@
 package database;
 
 import java.io.*;
+import java.lang.reflect.*;
 
 import database.*;
+import database.beans.*;
 import plog.*;
 import database.exceptions.*;
 
@@ -38,15 +40,55 @@ public class DB
         // Aggiungo il DataBase Utenti al DBManager
         dbManager.add("USERS", new DBUsers(this.dbDirectory + "/" + this.DB_USERS_FILE));
 
+		// Fixo la Directory del DataBase
         try
         {
             this.fixDirectory();
         }
         catch (ParcmanDBDirectoryMalformedException e)
         {
-            PLog.err(e, "Impossibile creare un'istanza di DB.");
-            throw new ParcmanDBNotCreateException("Directory non valida");
+            PLog.err(e, "DB", "Impossibile creare un'istanza di DB.");
+            throw new ParcmanDBNotCreateException();
         }
+    }
+
+    /**
+     * Aggiunge un utente al DataBase Utenti.
+     * 
+     * @param name Nome utente
+     * @param password Password utente
+     * @param privilege Privilegi utente
+     */
+    public void addUser(String name, String password, String privilege)
+	    throws ParcmanDBAddUserException, ParcmanDBUserExistException
+    {
+		UserBean user = new UserBean();
+		user.setName(name);
+		user.setPassword(password);
+		user.setPrivilege(privilege);
+		Object[] args = { user };
+
+		DBManager dbManager = DBManager.getInstance();
+
+		try
+		{
+			dbManager.call("USERS", "addUser", args);
+		}
+		catch (InvocationTargetException e)
+		{
+			// Utente gia' presente nel DataBase
+			if (e.getTargetException() instanceof ParcmanDBUserExistException)
+				throw new ParcmanDBUserExistException();
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBAddUserException();
+		}
+
+		// Salvo il DB Utenti
+		dbManager.save("USERS");
+
+		PLog.debug("DB.addUser", "Nuovo utente aggiunto al DB Utenti: " + name);
     }
 
     /**
@@ -60,11 +102,11 @@ public class DB
         // Controllo l'esistenza della directory
         if (!dir.exists()) // La Directory non esiste
         {
-            PLog.debug("Creazione della Directory " + dbDirectory);
+            PLog.debug("DB.fixDirectory", "Creazione della Directory " + dbDirectory);
             // Creo la directory, comprese le directory nel PATH
             dir.mkdirs();
 
-            PLog.debug("Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
+            PLog.debug("DB.fixDirectory", "Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
             // Creo il file XML del DB Utenti invocando save della classe DBUsers
             DBManager dbManager = DBManager.getInstance();
 
@@ -79,7 +121,7 @@ public class DB
 
                 if (!dbUsers.exists()) // Il file XML per il DB Utenti non esiste
                 {
-                    PLog.debug("Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
+                    PLog.debug("DB.fixDirectory", "Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
                     // Creo il file XML del DB Utenti invocando save della classe DBUsers
                     DBManager dbManager = DBManager.getInstance();
 
@@ -87,7 +129,7 @@ public class DB
                 }
                 else // Il file XML per il DB Utenti esiste
                 {
-                    PLog.debug("Carico il DB Utenti");
+                    PLog.debug("DB.fixDirectory", "Carico il DB Utenti");
                     // Carico il file XML del DB Utenti
                     DBManager dbManager = DBManager.getInstance();
 
@@ -95,8 +137,10 @@ public class DB
                 }
             }
             else // Non e' una Directory
+			{
                 throw new ParcmanDBDirectoryMalformedException(this.dbDirectory + " non e' una directory.");
-        }
+			}
+		}
     }
 }
 

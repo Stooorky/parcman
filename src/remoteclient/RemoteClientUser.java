@@ -19,6 +19,6 @@ public class RemoteClientUser implements RemoteClient
 	 */
 	public void run()
 	{
-		PLog.debug("Metodo run di RemoteClientUser avviato.");
+		PLog.debug("RemoteClientUser.run", "Metodo run di RemoteClientUser avviato.");
 	}
 }

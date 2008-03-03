@@ -9,5 +9,10 @@ public class ParcmanDBNotCreateException
     {
         super(message);
     }
+
+	public ParcmanDBNotCreateException ()
+	{
+
+	}
 }
 

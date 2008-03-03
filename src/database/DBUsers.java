@@ -8,6 +8,7 @@ import org.xml.sax.helpers.*;
 import plog.*;
 import database.beans.*;
 import database.xmlhandlers.*;
+import database.exceptions.*;
 
 /**
  * Gestore DataBase Utenti.
@@ -44,7 +45,7 @@ public class DBUsers implements DBFile
 		}
 		catch(FileNotFoundException e)
 		{
-			PLog.err(e, "Errore durante il salvataggio del DB Utenti");
+			PLog.err(e, "DBUsers.save", "Errore durante il salvataggio del DB Utenti");
 			return;
 		}
 
@@ -89,12 +90,11 @@ public class DBUsers implements DBFile
 		}
 		catch (SAXException e)
 		{
-			e.printStackTrace();
-			PLog.err("Errore durante il parsing del database.");
+			PLog.err(e, "DBUsers.load", "Errore durante il parsing del database.");
 		}
 		catch (IOException e)
 		{
-			PLog.err("Impossibile eseguire il parsing del database. File non leggibile.");
+			PLog.err(e, "DBUsers.load", "Impossibile eseguire il parsing del database. File non leggibile.");
 		}
 	}
 
@@ -103,8 +103,13 @@ public class DBUsers implements DBFile
 	 *
 	 * @param user Bean utente
 	 */
-	public void addUser(UserBean user)
+	public void addUser(UserBean user) throws ParcmanDBUserExistException
 	{
+		// Controllo che l'utente non sia gia' presente nel DataBase
+		for (int i=0; i< this.getSize(); i++)
+			if (this.getUserName(i) == user.getName())
+				throw new ParcmanDBUserExistException();
+
 		users.add(user);
 	}
 

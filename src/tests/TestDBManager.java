@@ -152,7 +152,7 @@ public class TestDBManager implements Test
     {
         System.out.println("\ttest DB...");
 
-	// Test creazione intero ramo DB
+		// Test creazione intero ramo DB
         try
         {
             DB db1 = new DB("./dbDirectory");
@@ -163,10 +163,23 @@ public class TestDBManager implements Test
             e.printStackTrace();
         }
 
-	// Test ramo DB  esistente
+		// Test ramo DB  esistente
         try
         {
             DB db2 = new DB("./dbDirectory");
+			try
+			{
+				db2.addUser("User1", "Password1", "Privilege1");
+				db2.addUser("User1", "Password2", "Privilege2");
+			}
+			catch (ParcmanDBUserExistException e)
+			{
+				System.out.println("\tok");
+			}
+			catch (Exception e)
+			{
+				System.out.println("failed");
+			}	
         }
         catch (ParcmanDBNotCreateException e)
         {
@@ -174,13 +187,11 @@ public class TestDBManager implements Test
             e.printStackTrace();
         }
 	
-	// Elimino i files e la cartella utilizzati nel test
-	File[] flist = (new File("./dbDirectory")).listFiles();
-	for (int i=0; i<flist.length; i++)
-		flist[i].delete();
-	(new File("./dbDirectory")).delete();
-
-        System.out.println("\tok.");
+		// Elimino i files e la cartella utilizzati nel test
+		File[] flist = (new File("./dbDirectory")).listFiles();
+		for (int i=0; i<flist.length; i++)
+			flist[i].delete();
+		(new File("./dbDirectory")).delete();
     }
 }
 

@@ -7,7 +7,9 @@ sourcefile=(DBManager.java \
 	beans/UserBean.java \
 	xmlhandlers/UserContentHandler.java \
     exceptions/ParcmanDBDirectoryMalformedException.java \
-    exceptions/ParcmanDBNotCreateException.java)
+    exceptions/ParcmanDBNotCreateException.java \
+	exceptions/ParcmanDBAddUserException.java \
+	exceptions/ParcmanDBUserExistException.java)
 
 clpath=`pwd`"/../"
 dom="[DATABASE]"
