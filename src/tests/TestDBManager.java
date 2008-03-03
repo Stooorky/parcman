@@ -152,6 +152,7 @@ public class TestDBManager implements Test
     {
         System.out.println("\ttest DB...");
 
+	// Test creazione intero ramo DB
         try
         {
             DB db1 = new DB("./dbDirectory");
@@ -162,6 +163,7 @@ public class TestDBManager implements Test
             e.printStackTrace();
         }
 
+	// Test ramo DB  esistente
         try
         {
             DB db2 = new DB("./dbDirectory");
@@ -171,10 +173,14 @@ public class TestDBManager implements Test
             System.out.println("failed.");
             e.printStackTrace();
         }
+	
+	// Elimino i files e la cartella utilizzati nel test
+	File[] flist = (new File("./dbDirectory")).listFiles();
+	for (int i=0; i<flist.length; i++)
+		flist[i].delete();
+	(new File("./dbDirectory")).delete();
 
-        File f = new File("./dbDirectory");
-        f.delete();
-
-        System.out.println("ok.");
+        System.out.println("\tok.");
     }
 }
+
