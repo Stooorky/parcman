@@ -15,6 +15,7 @@ public class PLog
 	 */
 	public static void err(Exception e, String str)
 	{
+
 		System.err.println("[ERROR] " + str);
 		System.err.println(e);
 	}
@@ -49,3 +50,4 @@ public class PLog
 		System.out.println("[LOG] " + str);
 	}
 }
+

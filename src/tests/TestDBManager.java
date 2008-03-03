@@ -3,9 +3,10 @@ package tests;
 import java.io.*;
 import java.util.*;
 
-import dbmanager.*;
-import dbmanager.beans.*;
-import dbmanager.xmlhandlers.*;
+import database.*;
+import database.beans.*;
+import database.xmlhandlers.*;
+import database.exceptions.*;
 
 public class TestDBManager implements Test
 {
@@ -17,6 +18,7 @@ public class TestDBManager implements Test
 		this.testCall();
 		this.testDrop();
 		this.testLoad();
+        this.testDB();
 		System.out.println("> TestDBManager END");
 		System.out.println("");
 	}
@@ -25,8 +27,8 @@ public class TestDBManager implements Test
 	{
 		System.out.print("\ttest singleton... ");
 		String dbDirectory = "./dbfiles/";
-		NewDBManager manager1 = NewDBManager.getInstance(dbDirectory);
-		NewDBManager manager2 = NewDBManager.getInstance(dbDirectory);
+		DBManager manager1 = DBManager.getInstance();
+		DBManager manager2 = DBManager.getInstance();
 		if (!manager1.equals(manager2))
 		{
 			System.out.println("failed.");
@@ -42,8 +44,8 @@ public class TestDBManager implements Test
 		System.out.print("\ttest call... ");
 		String dbDirectory = "./dbfiles/";
 		String dbUsersFile = "users.xml";
-		NewDBManager manager = NewDBManager.getInstance(dbDirectory);
-		manager.add("USERS", new NewDBUsers(dbUsersFile));
+		DBManager manager = DBManager.getInstance();
+		manager.add("USERS", new DBUsers(dbUsersFile));
 		manager.save();
 		File f = new File(dbUsersFile);
 		if (f.exists())
@@ -62,8 +64,8 @@ public class TestDBManager implements Test
 		System.out.print("\ttest save... ");
 		String dbDirectory = "./dbfiles/";
 		String dbUsersFile = "users.xml";
-		NewDBManager manager = NewDBManager.getInstance(dbDirectory);
-		manager.add("USERS", new NewDBUsers(dbUsersFile));
+		DBManager manager = DBManager.getInstance();
+		manager.add("USERS", new DBUsers(dbUsersFile));
 		UserBean user = new UserBean();
 		user.setName("pippo");
 		user.setPassword("pippo");
@@ -85,8 +87,8 @@ public class TestDBManager implements Test
 		System.out.print("\ttest drop... ");
 		String dbDirectory = "./dbfiles/";
 		String dbUsersFile = "users.xml";
-		NewDBManager manager = NewDBManager.getInstance(dbDirectory);
-		manager.add("USERS", new NewDBUsers(dbUsersFile));
+		DBManager manager = DBManager.getInstance();
+		manager.add("USERS", new DBUsers(dbUsersFile));
 		manager.drop("USERS");
 		Vector<String> list = manager.list();
 		if (list.contains("USERS"))
@@ -104,8 +106,8 @@ public class TestDBManager implements Test
 		System.out.print("\ttest load...");
 		String dbDirectory = "./dbfiles/";
 		String dbUsersFile = "users.xml";
-		NewDBManager manager = NewDBManager.getInstance(dbDirectory);
-		manager.add("USERS", new NewDBUsers(dbUsersFile));
+		DBManager manager = DBManager.getInstance();
+		manager.add("USERS", new DBUsers(dbUsersFile));
 		UserBean user = new UserBean();
 		user.setName("pluto");
 		user.setPassword("pluto");
@@ -145,4 +147,34 @@ public class TestDBManager implements Test
 			f.delete();
 		}
 	}
+
+    public void testDB()
+    {
+        System.out.println("\ttest DB...");
+
+        try
+        {
+            DB db1 = new DB("./dbDirectory");
+        }
+        catch (ParcmanDBNotCreateException e)
+        {
+            System.out.println("failed.");
+            e.printStackTrace();
+        }
+
+        try
+        {
+            DB db2 = new DB("./dbDirectory");
+        }
+        catch (ParcmanDBNotCreateException e)
+        {
+            System.out.println("failed.");
+            e.printStackTrace();
+        }
+
+        File f = new File("./dbDirectory");
+        f.delete();
+
+        System.out.println("ok.");
+    }
 }
