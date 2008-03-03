@@ -2,46 +2,25 @@ package dbmanager;
 
 import java.io.*;
 import java.util.*;
-import javax.xml.*;
-import javax.xml.parsers.*;
+import org.xml.sax.*;
+import org.xml.sax.helpers.*;
 
 import plog.*;
+import dbmanager.beans.*;
+import dbmanager.xmlhandlers.*;
 
-import beans.*;
-
-/**
- * Gestore DataBase utenti.
- *
- * @author Parcman Tm
- */
-public class DBUsers
+public class NewDBUsers implements DBFile
 {
-	/**
-	 * Path del file DB su disco.
-	 */
 	private String dbFile;
-
-	/**
-	 * Vettore utenti.
-	 */
 	private Vector<UserBean> users;
 
-	/**
-	 * Costruttore.
-	 *
-	 * @param db_file Path del file DB da gestire
-	 */
-	public DBUsers(String dbFile)
+	public NewDBUsers(String dbFile)
 	{
 		this.dbFile = dbFile;
-
-		users = new Vector<UserBean>();
+		this.users = new Vector<UserBean>();
 	}
 
-	/**
-	 * Esegue il salvataggio del DataBase Utenti su disco.
-	 */
-	public void save()
+	public void save() 
 	{
 		File f = new File(dbFile);
 		FileOutputStream fos;
@@ -77,21 +56,34 @@ public class DBUsers
 			ps.println("<NAME>" + this.getUserName(i) + "</NAME>");
 			ps.println("<PASSWORD>" + this.getUserPassword(i) + "</PASSWORD>");
 			ps.println("<PRIVILEGE>" + this.getUserPrivilege(i) + "</PRIVILEGE>");
-			ps.println("<USER>");
+			ps.println("</USER>");
 		}
 
 		ps.println("</DB_USERS>");
 	}
 
-    /**
-     * Popola il vettore users caricando i dati da dbFile.
-     */
-    public void load()
-    {
-        // SAXParser parser = SAXParserFactory.newSAXParser();
-
-        // parser.pars(dbFile);
-    }
+	/**
+	 * Popola il vettore users caricando i dati da dbFile.
+	 */
+	public void load()
+	{
+		XMLReader parser;
+		try 
+		{
+			parser = XMLReaderFactory.createXMLReader();
+			parser.setContentHandler(new UserContentHandler(this.users));
+			parser.parse(dbFile);
+		}
+		catch (SAXException e)
+		{
+			e.printStackTrace();
+			PLog.err("Errore durante il parsing del database.");
+		}
+		catch (IOException e)
+		{
+			PLog.err("Impossibile eseguire il parsing del database. File non leggibile.");
+		}
+	}
 
 	/**
 	 * Aggiunta di utente al DataBase Utenti.
@@ -109,13 +101,13 @@ public class DBUsers
 	 * @param index Index dell'utente da rimuovere
 	 */
 	public void removeUserAt(int index)
-        throws ArrayIndexOutOfBoundsException
-	{
-		if (index >= 0 && index < getSize())
-			users.removeElementAt(index);
-        else
-		    throw new ArrayIndexOutOfBoundsException();
-	}
+		throws ArrayIndexOutOfBoundsException
+		{
+			if (index >= 0 && index < getSize())
+				users.removeElementAt(index);
+			else
+				throw new ArrayIndexOutOfBoundsException();
+		}
 
 	/**
 	 * Assegna il campo dbFile.
@@ -144,13 +136,13 @@ public class DBUsers
 	 * @return Nome utente
 	 */
 	private String getUserName(int index)
-        throws ArrayIndexOutOfBoundsException
-	{
-		if (index >= 0 && index < this.getSize())
-			return users.elementAt(index).getName();
+		throws ArrayIndexOutOfBoundsException
+		{
+			if (index >= 0 && index < this.getSize())
+				return users.elementAt(index).getName();
 
-		throw new ArrayIndexOutOfBoundsException();
-	}
+			throw new ArrayIndexOutOfBoundsException();
+		}
 
 	/**
 	 * Restituisce la password dell'Utente di indice index.
@@ -159,13 +151,13 @@ public class DBUsers
 	 * @return Password utente
 	 */
 	private String getUserPassword(int index)
-        throws ArrayIndexOutOfBoundsException
-	{
-		if (index >= 0 && index < this.getSize())
-			return users.elementAt(index).getPassword();
+		throws ArrayIndexOutOfBoundsException
+		{
+			if (index >= 0 && index < this.getSize())
+				return users.elementAt(index).getPassword();
 
-		throw new ArrayIndexOutOfBoundsException();
-	}
+			throw new ArrayIndexOutOfBoundsException();
+		}
 
 	/**
 	 * Restituisce i privilegi dell'Utente di indice index.
@@ -174,15 +166,16 @@ public class DBUsers
 	 * @return Privilegi utente
 	 */
 	private String getUserPrivilege(int index)
-        throws ArrayIndexOutOfBoundsException
-	{
-		if (index >= 0 && index < this.getSize())
-			return users.elementAt(index).getPrivilege();
+		throws ArrayIndexOutOfBoundsException
+		{
+			if (index >= 0 && index < this.getSize())
+				return users.elementAt(index).getPrivilege();
 
-		throw new ArrayIndexOutOfBoundsException();
-	}
+			throw new ArrayIndexOutOfBoundsException();
+		}
 
-	/** Restituisce il numero di Utenti nel DB.
+	/** 
+	 * Restituisce il numero di Utenti nel DB.
 	 *
 	 * @return Numero di Utenti registrati nel DataBase Utenti
 	 */
@@ -190,4 +183,15 @@ public class DBUsers
 	{
 		return users.size();
 	}
+
+	/**
+	 * Restituisce la lista degli utenti nel DB.
+	 *
+	 * @return Vector di bean contenenti gli utenti.
+	 */
+	public Vector<UserBean> getUsers()
+	{
+		return this.users;
+	}
 }
+

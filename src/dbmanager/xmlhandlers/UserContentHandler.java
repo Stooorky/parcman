@@ -12,147 +12,152 @@ import dbmanager.beans.*;
  * @author Parcman Tm
  */
 public class UserContentHandler 
-    implements ContentHandler
+implements ContentHandler
 {
-    /** 
-     * 'true' se stiamo indagando l'elemento <NAME></NAME>.
-     */
-    private boolean inName;
+	/** 
+	 * 'true' se stiamo indagando l'elemento <NAME></NAME>.
+	 */
+	private boolean inName;
 
-    /** 
-     * 'true' se stiamo indagando l'elemento <PASSWORD></PASSWORD>.
-     */
-    private boolean inPass;
+	/** 
+	 * 'true' se stiamo indagando l'elemento <PASSWORD></PASSWORD>.
+	 */
+	private boolean inPass;
 
-    /** 
-     * 'true' se stiamo indagando l'elemento <PRIVILEGE></PRIVILEGE>.
-     */
-    private boolean inPriv;
+	/** 
+	 * 'true' se stiamo indagando l'elemento <PRIVILEGE></PRIVILEGE>.
+	 */
+	private boolean inPriv;
 
-    /** 
-     * Oggetto bean per la memorizzazione di un utente.
-     */
-    private UserBean bean;
+	/** 
+	 * Oggetto bean per la memorizzazione di un utente.
+	 */
+	private UserBean bean;
 
-    /** 
-     * Lista degli utenti registrati.
-     */
-    private Vector<UserBean> users;
+	/** 
+	 * Lista degli utenti registrati.
+	 */
+	private Vector<UserBean> users;
 
-    /**
-     * Costruttore.
-     * 
-     * @param Lista degli utenti registrati.
-     * @return Istanza dell'oggetto UserContentHandler.
-     */
-    public UserContentHandler(Vector<UserBean> user)
-    {
-	this.users = users;
-    }
-
-    public void characters(char[] ch, int start, int length)
-	throws SAXException 
-    {
-	if (this.inName)
+	/**
+	 * Costruttore.
+	 * 
+	 * @param Lista degli utenti registrati.
+	 * @return Istanza dell'oggetto UserContentHandler.
+	 */
+	public UserContentHandler(Vector<UserBean> users)
 	{
-	    this.bean.setName(new String(ch));
-	    this.inName = false;
+		this.users = users;
 	}
-	else if (this.inPass) 
+
+	public void characters(char[] ch, int start, int length)
+		throws SAXException 
 	{
-	    this.bean.setPassword(new String(ch));
-	    this.inPass = false;
+		if (this.inName)
+		{
+			this.bean.setName(new String(ch, start, length));
+			this.inName = false;
+		}
+		else if (this.inPass) 
+		{
+			this.bean.setPassword(new String(ch, start, length));
+			this.inPass = false;
+		}
+		else if (this.inPriv) 
+		{
+			this.bean.setPrivilege(new String(ch, start, length));
+			this.inPriv = false;
+		}
+		else 
+		{
+			throw new SAXException("Elemento non riconosciuto.");
+		}
 	}
-	else if (this.inPriv) 
+
+	public void endDocument() 
+		throws SAXException 
 	{
-	    this.bean.setPrivilege(new String(ch));
-	    this.inPriv = false;
+
 	}
-	else 
+
+	public void endElement(String uri, String localName, String qName) 
+		throws SAXException 
 	{
-	    throw new SAXException("Elemento non riconosciuto.");
+		if ("USER".equals(localName)
+			&& !this.users.contains(this.bean))
+		{
+			this.users.add(this.bean);
+		}
 	}
-    }
 
-    public void endDocument() 
-	throws SAXException 
-    {
-
-    }
-
-    public void endElement(String uri, String localName, String qName) 
-	throws SAXException 
-    {
-	if ("USER".equals(localName))
+	public void endPrefixMapping(String prefix) 
+		throws SAXException 
 	{
-	    this.users.add(this.bean);
+
 	}
-    }
 
-    public void endPrefixMapping(String prefix) 
-	throws SAXException 
-    {
-
-    }
-
-    public void ignorableWhitespace(char[] ch, int start, int length) 
-	throws SAXException 
-    {
-
-    }
-
-    public void processingInstruction(String target, String data) 
-	throws SAXException 
-    {
-
-    }
-
-    public void setDocumentLocator(Locator locator) 
-    {
-
-    }
-
-    public void skippedEntity(String name) 
-	throws SAXException 
-    {
-
-    }
-
-    public void startDocument() 
-	throws SAXException 
-    {
-
-    }
-
-    public void startElement(String uri, String localName, String qName, Attributes atts) 
-	throws SAXException 
-    {
-	if ("NAME".equals(localName))
+	public void ignorableWhitespace(char[] ch, int start, int length) 
+		throws SAXException 
 	{
-	    this.inName = true;
-	}
-	else if ("PASSWORD".equals(localName))
-	{
-	    this.inPass = true;
-	}
-	else if ("PRIVILEGE".equals(localName))
-	{
-	    this.inPriv = true;
-	}
-	else if ("USER".equals(localName))
-	{
-	    this.bean = new UserBean();
-	}
-	else 
-	{
-	    throw new SAXException("Elemento non riconosciuto.");
-	}
-    }
 
-    public void startPrefixMapping(String prefix, String uri) 
-	throws SAXException 
-    {
+	}
 
-    }
+	public void processingInstruction(String target, String data) 
+		throws SAXException 
+	{
+
+	}
+
+	public void setDocumentLocator(Locator locator) 
+	{
+
+	}
+
+	public void skippedEntity(String name) 
+		throws SAXException 
+	{
+
+	}
+
+	public void startDocument() 
+		throws SAXException 
+	{
+
+	}
+
+	public void startElement(String uri, String localName, String qName, Attributes atts) 
+		throws SAXException 
+	{
+		if ("NAME".equals(localName))
+		{
+			this.inName = true;
+		}
+		else if ("PASSWORD".equals(localName))
+		{
+			this.inPass = true;
+		}
+		else if ("PRIVILEGE".equals(localName))
+		{
+			this.inPriv = true;
+		}
+		else if ("USER".equals(localName))
+		{
+			this.bean = new UserBean();
+		}
+		else if ("DB_USERS".equals(localName))
+		{
+			
+		}
+		else 
+		{
+			throw new SAXException("Elemento non riconosciuto.");
+		}
+	}
+
+	public void startPrefixMapping(String prefix, String uri) 
+		throws SAXException 
+	{
+
+	}
 
 }

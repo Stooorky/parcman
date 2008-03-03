@@ -106,16 +106,43 @@ public class TestDBManager implements Test
 		String dbUsersFile = "users.xml";
 		NewDBManager manager = NewDBManager.getInstance(dbDirectory);
 		manager.add("USERS", new NewDBUsers(dbUsersFile));
+		UserBean user = new UserBean();
+		user.setName("pluto");
+		user.setPassword("pluto");
+		user.setPrivilege("pluto");
+		Object[] args = { user };
+		try
+		{
+			manager.call("USERS", "addUser", args);
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		manager.save();
+		File f = new File(dbUsersFile);
 		try 
 		{
 			manager.load();
-			System.out.println("ok.");
+			//Object[] args1 = { 0 }; 
+			//System.out.println(manager.call("USERS", "getUserName", args1));
+			Vector<UserBean> users = (Vector<UserBean>) manager.call("USERS", "getUsers", null);
+			if (users.size() == 1) 
+			{
+				System.out.println("ok.");
+			} 
+			else 
+			{
+				System.out.println("failed.");
+			}
+			f.delete();
+
 		}
 		catch (Exception e)
 		{
 			System.out.println("failed.");
 			e.printStackTrace();
+			f.delete();
 		}
 	}
 }
