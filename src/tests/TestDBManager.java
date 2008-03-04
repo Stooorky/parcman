@@ -2,11 +2,14 @@ package tests;
 
 import java.io.*;
 import java.util.*;
+import java.rmi.*;
 
 import database.*;
 import database.beans.*;
 import database.xmlhandlers.*;
 import database.exceptions.*;
+import databaseserver.*;
+import remoteexceptions.*;
 
 public class TestDBManager implements Test
 {
@@ -19,6 +22,7 @@ public class TestDBManager implements Test
 		this.testDrop();
 		this.testLoad();
         this.testDB();
+		this.testDBServer();
 		System.out.println("> TestDBManager END");
 		System.out.println("");
 	}
@@ -193,7 +197,7 @@ public class TestDBManager implements Test
 			flist[i].delete();
 		(new File("./dbDirectory")).delete();
     }
-/*
+
 	public void testDBServer()
 	{
 		System.out.println("\ttest DBServer...");
@@ -222,8 +226,21 @@ public class TestDBManager implements Test
             e.printStackTrace();
         }
 		
-		ServerDB serverDB = new ServerDB("./dbDirectory");
-		
+		try
+		{
+			DBServer dBServer = new DBServer("./dbDirectory");
+			UserBean user = dBServer.getUser("User1");
+			if (user == null || !user.getName().equals("User1"))
+				System.out.println("\tfailed.");
+			else
+				System.out.println("\tok.");
+		}
+		catch(RemoteException e)
+		{
+			System.out.println("\tfailed.");
+			e.printStackTrace();
+		}
+
 		
 		// Elimino i files e la cartella utilizzati nel test
 		File[] flist = (new File("./dbDirectory")).listFiles();
@@ -232,6 +249,5 @@ public class TestDBManager implements Test
 		(new File("./dbDirectory")).delete();
 
 	}
-*/
 }
 

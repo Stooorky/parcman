@@ -124,7 +124,7 @@ public class DBUsers implements DBFile
 		throws ParcmanDBUserNotExistException
 	{
 		for (int i=0; i<this.getSize(); i++)
-			if (this.getUserName(i) == name)
+			if (this.getUserName(i).equals(name))
 				return this.users.elementAt(i);
 
 		throw new ParcmanDBUserNotExistException();

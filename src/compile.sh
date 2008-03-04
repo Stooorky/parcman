@@ -51,6 +51,22 @@ if [ "$1" = "clean" ]; then
         exit
     fi
 
+	if [ "$2" = "remoteexceptions" ]; then
+        echo "Clean Remoteexceptions  .class files."
+        clean remoteexceptions
+        echo "Done."
+        exit
+    fi
+
+    if [ "$2" = "databaseserver" ]; then
+        echo "Clean DatabaseServer  .class files."
+        clean databaseserver
+		clean remoteexceptions
+        clean plog
+        echo "Done."
+        exit
+    fi
+
     if [ "$2" = "all" ]; then
         echo "Clean All .class files."
         clean clientbootstrap
@@ -58,6 +74,8 @@ if [ "$1" = "clean" ]; then
         clean remoteclient
         clean tests
         clean database
+		clean remoteexceptions
+		clean databaseserver
         echo "Done."
         exit
     fi
@@ -100,8 +118,30 @@ fi
 # Compile Tests
 #####################
 if [ "$1" = "tests" ]; then
-    echo "Compilation Client start."
+    echo "Compilation Tests start."
     compile tests 
+    echo "Done."
+    exit
+fi
+
+#####################
+# Compile RemoteExceptions
+#####################
+if [ "$1" = "remoteexceptions" ]; then
+    echo "Compilation Remoteexceptions start."
+	compile remoteexceptions 
+    echo "Done."
+    exit
+fi
+
+#####################
+# Compile DatabaseServer
+#####################
+if [ "$1" = "databaseserver" ]; then
+    echo "Compilation DatabaseServer start."
+    compile remoteexceptions
+	compile plog
+	compile databaseserver
     echo "Done."
     exit
 fi
@@ -116,6 +156,8 @@ if [ "$1" = "all" ]; then
     compile remoteclient
     compile tests
     compile database
+	compile databaseserver
+	compile remoteexceptions
     echo "Done."
     exit
 fi
@@ -124,7 +166,7 @@ fi
 # USE
 #####################
 echo "[USE] For Clean:"
-echo "       $0 clean <server, client, tests, database, all>"
+echo "       $0 clean <server, client, tests, database, databaseserver, remoteexceptions, all>"
 echo "      For Compile:"
-echo "       $0 <server, client, tests, database, all>"
+echo "       $0 <server, client, tests, database, databaseserver, remoteexceptions, all>"
 

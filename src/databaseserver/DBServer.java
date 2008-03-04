@@ -10,7 +10,7 @@ import database.*;
 import plog.*;
 import database.exceptions.*;
 import database.beans.*;
-import remoteexception.*;
+import remoteexceptions.*;
 
 public class DBServer implements RemoteDBServer
 {
