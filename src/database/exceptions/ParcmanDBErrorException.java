@@ -1,6 +1,11 @@
 package database.exceptions;
 
-public class ParcmanDBAddUserException
+/**
+ * Errore interno al database.
+ *
+ * @author Parcman Tm
+ */
+public class ParcmanDBErrorException
     extends Exception
 {
     private static final long serialVersionUID = 42L;
@@ -10,7 +15,7 @@ public class ParcmanDBAddUserException
      *
      * @param message Messaggio di errore.
      */
-    public ParcmanDBAddUserException (String message)
+    public ParcmanDBErrorException (String message)
     {
         super(message);
     }
@@ -18,7 +23,7 @@ public class ParcmanDBAddUserException
     /**
      * Costruttore.
      */
-	public ParcmanDBAddUserException ()
+	public ParcmanDBErrorException ()
 	{
 
 	}

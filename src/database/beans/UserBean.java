@@ -1,5 +1,9 @@
 package database.beans;
 
+import java.io.Serializable;
+import java.util.*;
+import java.io.*;
+
 import database.xmlhandlers.*;
 
 /**
@@ -7,7 +11,7 @@ import database.xmlhandlers.*;
  *
  * @author Parcman Tm
  */
-public class UserBean
+public class UserBean implements Serializable
 {
 	/**
 	 * Nome utente.
@@ -24,6 +28,10 @@ public class UserBean
 	 */
 	private String privilege;
 
+	/**
+	 * Serial Version UID per il check di compatibilita'.
+	 */
+	private static final long serialVersionUID = 42L;
 
 	/**
 	 * Restituisce il nome utente.
@@ -101,6 +109,27 @@ public class UserBean
 		}
 
 		return true;
+	}
+
+	private void readObject(ObjectInputStream aInputStream)
+		throws ClassNotFoundException, IOException
+	{
+		aInputStream.defaultReadObject();
+
+	/*
+		if (!(this.name != null && !(this.name.equals(""))))
+			throw new IllegalArgumentException("Il nome utente non deve essere nullo o vuoto.");
+		if (!(this.password != null && !(this.password.equals(""))))
+			throw new IllegalArgumentException("La password utente non deve essere nulla o vuota.");
+		if (!(this.privilege != null && !(this.privilege.equals(""))))
+			throw new IllegalArgumentException("Il campo privilegi utente non deve essere nullo o vuoto.");
+	*/
+	}
+
+	private void writeObject(ObjectOutputStream aOutputStream)
+		throws IOException
+	{
+		aOutputStream.defaultWriteObject();
 	}
 }
 

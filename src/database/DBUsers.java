@@ -103,7 +103,8 @@ public class DBUsers implements DBFile
 	 *
 	 * @param user Bean utente
 	 */
-	public void addUser(UserBean user) throws ParcmanDBUserExistException
+	public void addUser(UserBean user)
+		throws ParcmanDBUserExistException
 	{
 		// Controllo che l'utente non sia gia' presente nel DataBase
 		for (int i=0; i< this.getSize(); i++)
@@ -111,6 +112,22 @@ public class DBUsers implements DBFile
 				throw new ParcmanDBUserExistException();
 
 		users.add(user);
+	}
+
+	/**
+	 * Restituisce i dati di un utente a partire dal nome.
+	 *
+	 * @param name Nome Utente
+	 * @return UserBean contenente i dati dell'utente
+	 */
+	public UserBean getUser(String name)
+		throws ParcmanDBUserNotExistException
+	{
+		for (int i=0; i<this.getSize(); i++)
+			if (this.getUserName(i) == name)
+				return this.users.elementAt(i);
+
+		throw new ParcmanDBUserNotExistException();
 	}
 
 	/**

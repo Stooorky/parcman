@@ -60,7 +60,7 @@ public class DB
      * @param privilege Privilegi utente
      */
     public void addUser(String name, String password, String privilege)
-	    throws ParcmanDBAddUserException, ParcmanDBUserExistException
+	    throws ParcmanDBErrorException, ParcmanDBUserExistException
     {
 		UserBean user = new UserBean();
 		user.setName(name);
@@ -79,10 +79,12 @@ public class DB
 			// Utente gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBUserExistException)
 				throw new ParcmanDBUserExistException();
+
+			throw new ParcmanDBErrorException();
 		}
 		catch (Exception e)
 		{
-			throw new ParcmanDBAddUserException();
+			throw new ParcmanDBErrorException();
 		}
 
 		// Salvo il DB Utenti
@@ -90,6 +92,31 @@ public class DB
 
 		PLog.debug("DB.addUser", "Nuovo utente aggiunto al DB Utenti: " + name);
     }
+
+	public UserBean getUser(String name)
+		throws ParcmanDBErrorException, ParcmanDBUserNotExistException
+	{
+		Object[] args = { name };
+
+		DBManager dbManager = DBManager.getInstance();
+
+		try
+		{
+			return (UserBean)dbManager.call("USERS", "getUser", args);
+		}
+		catch (InvocationTargetException e)
+		{
+			// Utente gia' presente nel DataBase
+			if (e.getTargetException() instanceof ParcmanDBUserNotExistException)
+				throw new ParcmanDBUserNotExistException();
+
+			throw new ParcmanDBErrorException();
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+	}
 
     /**
      * Controlla e Fixa la Directory radice del DataBase

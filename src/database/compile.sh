@@ -8,7 +8,7 @@ sourcefile=(DBManager.java \
 	xmlhandlers/UserContentHandler.java \
     exceptions/ParcmanDBDirectoryMalformedException.java \
     exceptions/ParcmanDBNotCreateException.java \
-	exceptions/ParcmanDBAddUserException.java \
+	exceptions/ParcmanDBErrorException.java \
 	exceptions/ParcmanDBUserExistException.java)
 
 clpath=`pwd`"/../"

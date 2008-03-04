@@ -174,16 +174,16 @@ public class TestDBManager implements Test
 			}
 			catch (ParcmanDBUserExistException e)
 			{
-				System.out.println("\tok");
+				System.out.println("\tok.");
 			}
 			catch (Exception e)
 			{
-				System.out.println("failed");
+				System.out.println("\tfailed.");
 			}	
         }
         catch (ParcmanDBNotCreateException e)
         {
-            System.out.println("failed.");
+            System.out.println("\tfailed.");
             e.printStackTrace();
         }
 	
@@ -193,5 +193,45 @@ public class TestDBManager implements Test
 			flist[i].delete();
 		(new File("./dbDirectory")).delete();
     }
+/*
+	public void testDBServer()
+	{
+		System.out.println("\ttest DBServer...");
+
+		// Test ramo DB  esistente
+        try
+        {
+            DB db = new DB("./dbDirectory");
+			try
+			{
+				db.addUser("User1", "Password1", "Privilege1");
+				db.addUser("User2", "Password2", "Privilege2");
+			}
+			catch (ParcmanDBUserExistException e)
+			{
+				System.out.println("\tfailed.");
+			}
+			catch (Exception e)
+			{
+				System.out.println("\tfailed.");
+			}
+        }
+        catch (ParcmanDBNotCreateException e)
+        {
+            System.out.println("\tfailed.");
+            e.printStackTrace();
+        }
+		
+		ServerDB serverDB = new ServerDB("./dbDirectory");
+		
+		
+		// Elimino i files e la cartella utilizzati nel test
+		File[] flist = (new File("./dbDirectory")).listFiles();
+		for (int i=0; i<flist.length; i++)
+			flist[i].delete();
+		(new File("./dbDirectory")).delete();
+
+	}
+*/
 }
 
