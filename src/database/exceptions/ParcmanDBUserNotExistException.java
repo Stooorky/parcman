@@ -1,5 +1,10 @@
 package database.exceptions;
 
+/**
+ * Utente non presente all'interno del database utenti.
+ *
+ * @author Parcman Tm
+ */
 public class ParcmanDBUserNotExistException
     extends Exception
 {

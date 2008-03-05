@@ -9,19 +9,19 @@ import plog.*;
 import database.exceptions.*;
 
 /**
- * Gestore del DataBase globale.
+ * Gestore del database globale.
  *
  * @author Parcman Tm
  */
 public class DB
 {
     /**
-     * Path della directory contenente i file del DataBase.
+     * Path della directory contenente i file del database.
      */
     private String dbDirectory;
 
     /**
-     * Nome del DataBase Utenti.
+     * Nome del file xml del database utenti.
      */
     private static String DB_USERS_FILE = "dbUsers.xml";
 
@@ -29,9 +29,10 @@ public class DB
      * Costruttore.
      *
      * @param dbDirectory Directory radice del DataBase
+     * @throws ParcmanDBNotCreateException Errore durante la creazione dell'istanza del database
      */
-    public DB (String dbDirectory)
-        throws ParcmanDBNotCreateException
+    public DB(String dbDirectory) throws
+        ParcmanDBNotCreateException
     {
         this.dbDirectory = dbDirectory;
 
@@ -54,11 +55,18 @@ public class DB
 
     /**
      * Aggiunge un utente al DataBase Utenti.
+     * Esegue una validazione dei dati presenti all'interno dello UserBean
+     * attraverso la funzione UserBean.validate().
      * 
      * @param user Dati dell'utente
+     * @throws ParcmanDBErrorException Errore interno del database utenti
+     * @throws ParcmanDBUserExistException L'utente e' gia' presente nel database
+     * @throws ParcmanDBUserNotValidException I dati forniti per l'utente non sono validi
      */
-    public void addUser(UserBean user)
-	    throws ParcmanDBErrorException, ParcmanDBUserExistException, ParcmanDBUserNotValidException
+    public void addUser(UserBean user) throws
+        ParcmanDBErrorException,
+        ParcmanDBUserExistException,
+        ParcmanDBUserNotValidException
     {
 		Object[] args = { user };
        
@@ -91,8 +99,19 @@ public class DB
 		PLog.debug("DB.addUser", "Nuovo utente aggiunto al DB Utenti: " + user.getName());
     }
 
-	public UserBean getUser(String name)
-		throws ParcmanDBErrorException, ParcmanDBUserNotExistException
+    /**
+     * Restituisce i dati di un utente a partire dal nome.
+     * Se l'utente non e' presente all'interno del database solleva l'eccezione
+     * ParcmanDBUserNotExistException.
+     *
+     * @param name Nome utente
+     * @return UserBean contenente i dati dell'utente
+     * @throws ParcmanDBErrorException Errore interno del database utenti
+     * @throws ParcmanDBUserNotExistException Utente non presente all'interno del database utenti
+     */
+	public UserBean getUser(String name) throws
+        ParcmanDBErrorException,
+        ParcmanDBUserNotExistException
 	{
 		Object[] args = { name };
 
@@ -117,10 +136,13 @@ public class DB
 	}
 
     /**
-     * Controlla e Fixa la Directory radice del DataBase
+     * Controlla e Fixa la Directory radice del DataBase.
+     * Crea la directory se non esiste e la popola con i file necessari ai database.
+     *
+     * @throws ParcmanDBDirectoryMalformedException Il path fornito e' errato o i permessi non sono adeguati
      */
-    private void fixDirectory ()
-        throws ParcmanDBDirectoryMalformedException
+    private void fixDirectory() throws
+        ParcmanDBDirectoryMalformedException
     {
         File dir = new File(this.dbDirectory);
 

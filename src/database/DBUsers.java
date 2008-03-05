@@ -17,8 +17,15 @@ import database.exceptions.*;
  */
 public class DBUsers implements DBFile
 {
+    /**
+     * Path del file XML.
+     */
 	private String dbFile;
-	private Vector<UserBean> users;
+
+    /**
+     * Lista degli utenti presenti all'interno del database.
+     */
+    private Vector<UserBean> users;
 
     /**
      * Costruttore.
@@ -99,12 +106,15 @@ public class DBUsers implements DBFile
 	}
 
 	/**
-	 * Aggiunta di utente al DataBase Utenti.
-	 *
+	 * Aggiunge un utente al database utenti.
+	 * Se l'utente e' gia' presente all'interno del database solleva
+     * l'eccezione ParcmanDBUserException.
+     *
 	 * @param user Bean utente
+     * @throws ParcmanDBUserExistException L'utente specificato e' gia' presente all'interno del database
 	 */
-	public void addUser(UserBean user)
-		throws ParcmanDBUserExistException
+	public void addUser(UserBean user) throws
+        ParcmanDBUserExistException
 	{
 		// Controllo che l'utente non sia gia' presente nel DataBase
 		for (int i=0; i< this.getSize(); i++)
@@ -116,9 +126,12 @@ public class DBUsers implements DBFile
 
 	/**
 	 * Restituisce i dati di un utente a partire dal nome.
+     * Se l'utente non e' presente all'interno del database solleva
+     * l'eccezione ParcmanDBUserNotExistException.
 	 *
 	 * @param name Nome Utente
 	 * @return UserBean contenente i dati dell'utente
+     * @throws ParcmanDBUserNotExistException L'utente non e' presente all'interno del database
 	 */
 	public UserBean getUser(String name)
 		throws ParcmanDBUserNotExistException
@@ -131,23 +144,24 @@ public class DBUsers implements DBFile
 	}
 
 	/**
-	 * Rimuove un utente dal DataBase Utenti.
+	 * Rimuove un utente dal database utenti.
 	 *
 	 * @param index Index dell'utente da rimuovere
+     * @throws ArrayIndexOutOfBoundsException Indice non valido
 	 */
-	public void removeUserAt(int index)
-		throws ArrayIndexOutOfBoundsException
-		{
-			if (index >= 0 && index < getSize())
-				users.removeElementAt(index);
-			else
-				throw new ArrayIndexOutOfBoundsException();
-		}
+	public void removeUserAt(int index) throws
+        ArrayIndexOutOfBoundsException
+	{
+		if (index >= 0 && index < getSize())
+			users.removeElementAt(index);
+		else
+			throw new ArrayIndexOutOfBoundsException();
+	}
 
 	/**
 	 * Assegna il campo dbFile.
 	 *
-	 * @param dbFile Il Path del file DB su disco
+	 * @param dbFile Il Path del file su disco
 	 */
 	public void setDbFile(String dbFile)
 	{
@@ -157,7 +171,7 @@ public class DBUsers implements DBFile
 	/**
 	 * Restituisce il valore del campo dbFile.
 	 *
-	 * @return Il Path del file DB su disco
+	 * @return Il Path del file su disco
 	 */
 	public String getDbFile()
 	{
@@ -165,54 +179,57 @@ public class DBUsers implements DBFile
 	}
 
 	/**
-	 * Restituisce il nome dell'Utente di indice index.
+	 * Restituisce il nome dell'utente di indice index.
 	 *
 	 * @param index Indice dell'utente
 	 * @return Nome utente
+     * @throws ArrayIndexOutOfBoundsException Indice non valido
 	 */
-	private String getUserName(int index)
-		throws ArrayIndexOutOfBoundsException
-		{
-			if (index >= 0 && index < this.getSize())
-				return users.elementAt(index).getName();
+	private String getUserName(int index) throws
+        ArrayIndexOutOfBoundsException
+	{
+		if (index >= 0 && index < this.getSize())
+			return users.elementAt(index).getName();
 
-			throw new ArrayIndexOutOfBoundsException();
-		}
+        throw new ArrayIndexOutOfBoundsException();
+	}
 
 	/**
-	 * Restituisce la password dell'Utente di indice index.
+	 * Restituisce la password dell'utente di indice index.
 	 *
 	 * @param index Indice dell'utente
 	 * @return Password utente
-	 */
-	private String getUserPassword(int index)
-		throws ArrayIndexOutOfBoundsException
-		{
-			if (index >= 0 && index < this.getSize())
-				return users.elementAt(index).getPassword();
+     * @throws ArrayIndexOutOfBoundsException Indice non valido
+     */
+	private String getUserPassword(int index) throws
+        ArrayIndexOutOfBoundsException
+	{
+		if (index >= 0 && index < this.getSize())
+			return users.elementAt(index).getPassword();
 
-			throw new ArrayIndexOutOfBoundsException();
-		}
+		throw new ArrayIndexOutOfBoundsException();
+	}
 
 	/**
-	 * Restituisce i privilegi dell'Utente di indice index.
+	 * Restituisce i privilegi dell'utente di indice index.
 	 *
 	 * @param index Indice dell'utente
 	 * @return Privilegi utente
+     * @throws ArrayIndexOutOfBoundsException Indice non valido
 	 */
-	private String getUserPrivilege(int index)
-		throws ArrayIndexOutOfBoundsException
-		{
-			if (index >= 0 && index < this.getSize())
-				return users.elementAt(index).getPrivilege();
+	private String getUserPrivilege(int index) throws
+        ArrayIndexOutOfBoundsException
+	{
+		if (index >= 0 && index < this.getSize())
+			return users.elementAt(index).getPrivilege();
 
-			throw new ArrayIndexOutOfBoundsException();
-		}
+		throw new ArrayIndexOutOfBoundsException();
+	}
 
 	/** 
-	 * Restituisce il numero di Utenti nel DB.
+	 * Restituisce il numero di utenti nel database.
 	 *
-	 * @return Numero di Utenti registrati nel DataBase Utenti
+	 * @return Numero di Utenti registrati
 	 */
 	private int getSize()
 	{
@@ -220,9 +237,9 @@ public class DBUsers implements DBFile
 	}
 
 	/**
-	 * Restituisce la lista degli utenti nel DB.
+	 * Restituisce la lista degli utenti nel database.
 	 *
-	 * @return Vector di bean contenenti gli utenti.
+	 * @return Vector di UserBean contenente la lista utenti.
 	 */
 	public Vector<UserBean> getUsers()
 	{

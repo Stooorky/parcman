@@ -24,10 +24,11 @@ public class DBServer implements RemoteDBServer
     /**
      * Costruttore.
      *
-     * @param dbDirectory Directory radice del DataBase
+     * @param dbDirectory Path della directory radice del database
+     * @throws ParcmanDBServerErrorRemoteException Impossibile creare il DB
      */
-	public DBServer(String dbDirectory)
-		throws ParcmanDBServerErrorRemoteException, RemoteException
+	public DBServer(String dbDirectory) throws
+        ParcmanDBServerErrorRemoteException
 	{
 		try
         {
@@ -42,13 +43,16 @@ public class DBServer implements RemoteDBServer
 
     /**
      * Restituisce i dati di un utente a partire dal nome.
+     * Se l'utente non e' presente all'interno del database restituisce null.
      *
      * @param name Nome Utente
      * @return UserBean contenente i dati utente se esiste, null altrimenti
+     * @throws ParcmanDBServerErrorRemoteException Errore interno al database
+     * @throws RemoteException Eccezione remota
      */
-	public UserBean getUser(String name)
-		throws ParcmanDBServerErrorRemoteException,
-            RemoteException
+	public UserBean getUser(String name) throws
+        ParcmanDBServerErrorRemoteException,
+        RemoteException
 	{
 		try
 		{
@@ -64,10 +68,22 @@ public class DBServer implements RemoteDBServer
 		}
 	}
 
-    public void addUser(UserBean user)
-        throws ParcmanDBServerUserExistRemoteException,
-            ParcmanDBServerUserNotValidRemoteException,
-            RemoteException
+    /**
+     * Aggiunge un utente al database.
+     * Se l'utente e' gia' presente all'interno del database solleva
+     * l'eccezione remota ParcmanDBServerUserExistRemoteException.
+     * Se i dati forniti non sono coerenti, cioe' non superano il test
+     * UserBean.validate(), solleva l'eccezione ParcmanDBUserNotValidException.
+     *
+     * @param user UserBean contenente i dati dell'utente
+     * @throws ParcmanDBServerUserExistRemoteException L'utente e' gia' presente all'interno del database
+     * @throws ParcmanDBServerUserNotValidRemoteException I dati forniti per l'utente non sono validi
+     * @throws RemoteException Eccezione remota
+     */
+    public void addUser(UserBean user) throws
+        ParcmanDBServerUserExistRemoteException,
+        ParcmanDBServerUserNotValidRemoteException,
+        RemoteException
     {
         try
         {

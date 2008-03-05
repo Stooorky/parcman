@@ -1,5 +1,10 @@
 package database.exceptions;
 
+/**
+ * I dati dell'utente non sono validi.
+ *
+ * @author Parcman Tm
+ */
 public class ParcmanDBUserNotValidException
     extends Exception
 {

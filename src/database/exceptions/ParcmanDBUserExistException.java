@@ -1,5 +1,10 @@
 package database.exceptions;
 
+/**
+ * L'utente e' gia' presente all'interno del database.
+ *
+ * @author Parcman Tm
+ */
 public class ParcmanDBUserExistException
     extends Exception
 {

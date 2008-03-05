@@ -2,8 +2,6 @@ package database.exceptions;
 
 /**
  * Il path della directory radice non e' valido.
- * Ad esempio il path punta ad un file oppure la directory
- * non ha i permessi adeguati per essere usata.
  * 
  * @author Parcman Tm
  */

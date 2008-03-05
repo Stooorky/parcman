@@ -6,7 +6,7 @@ import java.lang.reflect.*;
 import plog.*;
 
 /**
- * Gestore del DataBase.
+ * Gestore dei DataBase.
  *
  * @author Parcman Tm
  */
@@ -32,7 +32,7 @@ public class DBManager
 
 	/** 
 	 * Costruttore.
-	 * @param dbMap Lista dei database
+	 * @param dbMap Map contenente la lista dei database
 	 */
 	private DBManager(Map<String, DBFile> dbMap)
 	{
@@ -69,10 +69,6 @@ public class DBManager
 	 */
 	public void save()
 	{
-		//if (this.dbMap.size() == 0)
-		//{
-		//	throw new Exception("Non ci sono database registrati nel dbmanager.");
-		//}
 		Set<String> keys = this.dbMap.keySet();
 		Iterator i = keys.iterator();
 		while (i.hasNext())
@@ -88,10 +84,6 @@ public class DBManager
 	 */
 	public void load()
 	{
-		//if (this.dbMap.size() == 0)
-		//{
-		//	throw new Exception("Non ci sono database registrati nel dbmanager.");
-		//}
 		Set keys = this.dbMap.keySet();
 		Iterator i = keys.iterator();
 		while (i.hasNext())
@@ -106,7 +98,7 @@ public class DBManager
 	 * Permette di ottenere la lista dei nomi dei database registrati nel 
 	 * manager.
 	 *
-	 * @return Vector contenente i nomi dei database registrati.
+	 * @return Vector contenente i nomi dei database registrati
 	 */
 	public Vector<String> list()
 	{
@@ -121,9 +113,9 @@ public class DBManager
 	}
 
 	/**
-	 * Esegue il salvataggio del database su file.
+	 * Esegue il salvataggio del database specificato su file.
 	 *
-	 * @param dbName Nome del database.
+	 * @param dbName Nome del database
 	 */
 	public void save(String dbName)
 	{
@@ -132,9 +124,9 @@ public class DBManager
 	}
 
 	/**
-	 * Carica il database specificato da dbName.
+	 * Carica in memoria il database specificato.
 	 *
-	 * @param dbName Nome del database.
+	 * @param dbName Nome del database
 	 */
 	public void load(String dbName)
 	{
@@ -143,11 +135,11 @@ public class DBManager
 	}
 
 	/**
-	 * Aggiunge un database; se esiste gia` un database con nome dbName 
+	 * Aggiunge un database; se esiste gia` un database con il nome specificato 
 	 * quest'ultimo viene sovrascritto.
 	 *
-	 * @param dbName	Nome del database.
-	 * @param db		Database da aggiungere.
+	 * @param dbName Nome del database
+	 * @param db Database da aggiungere
 	 */
 	public void add(String dbName, DBFile db)
 	{
@@ -159,9 +151,9 @@ public class DBManager
 	}
 
 	/**
-	 * Rimuove il database dbName.
+	 * Rimuove il database specificato.
 	 *
-	 * @param dbName Nome del database.
+	 * @param dbName Nome del database
 	 */
 	public void drop(String dbName)
 	{
@@ -173,25 +165,29 @@ public class DBManager
 	}
 	
 	/**
-	 * Chiamo un metodo del database dbName e ne ritorno l'output.
+	 * Chiama un metodo del database specificato e ne ritorna l'output.
 	 *
-	 * @param dbName	Nome del database richiesto.
-	 * @param methodName	Metodo da invocare.
-	 * @param args		Argomenti da passare al metodo incato.
-	 *
-	 * @return		Output del metodo invocato.
+	 * @param dbName Nome del database richiesto
+	 * @param methodName Stringa rappresentante il nome del metodo da invocare
+	 * @param args Argomenti da passare al metodo
+	 * @return Output del metodo invocato
+	 * @throws NoSuchMethodException Il metodo specificato non esiste
+     * @throws InvocationTargetException Eccezioni sollevate dal metodo invocato
+     * @throws SecurityException Invocata solo in presenza di un SecurityManager
+     * @throws IllegalAccessException Impossibile accedere alla definizione della classe
+     * @throws IllegalArgumentException Gli argomenti passati non sono validi
 	 */
-	public Object call(String dbName, String methodName, Object[] args)
-		throws NoSuchMethodException, 
-		InvocationTargetException,
+	public Object call(String dbName, String methodName, Object[] args) throws
+        NoSuchMethodException, 
 		SecurityException,
-		IllegalAccessException,		// lanciata quando il metodo corrente non ha accesso alla definizione della classe richiesta.
-		IllegalArgumentException,	// lanciata quando i parametri passati sono inappropriati per il metodo richiesto.
-		InvocationTargetException	// lanciata quando viene lanciata un'eccezzione nel metodo chiamato.
+		IllegalAccessException,
+		IllegalArgumentException,
+		InvocationTargetException
 	{
-		// - prelevo dalla lista il db con nome dbName.
+		// Prelevo dalla lista il db con nome dbName.
 		DBFile db = this.dbMap.get(dbName);
-		// - controllo che il db abbia il metodo richiesto.
+
+        // Controllo che il db abbia il metodo richiesto.
 		Class dbClass = db.getClass();
 		Class[] argsTypes;
 		if (args == null)
@@ -220,24 +216,24 @@ public class DBManager
             // TODO Warning in fase di compilazione. Controllare se e' evitabile.
 		    Method m = dbClass.getMethod(methodName, argsTypes);
 		    Object returned = m.invoke(db, args);
-		    // - ritorno l'output del metodo.
+		    // Ritorno l'output del metodo.
 		    return returned;
 
         }
         catch (SecurityException e)
         {
             PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
-            return null;
+            throw new SecurityException();
         }
         catch (NullPointerException e)
         {
             PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
-            return null;
+            return new NullPointerException();
         }
         catch (NoSuchMethodException e)
         {
             PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
-            return null;
+            return new NoSuchMethodException();
         }
         catch (InvocationTargetException e)
         {

@@ -135,8 +135,18 @@ public class UserBean implements Serializable
         return true;
     }
 
-	private void readObject(ObjectInputStream aInputStream)
-		throws ClassNotFoundException, IOException
+    /**
+     * Reimplementazione del metodo readObject della classe Serializable.
+     *
+     * @param aInputStream Stream in lettura dell'oggetto
+     * @throws ClassNotFoundException Impossibile ottenere la definizione della classe
+     * @throws IllegalArgumentException I dati dell'oggetto non sono validi
+     * @throws IOException Errore di IO
+     */
+	private void readObject(ObjectInputStream aInputStream) throws
+        ClassNotFoundException,
+        IllegalArgumentException,
+        IOException
 	{
 		aInputStream.defaultReadObject();
 
@@ -144,8 +154,14 @@ public class UserBean implements Serializable
           	throw new IllegalArgumentException("I dati contenuti nello UserBean non sono validi.");
 	}
 
-	private void writeObject(ObjectOutputStream aOutputStream)
-		throws IOException
+    /**
+     * Reimplementazione del metodo writeObject della classe Serializable.
+     *
+     * @param aOutputStream Stream in scrittura dell'oggetto
+     * @throws IOException Errore di IO
+     */
+	private void writeObject(ObjectOutputStream aOutputStream) throws
+        IOException
 	{
 		aOutputStream.defaultWriteObject();
 	}

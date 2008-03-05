@@ -241,7 +241,6 @@ public class TestDBManager implements Test
 		for (int i=0; i<flist.length; i++)
 			flist[i].delete();
 		(new File("./dbDirectory")).delete();
-
 	}
 }
 
