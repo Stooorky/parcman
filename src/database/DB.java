@@ -55,18 +55,16 @@ public class DB
     /**
      * Aggiunge un utente al DataBase Utenti.
      * 
-     * @param name Nome utente
-     * @param password Password utente
-     * @param privilege Privilegi utente
+     * @param user Dati dell'utente
      */
-    public void addUser(String name, String password, String privilege)
-	    throws ParcmanDBErrorException, ParcmanDBUserExistException
+    public void addUser(UserBean user)
+	    throws ParcmanDBErrorException, ParcmanDBUserExistException, ParcmanDBUserNotValidException
     {
-		UserBean user = new UserBean();
-		user.setName(name);
-		user.setPassword(password);
-		user.setPrivilege(privilege);
 		Object[] args = { user };
+       
+        // Controllo la validita' dei dati contenuti nello UserBean
+        if (!user.validate())
+            throw new ParcmanDBUserNotValidException();
 
 		DBManager dbManager = DBManager.getInstance();
 
@@ -90,7 +88,7 @@ public class DB
 		// Salvo il DB Utenti
 		dbManager.save("USERS");
 
-		PLog.debug("DB.addUser", "Nuovo utente aggiunto al DB Utenti: " + name);
+		PLog.debug("DB.addUser", "Nuovo utente aggiunto al DB Utenti: " + user.getName());
     }
 
 	public UserBean getUser(String name)

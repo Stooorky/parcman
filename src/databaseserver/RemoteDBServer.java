@@ -20,5 +20,12 @@ public interface RemoteDBServer extends Remote
 	 * @return UserBean dell'utente se esiste, null altrimenti
 	 */
 	public UserBean getUser(String name) throws RemoteException;
+
+    /**
+     * Aggiunge un utente al database.
+     *
+     * @param user UserBean dell'utente da aggiungere.
+     */
+    public void addUser(UserBean user) throws RemoteException;
 }
 

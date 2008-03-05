@@ -172,9 +172,19 @@ public class TestDBManager implements Test
         {
             DB db2 = new DB("./dbDirectory");
 			try
-			{
-				db2.addUser("User1", "Password1", "Privilege1");
-				db2.addUser("User1", "Password2", "Privilege2");
+			{   
+                UserBean user1 = new UserBean();
+                UserBean user2 = new UserBean();
+
+                user1.setName("User1");
+                user1.setPassword("Pwd");
+                user1.setPrivilege("Priv");
+	            user2.setName("User1");
+                user2.setPassword("Pwd");
+                user2.setPrivilege("Priv");
+
+                db2.addUser(user1);
+				db2.addUser(user2);
 			}
 			catch (ParcmanDBUserExistException e)
 			{
@@ -202,35 +212,19 @@ public class TestDBManager implements Test
 	{
 		System.out.println("\ttest DBServer...");
 
-		// Test ramo DB  esistente
-        try
-        {
-            DB db = new DB("./dbDirectory");
-			try
-			{
-				db.addUser("User1", "Password1", "Privilege1");
-				db.addUser("User2", "Password2", "Privilege2");
-			}
-			catch (ParcmanDBUserExistException e)
-			{
-				System.out.println("\tfailed.");
-			}
-			catch (Exception e)
-			{
-				System.out.println("\tfailed.");
-			}
-        }
-        catch (ParcmanDBNotCreateException e)
-        {
-            System.out.println("\tfailed.");
-            e.printStackTrace();
-        }
-		
 		try
 		{
 			DBServer dBServer = new DBServer("./dbDirectory");
-			UserBean user = dBServer.getUser("User1");
-			if (user == null || !user.getName().equals("User1"))
+            UserBean newUser = new UserBean();
+
+            newUser.setName("UserServer");
+            newUser.setPassword("Pwd");
+            newUser.setPrivilege("Priv");
+            
+            dBServer.addUser(newUser);
+
+			UserBean user = dBServer.getUser("UserServer");
+			if (user == null || !user.getName().equals("UserServer"))
 				System.out.println("\tfailed.");
 			else
 				System.out.println("\tok.");

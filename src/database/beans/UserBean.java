@@ -93,6 +93,12 @@ public class UserBean implements Serializable
 		this.privilege = privilege;
 	}
 
+    /**
+     * Controlla di equivalenza.
+     *
+     * @param obj Oggetto da confrontare
+     * @return True se obj e' un'istanza di UserBean identica a this, false altrimenti.
+     */
 	public boolean equals(Object obj)
 	{
 		if (!(obj instanceof UserBean))
@@ -111,19 +117,31 @@ public class UserBean implements Serializable
 		return true;
 	}
 
+    /**
+     * Controlla la validita' dei dati contenuti nello UserBean.
+     * I campi devono essere non vuoti.
+     *
+     * @return True se i dati sono validi, False altrimenti.
+     */
+    public boolean validate()
+    {
+        if (this.name == null || this.name.equals(""))
+            return false;
+        if (this.password == null || this.password.equals(""))
+            return false;
+        if (this.privilege == null || this.privilege.equals(""))
+            return false;
+
+        return true;
+    }
+
 	private void readObject(ObjectInputStream aInputStream)
 		throws ClassNotFoundException, IOException
 	{
 		aInputStream.defaultReadObject();
 
-	/*
-		if (!(this.name != null && !(this.name.equals(""))))
-			throw new IllegalArgumentException("Il nome utente non deve essere nullo o vuoto.");
-		if (!(this.password != null && !(this.password.equals(""))))
-			throw new IllegalArgumentException("La password utente non deve essere nulla o vuota.");
-		if (!(this.privilege != null && !(this.privilege.equals(""))))
-			throw new IllegalArgumentException("Il campo privilegi utente non deve essere nullo o vuoto.");
-	*/
+        if (!(this.validate()))
+          	throw new IllegalArgumentException("I dati contenuti nello UserBean non sono validi.");
 	}
 
 	private void writeObject(ObjectOutputStream aOutputStream)

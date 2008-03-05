@@ -1,6 +1,8 @@
 #!/bin/bash
 
-sourcefile=(ParcmanDBServerErrorRemoteException.java)
+sourcefile=(ParcmanDBServerErrorRemoteException.java \
+    ParcmanDBServerUserExistRemoteException.java \
+    ParcmanDBServerUserNotValidRemoteException.java)
 
 clpath=`pwd`"/../"
 dom="[REMOTEEXCEPTIONS]"
