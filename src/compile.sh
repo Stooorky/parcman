@@ -1,172 +1,74 @@
 #!/bin/bash
 
+
+# Elenco dei pacchetti
+pkglist=("pkgserver client tests database remoteexceptions databaseserver all")
+
+# Pacchetti
+pkgserver=("remoteclient plog")
+client=("clientbootstrap plog")
+tests=("tests")
+database=("database plog")
+remoteexceptions=("remoteexceptions")
+databaseserver=("databaseserver remoteexceptions plog")
+all=("clientbootstrap plog remoteclient tests database remoteexceptions databaseserver")
+
+
+#################
+# PRIVATE
+#################
 # Funzione di compilazione package
-compile ()
+compile()
 {
-	cd $1
-	bash compile.sh $2
-	cd ..
+	for var in $@
+	do
+		cd $var
+		bash compile.sh
+		cd ..
+	done
 }
 
 # Funzione di clean package
-clean ()
+clean()
 {
-    cd $1
-    bash compile.sh clean
-    cd ..
+	for var in $@
+	do
+		cd $var
+		bash compile.sh clean
+		cd ..
+	done
 }
 
-#####################
-# Clean
-#####################
+
 if [ "$1" = "clean" ]; then
-    if [ "$2" = "server" ]; then
-        echo "Clean Server .class files."
-        clean remoteclient
-        clean plog
-        echo "Done."
-        exit
-    fi
-
-    if [ "$2" = "client" ]; then
-        echo "Clean Client .class files."
-        clean clientbootstrap
-        clean plog
-        echo "Done."
-        exit
-    fi
-
-    if [ "$2" = "tests" ]; then
-        echo "Clean Tests .class files."
-        clean tests
-        echo "Done."
-        exit
-    fi
-
-    if [ "$2" = "dbmanager" ]; then
-        echo "Clean Dbmanager  .class files."
-        clean dbmanager
-        clean plog
-        echo "Done."
-        exit
-    fi
-
-	if [ "$2" = "remoteexceptions" ]; then
-        echo "Clean Remoteexceptions  .class files."
-        clean remoteexceptions
-        echo "Done."
-        exit
-    fi
-
-    if [ "$2" = "databaseserver" ]; then
-        echo "Clean DatabaseServer  .class files."
-        clean databaseserver
-		clean remoteexceptions
-        clean plog
-        echo "Done."
-        exit
-    fi
-
-    if [ "$2" = "all" ]; then
-        echo "Clean All .class files."
-        clean clientbootstrap
-        clean plog
-        clean remoteclient
-        clean tests
-        clean database
-		clean remoteexceptions
-		clean databaseserver
-        echo "Done."
-        exit
-    fi
-fi
-
-#####################
-# Compile Server
-#####################
-if [ "$1" = "server" ]; then
-    echo "Compilation Server start."
-    compile remoteclient
-    compile plog
-    echo "Done."
-    exit
-fi
-
-#####################
-# Compile Client
-#####################
-if [ "$1" = "client" ]; then
-    echo "Compilation Client start."
-    compile clientbootstrap
-    compile plog
-    echo "Done."
-    exit
-fi
-
-#####################
-# Compile DBmanager
-#####################
-if [ "$1" = "database" ]; then
-    echo "Compilation Database start."
-    compile database
-    compile plog
-    echo "Done."
-    exit
-fi
-
-#####################
-# Compile Tests
-#####################
-if [ "$1" = "tests" ]; then
-    echo "Compilation Tests start."
-    compile tests 
-    echo "Done."
-    exit
-fi
-
-#####################
-# Compile RemoteExceptions
-#####################
-if [ "$1" = "remoteexceptions" ]; then
-    echo "Compilation Remoteexceptions start."
-	compile remoteexceptions 
-    echo "Done."
-    exit
-fi
-
-#####################
-# Compile DatabaseServer
-#####################
-if [ "$1" = "databaseserver" ]; then
-    echo "Compilation DatabaseServer start."
-    compile remoteexceptions
-	compile plog
-	compile databaseserver
-    echo "Done."
-    exit
-fi
-
-#####################
-# Compile All
-#####################
-if [ "$1" = "all" ]; then
-    echo "Compile All start."
-    compile clientbootstrap
-    compile plog
-    compile remoteclient
-    compile tests
-    compile database
-	compile databaseserver
-	compile remoteexceptions
-    echo "Done."
-    exit
+	# Clean
+	for pkg in $pkglist
+	do
+		if [ "$2" = "$pkg" ]; then
+			echo "Compile $pkg..."
+			clean ${!pkg}
+			echo "Done."
+			exit
+		fi
+	done
+else
+	# Compile
+	for pkg in $pkglist
+	do
+		if [ "$1" = "$pkg" ]; then
+			echo "Compile $pkg..."
+			compile ${!pkg}
+			echo "Done."
+			exit
+		fi
+	done
 fi
 
 #####################
 # USE
 #####################
-echo "[USE] For Clean:"
-echo "       $0 clean <server, client, tests, database, databaseserver, remoteexceptions, all>"
+echo "      For Clean:"
+echo "       $0 clean <${pkglist}>"
 echo "      For Compile:"
-echo "       $0 <server, client, tests, database, databaseserver, remoteexceptions, all>"
+echo "       $0 <${pkglist}>"
 
