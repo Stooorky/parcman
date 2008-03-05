@@ -2,7 +2,7 @@
 
 
 # Elenco dei pacchetti
-pkglist=("pkgserver client tests database remoteexceptions databaseserver all")
+pkglist=("pkgserver client tests database remoteexceptions databaseserver parcmanserver all")
 
 # Pacchetti
 pkgserver=("remoteclient plog")
@@ -11,7 +11,10 @@ tests=("tests")
 database=("database plog")
 remoteexceptions=("remoteexceptions")
 databaseserver=("databaseserver remoteexceptions plog")
-all=("clientbootstrap plog remoteclient tests database remoteexceptions databaseserver")
+parcmanserver=("parcmanserver remoteexceptions plog")
+
+all=("clientbootstrap plog remoteclient tests database remoteexceptions databaseserver parcmanserver")
+
 
 
 #################
@@ -45,9 +48,9 @@ if [ "$1" = "clean" ]; then
 	for pkg in $pkglist
 	do
 		if [ "$2" = "$pkg" ]; then
-			echo "Compile $pkg..."
+			echo -e "\033[31;1mClean $pkg...\033[0m"
 			clean ${!pkg}
-			echo "Done."
+			echo -e "\033[31;1mDone.\033[0m"
 			exit
 		fi
 	done
@@ -56,9 +59,9 @@ else
 	for pkg in $pkglist
 	do
 		if [ "$1" = "$pkg" ]; then
-			echo "Compile $pkg..."
+			echo -e "\033[31;1mCompile $pkg...\033[0m"
 			compile ${!pkg}
-			echo "Done."
+			echo -e "\033[31;1mDone.\033[0m"
 			exit
 		fi
 	done
