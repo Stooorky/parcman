@@ -14,7 +14,7 @@ databaseserver=("databaseserver remoteexceptions plog")
 parcmanserver=("parcmanserver remoteexceptions plog")
 setup=("setup")
 
-all=("clientbootstrap plog remoteclient tests database remoteexceptions databaseserver parcmanserver")
+all=("clientbootstrap plog remoteclient tests database remoteexceptions databaseserver parcmanserver setup")
 
 
 

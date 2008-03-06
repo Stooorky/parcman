@@ -34,15 +34,14 @@ public class ParcmanServer
 	}
 
     /**
-     * Ritorna la stringa "Pong".
+     * Metodo ping.
      *
-     * @return Stringa "Pong"
      * @throws RemoteException Eccezione remota
      */
-    public String ping() throws
+    public void ping() throws
         RemoteException
     {
-        return "Pong";
+        PLog.debug("ParcmanServer.ping", "E' stata ricevuta una richiesta di ping!");
     }
 }
 

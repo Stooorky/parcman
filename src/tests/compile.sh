@@ -2,7 +2,8 @@
 
 sourcefile=(RunTests.java \
 	Test.java \
-	TestDBManager.java)
+	TestDBManager.java \
+    TestSetup.java)
 
 clpath=`pwd`"/../"
 dom="[TESTS]"
