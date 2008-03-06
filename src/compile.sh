@@ -2,7 +2,7 @@
 
 
 # Elenco dei pacchetti
-pkglist=("pkgserver client tests database remoteexceptions databaseserver parcmanserver setup all")
+pkglist=("pkgserver client tests database remoteexceptions databaseserver parcmanserver setup indexingserver all")
 
 # Pacchetti
 pkgserver=("remoteclient plog")
@@ -13,8 +13,9 @@ remoteexceptions=("remoteexceptions")
 databaseserver=("databaseserver remoteexceptions plog")
 parcmanserver=("parcmanserver remoteexceptions plog")
 setup=("setup")
+indexingserver=("indexingserverm remoteexceptions plog")
 
-all=("clientbootstrap plog remoteclient tests database remoteexceptions databaseserver parcmanserver setup")
+all=("clientbootstrap plog remoteclient tests database remoteexceptions databaseserver parcmanserver setup indexingserver")
 
 
 

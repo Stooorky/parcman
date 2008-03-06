@@ -112,6 +112,17 @@ public class DBServer
             throw new ParcmanDBServerUserNotValidRemoteException();
         }
     }
-    
+ 
+    /**
+     * Metodo ping.
+     *
+     * @throws RemoteException Eccezione remota
+     */
+    public void ping() throws
+        RemoteException
+    {
+        PLog.debug("DBServer.ping", "E' stata ricevuta una richiesta di ping!");
+    }
+   
 }
 

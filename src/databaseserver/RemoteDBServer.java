@@ -41,5 +41,12 @@ public interface RemoteDBServer extends Remote
         ParcmanDBServerUserExistRemoteException,
         ParcmanDBServerUserNotValidRemoteException;
 
+    /**
+     * Ping.
+     *
+     * @throws RemoteException Eccezione Remota
+     */
+    public void ping() throws RemoteException;
+
 }
 
