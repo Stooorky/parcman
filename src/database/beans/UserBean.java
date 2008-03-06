@@ -143,7 +143,7 @@ public class UserBean implements Serializable
      * @throws IllegalArgumentException I dati dell'oggetto non sono validi
      * @throws IOException Errore di IO
      */
-	private void readObject(ObjectInputStream aInputStream) throws
+    private void readObject(ObjectInputStream aInputStream) throws
         ClassNotFoundException,
         IllegalArgumentException,
         IOException
@@ -160,7 +160,7 @@ public class UserBean implements Serializable
      * @param aOutputStream Stream in scrittura dell'oggetto
      * @throws IOException Errore di IO
      */
-	private void writeObject(ObjectOutputStream aOutputStream) throws
+    private void writeObject(ObjectOutputStream aOutputStream) throws
         IOException
 	{
 		aOutputStream.defaultWriteObject();

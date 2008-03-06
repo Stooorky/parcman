@@ -5,7 +5,7 @@ import java.rmi.server.*;
 import java.util.*;
 
 import database.beans.*;
-    import remoteexceptions.*;
+import remoteexceptions.*;
 
 /**
  * Interfaccia remota del DBServer.
@@ -22,6 +22,7 @@ public interface RemoteDBServer extends Remote
      * @throws RemoteException Eccezione remota
      * @throws ParcmanDBServerErrorRemoteException Errore interno del database
 	 */
+
 	public UserBean getUser(String name) throws
         RemoteException,
         ParcmanDBServerErrorRemoteException;
@@ -34,9 +35,11 @@ public interface RemoteDBServer extends Remote
      * @throws ParcmanDBServerUserExistRemoteException L'utente e' gia' presente all'interno del database
      * @throws ParcmanDBServerUserNotValidRemoteException I dati forniti per l'utente non sono validi
      */
+
     public void addUser(UserBean user) throws
         RemoteException,
         ParcmanDBServerUserExistRemoteException,
         ParcmanDBServerUserNotValidRemoteException;
+
 }
 

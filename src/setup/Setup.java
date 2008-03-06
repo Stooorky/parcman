@@ -50,8 +50,8 @@ public final class Setup
 
             PLog.debug("Setup", "Registro per i Test il DBServer e il ParcmanServer sul registro RMI alla porta 4242.");
             // TODO Togliere la registrazione al registro RMI dei server.
-            reg.rebind("DBServer", dbServer);
-            reg.rebind("ParcmanServer", parcmanServer);
+            reg.bind("DBServer", dbServer);
+            reg.bind("ParcmanServer", parcmanServer);
         } // TODO Creare una funzione da lanciare prima di un return per ripulire.
         catch(ParcmanDBServerErrorRemoteException e)
         {

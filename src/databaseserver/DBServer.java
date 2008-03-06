@@ -19,7 +19,14 @@ import remoteexceptions.*;
  */
 public class DBServer implements RemoteDBServer
 {
-	private DB db;
+	private transient DB db;
+
+    /**
+	 * SerialVersionUID
+	 */
+	private static final long serialVersionUID = 42L;
+
+
 
     /**
      * Costruttore.
@@ -102,5 +109,6 @@ public class DBServer implements RemoteDBServer
             throw new ParcmanDBServerUserNotValidRemoteException();
         }
     }
+    
 }
 
