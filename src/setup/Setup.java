@@ -15,8 +15,6 @@ import remoteexceptions.*;
 
 public final class Setup
 {
-    private static final String dbDirectory = "./dbDirectory";
-
     /**
      * Main.
      * Specificare le seguenti proprieta':
@@ -29,6 +27,7 @@ public final class Setup
         System.setSecurityManager(new RMISecurityManager());
 
         String policyGroup = System.getProperty("setup.policy");
+		String dbDirectory = System.getProperty("setup.dbDirectory");
 
         Properties prop = new Properties();
         prop.put("java.security.policy", policyGroup);
@@ -42,16 +41,16 @@ public final class Setup
 
             PLog.debug("Setup", "Creo un'istanza del DBServer.");
             // Creo il DBServer
-            DBServer dbServer = new DBServer(dbDirectory);
+            RemoteDBServer dbServer = new DBServer(dbDirectory);
 
             PLog.debug("Setup", "Creo un'istanza del ParcmanServer.");
             // Creo il ParcmanServer
-            ParcmanServer parcmanServer = new ParcmanServer();
+            RemoteParcmanServer parcmanServer = new ParcmanServer();
 
             PLog.debug("Setup", "Registro per i Test il DBServer e il ParcmanServer sul registro RMI alla porta 4242.");
             // TODO Togliere la registrazione al registro RMI dei server.
-            reg.bind("DBServer", dbServer);
-            reg.bind("ParcmanServer", parcmanServer);
+            reg.rebind("DBServer", dbServer);
+            reg.rebind("ParcmanServer", parcmanServer);
         } // TODO Creare una funzione da lanciare prima di un return per ripulire.
         catch(ParcmanDBServerErrorRemoteException e)
         {

@@ -11,7 +11,7 @@ import database.beans.*;
 
 public class TestSetup implements Test
 {
-    private static final String URLRmiRegistry = "gamma20:4242";
+    private static final String URLRmiRegistry = "localhost:4242";
     public void run()
     {
 		System.out.println("> TestSetup START");
@@ -19,6 +19,7 @@ public class TestSetup implements Test
         this.testDBServer();
 		System.out.println("> TestSetup END");
 		System.out.println("");
+		return;
     }
 
     public void testParcmanServer()
@@ -50,10 +51,10 @@ public class TestSetup implements Test
             user.setName("Francesco");
             user.setPassword("FrancescoPwd");
             user.setPrivilege("AllPrivilege");
-           // obj.addUser(user);
-           // UserBean userget = obj.getUser("Francesco");
-           // if (!userget.getName().equals("Francesco"))
-           //     System.out.println("failed (userget)");
+            obj.addUser(user);
+            UserBean userget = obj.getUser("Francesco");
+            if (!userget.getName().equals("Francesco"))
+                System.out.println("failed (userget)");
             System.out.println("ok");
         }
         catch (Exception e)

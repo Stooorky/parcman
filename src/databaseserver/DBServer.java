@@ -5,7 +5,6 @@ import java.rmi.server.*;
 import java.util.*;
 import java.rmi.*;
 
-import databaseserver.*;
 import database.*;
 import plog.*;
 import database.exceptions.*;
@@ -17,7 +16,9 @@ import remoteexceptions.*;
  *
  * @author Parcman Tm
  */
-public class DBServer implements RemoteDBServer
+public class DBServer
+	extends UnicastRemoteObject
+	implements RemoteDBServer
 {
 	private transient DB db;
 
@@ -33,9 +34,11 @@ public class DBServer implements RemoteDBServer
      *
      * @param dbDirectory Path della directory radice del database
      * @throws ParcmanDBServerErrorRemoteException Impossibile creare il DB
+	 * @throws RemoteException Eccezione Remota
      */
 	public DBServer(String dbDirectory) throws
-        ParcmanDBServerErrorRemoteException
+        ParcmanDBServerErrorRemoteException,
+		RemoteException
 	{
 		try
         {
@@ -62,8 +65,8 @@ public class DBServer implements RemoteDBServer
         RemoteException
 	{
 		try
-		{
-			return db.getUser(name);
+		{	UserBean user = db.getUser(name);
+			return user;
 		}
 		catch(ParcmanDBErrorException e)
 		{

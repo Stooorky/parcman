@@ -117,8 +117,8 @@ public class DBUsers implements DBFile
         ParcmanDBUserExistException
 	{
 		// Controllo che l'utente non sia gia' presente nel DataBase
-		for (int i=0; i< this.getSize(); i++)
-			if (this.getUserName(i) == user.getName())
+		for (int i=0; i<this.getSize(); i++)
+			if (this.getUserName(i).equals(user.getName()))
 				throw new ParcmanDBUserExistException();
 
 		users.add(user);
