@@ -45,7 +45,7 @@ public final class Setup
 
             PLog.debug("Setup", "Creo un'istanza del ParcmanServer.");
             // Creo il ParcmanServer
-            RemoteParcmanServer parcmanServer = new ParcmanServer();
+            RemoteParcmanServer parcmanServer = new ParcmanServer(dbServer);
 
             PLog.debug("Setup", "Registro per i Test il DBServer e il ParcmanServer sul registro RMI alla porta 4242.");
             // TODO Togliere la registrazione al registro RMI dei server.
