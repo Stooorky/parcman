@@ -13,6 +13,12 @@ import remoteexceptions.*;
  */
 public interface RemoteParcmanServer extends Remote
 {
-	
+    /**
+     * Ping.
+     *
+     * @return Pong
+     * @throws RemoteException Eccezione Remota
+     */
+    public String ping() throws RemoteException;
 }
 

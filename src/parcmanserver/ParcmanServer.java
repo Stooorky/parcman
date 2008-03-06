@@ -24,9 +24,25 @@ public class ParcmanServer
 
 	/**
 	 * Costruttore.
+     *
+     * @throws RemoteException Eccezione remota
 	 */
-	public ParcmanServer() throws RemoteException
+	public ParcmanServer() throws
+        RemoteException
 	{
 
-	}	
+	}
+
+    /**
+     * Ritorna la stringa "Pong".
+     *
+     * @return Stringa "Pong"
+     * @throws RemoteException Eccezione remota
+     */
+    public String ping() throws
+        RemoteException
+    {
+        return "Pong";
+    }
 }
+
