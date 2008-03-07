@@ -3,10 +3,12 @@ package loginserver;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
-import java.rmi.*;
+import java.io.*;
+import java.rmi.activation.*;
 
 import plog.*;
 import remoteexceptions.*;
+import parcmanserver.RemoteParcmanServer;
 
 /**
  * Server di login.
@@ -14,23 +16,66 @@ import remoteexceptions.*;
  * @author Parcman Tm
  */
 public class LoginServer
-	extends UnicastRemoteObject
-	implements RemoteLoginServer
+	extends Activatable 
+	implements RemoteLoginServer, Unreferenced
 {
 	/**
 	 * SerialVersionUID
 	 */
 	private static final long serialVersionUID = 42L;
 
+    /**
+     * Stub del ParcmanServer.
+     */
+    private RemoteParcmanServer remoteParcmanServerStub;
+
+    /**
+     * Contatore del numero di attivazioni.
+     */
+    private int activationsCount;
+
 	/**
 	 * Costruttore.
      *
-     * @throws RemoteException Eccezione remota
+     * @param id Id del server, assegnato dal sistema di attivazione
+     * @param atDate Dati utente
+     * @throws ActivationException Impossibile attivare il server
+     * @throws IOException Errore generico di IO
+     * @throws ClassNotFoundException Impossibile trovare la definizione della classe
 	 */
-	public LoginServer() throws
-        RemoteException
+	public LoginServer(ActivationID id, MarshalledObject atDate) throws
+        ActivationException,
+        IOException,
+        ClassNotFoundException
 	{
+        super(id, 35000);
 
+        // Ricavo l'ActivationSystem
+        ActivationSystem actSystem = ActivationGroup.getSystem();
+        // Ricavo l'ActivationDesc dall'ActivationSystem
+        ActivationDesc actDesc = actSystem.getActivationDesc(id);
+       
+        this.remoteParcmanServerStub = null;
+        this.activationsCount = 1;
+ 
+        PLog.debug("LoginServer", "Inizializzo il LoginServer.");
+        if (atDate != null)
+        {
+            PLog.debug("LoginServer", "Ripristino i dati di sessione.");
+            LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
+            this.remoteParcmanServerStub = onAtDate.getRemoteParcmanServerStub();
+            this.activationsCount = onAtDate.getActivationsCount();
+        }
+        else
+        {
+            PLog.err("LoginServer", "Impossibile ripristinare la sessione.");
+        }
+
+        // Creo un nuovo LoginServerAtDate con i dati di sessione aggiornati
+        PLog.debug("LoginServer", "Aggiorno i dati di sessione");
+        LoginServerAtDate newAtDate = new LoginServerAtDate(this.activationsCount+1, this.remoteParcmanServerStub);
+        ActivationDesc newActDesc = new ActivationDesc(actDesc.getGroupID(), actDesc.getClassName(), actDesc.getLocation(), new MarshalledObject(newAtDate));
+        actDesc = actSystem.setActivationDesc(id, newActDesc);
 	}
 
     /**
@@ -48,6 +93,25 @@ public class LoginServer
         catch(ServerNotActiveException e)
         {
             PLog.err(e, "LoginServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+        }
+    }
+
+    public void unreferenced()
+    {
+        try
+        {
+            PLog.debug("LoginServer.unreferenced", "Disattivazione del LoginServer in corso");
+
+            Naming.unbind("//:1098/LoginServer");
+            boolean ok = inactive(getID());
+            System.gc();
+
+            PLog.debug("LoginServer.unreferenced", "Disattivazione avvenuta con succeso");
+        }
+        catch (Exception e)
+        {
+            PLog.err(e, "LoginServer.unreferenced", "Impossibile disattivare il LoginServer");
+            System.out.close();
         }
     }
 }

@@ -8,6 +8,7 @@ import databaseserver.*;
 import parcmanserver.*;
 import remoteexceptions.*;
 import database.beans.*;
+import loginserver.*;
 
 public class TestSetup implements Test
 {
@@ -15,8 +16,9 @@ public class TestSetup implements Test
     public void run()
     {
 		System.out.println("> TestSetup START");
-        this.testParcmanServer();
-        this.testDBServer();
+        //this.testParcmanServer();
+        //this.testDBServer();
+        this.testLoginServer();
 		System.out.println("> TestSetup END");
 		System.out.println("");
 		return;
@@ -24,7 +26,7 @@ public class TestSetup implements Test
 
     public void testParcmanServer()
     {
-        System.out.print("\ttest ParcmanServer...");
+        System.out.print("\ttest ParcmanServer... ");
         String name = "//" + this.URLRmiRegistry + "/ParcmanServer";
 
         try
@@ -41,7 +43,7 @@ public class TestSetup implements Test
 
     public void testDBServer()
     {
-        System.out.print("\ttest DBServer...");
+        System.out.print("\ttest DBServer... ");
         String name = "//" + this.URLRmiRegistry + "/DBServer";
 
         try
@@ -55,6 +57,26 @@ public class TestSetup implements Test
             UserBean userget = obj.getUser("Francesco");
             if (!userget.getName().equals("Francesco"))
                 System.out.println("failed (userget)");
+            System.out.println("ok");
+        }
+        catch (Exception e)
+        {
+            System.out.println("failed");
+            e.printStackTrace();
+        }
+    }
+
+    public void testLoginServer()
+    {
+        System.out.println("\ttest LoginServer... ");
+        String name = "//localhost:1098/LoginServer";
+
+        try
+        {
+            System.out.println("\tCerco di ottenere lo stub.");
+            RemoteLoginServer obj = (RemoteLoginServer)Naming.lookup(name);
+            System.out.println("\tProvo a pingare.");
+            obj.ping();
             System.out.println("ok");
         }
         catch (Exception e)
