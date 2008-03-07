@@ -18,7 +18,6 @@ public class ParcmanServer
 	extends UnicastRemoteObject
 	implements RemoteParcmanServer
 {
-
 	private RemoteDBServer dbServer;
 	/**
 	 * SerialVersionUID
@@ -57,7 +56,14 @@ public class ParcmanServer
     public void ping() throws
         RemoteException
     {
-        PLog.debug("ParcmanServer.ping", "E' stata ricevuta una richiesta di ping!");
+        try
+        {
+            PLog.debug("ParcmanServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+        }
+        catch(ServerNotActiveException e)
+        {
+            PLog.err(e, "ParcmanServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+        }
     }
 }
 

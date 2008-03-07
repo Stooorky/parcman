@@ -121,7 +121,14 @@ public class DBServer
     public void ping() throws
         RemoteException
     {
-        PLog.debug("DBServer.ping", "E' stata ricevuta una richiesta di ping!");
+        try
+        {
+            PLog.debug("DBServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+        }
+        catch(ServerNotActiveException e)
+        {
+            PLog.err(e, "DBServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+        }
     }
    
 }

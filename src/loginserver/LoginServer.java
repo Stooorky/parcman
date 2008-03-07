@@ -1,4 +1,4 @@
-package indexingserver;
+package loginserver;
 
 import java.rmi.*;
 import java.rmi.server.*;
@@ -9,13 +9,13 @@ import plog.*;
 import remoteexceptions.*;
 
 /**
- * Server di indicizzazione.
+ * Server di login.
  *
  * @author Parcman Tm
  */
-public class IndexingServer
+public class LoginServer
 	extends UnicastRemoteObject
-	implements RemoteIndexingServer
+	implements RemoteLoginServer
 {
 	/**
 	 * SerialVersionUID
@@ -27,7 +27,7 @@ public class IndexingServer
      *
      * @throws RemoteException Eccezione remota
 	 */
-	public IndexingServer() throws
+	public LoginServer() throws
         RemoteException
 	{
 
@@ -43,11 +43,11 @@ public class IndexingServer
     {
         try
         {
-            PLog.debug("IndexingServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+            PLog.debug("LoginServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
         }
         catch(ServerNotActiveException e)
         {
-            PLog.err(e, "IndexingServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+            PLog.err(e, "LoginServer.ping", "Errore di rete, ClientHost irraggiungibile.");
         }
     }
 }

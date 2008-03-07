@@ -13,6 +13,11 @@ import parcmanserver.*;
 import plog.*;
 import remoteexceptions.*;
 
+/**
+ * Setup globale lato server.
+ *
+ * Parcman Tm
+ */
 public final class Setup
 {
     /**
