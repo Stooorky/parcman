@@ -1,9 +1,9 @@
 java -classpath :. \
--Djava.rmi.server.codebase=http://`hostname`:8001/common/ \
+-Djava.rmi.server.codebase=file://$HOME/public_html/common/ \
 -Djava.security.policy=policy \
--Dsetup.implCodebase=file://$HOME/Desktop/svnkit/parcman/src/ \
+-Dsetup.implCodebase=file://$HOME/Desktop/parcman/src/ \
 -Dsetup.loginServerClass=loginserver.LoginServer \
 -Dsetup.policyGroup=setup/policy \
--Dsetup.dbDirectory=$HOME/Desktop/svnkit/parcman/dbDirectory \
+-Dsetup.dbDirectory=$HOME/Desktop/parcman/dbDirectory \
 setup.Setup
 

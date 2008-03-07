@@ -101,9 +101,10 @@ public class LoginServer
         try
         {
             PLog.debug("LoginServer.unreferenced", "Disattivazione del LoginServer in corso");
+			// Rendo inattivo il LoginServer
+			this.inactive(getID());
 
-            Naming.unbind("//:1098/LoginServer");
-            boolean ok = inactive(getID());
+			// Invoco il Garbage Collector
             System.gc();
 
             PLog.debug("LoginServer.unreferenced", "Disattivazione avvenuta con succeso");

@@ -1,5 +1,8 @@
+pkill rmid
+pkill rmid
+sleep 1
 
 rmid -log $HOME/Desktop/log-rmid/ \
--J-Djava.rmi.server.codebase=http://`hostname`:8001/common/ \
+-J-Djava.rmi.server.codebase=file://$HOME/Desktop/parcman/src/ \
 -J-Djava.security.policy=policy &
 
