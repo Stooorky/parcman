@@ -64,23 +64,13 @@ public class LoginServer
         // Ricavo l'ActivationDesc dall'ActivationSystem
         ActivationDesc actDesc = actSystem.getActivationDesc(id);
        
-        this.parcmanServerStub = null;
-		this.dBServerStub = null;
-        this.activationsCount = 1;
- 
         PLog.debug("LoginServer", "Inizializzo il LoginServer.");
-        if (atDate != null)
-        {
-            PLog.debug("LoginServer", "Ripristino i dati di sessione.");
-            LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
-            this.parcmanServerStub = onAtDate.getParcmanServerStub();
-			this.dBServerStub = onAtDate.getDBServerStub();
-            this.activationsCount = onAtDate.getActivationsCount();
-        }
-        else
-        {
-            PLog.err("LoginServer", "Impossibile ripristinare la sessione.");
-        }
+
+		PLog.debug("LoginServer", "Ripristino i dati di sessione.");
+        LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
+        this.parcmanServerStub = onAtDate.getParcmanServerStub();
+		this.dBServerStub = onAtDate.getDBServerStub();
+        this.activationsCount = onAtDate.getActivationsCount();
 
         // Creo un nuovo LoginServerAtDate con i dati di sessione aggiornati
         PLog.debug("LoginServer", "Aggiorno i dati di sessione");

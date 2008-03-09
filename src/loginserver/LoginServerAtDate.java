@@ -15,7 +15,7 @@ public class LoginServerAtDate
 
     public LoginServerAtDate(
         int activationsCount,
-        RemoteParcmanServer ParcmanServerStub,
+        RemoteParcmanServer parcmanServerStub,
 		RemoteDBServer dBServerStub)
     {
         this.activationsCount = activationsCount;
