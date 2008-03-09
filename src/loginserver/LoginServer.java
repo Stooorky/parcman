@@ -65,22 +65,27 @@ public class LoginServer
         ActivationDesc actDesc = actSystem.getActivationDesc(id);
        
         PLog.debug("LoginServer", "Inizializzo il LoginServer.");
-
-		PLog.debug("LoginServer", "Ripristino i dati di sessione.");
-        LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
+		PLog.debug("LoginServer", "Ripristino e aggiornamento dei dati di sessione.");
+		// Ricavo dall'atDate i dati della sessione
+		LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
         this.parcmanServerStub = onAtDate.getParcmanServerStub();
 		this.dBServerStub = onAtDate.getDBServerStub();
         this.activationsCount = onAtDate.getActivationsCount();
 
         // Creo un nuovo LoginServerAtDate con i dati di sessione aggiornati
-        PLog.debug("LoginServer", "Aggiorno i dati di sessione");
         LoginServerAtDate newAtDate = new LoginServerAtDate(this.activationsCount+1, this.parcmanServerStub, this.dBServerStub);
         ActivationDesc newActDesc = new ActivationDesc(actDesc.getGroupID(), actDesc.getClassName(), actDesc.getLocation(), new MarshalledObject(newAtDate));
         actDesc = actSystem.setActivationDesc(id, newActDesc);
 	}
 
 	/**
-	 *
+	 * Esegue il login di un Client alla rete Parcman.
+	 * Ritorna un MobileServer esportato nel caso in cui il login abbia successo.
+	 * 
+	 * @param name Nome utente
+	 * @param password Password utente
+	 * @return Un MobileServer di tipo ParcmanClient se il login ha successo, null altrimenti.
+	 * @throws RemoteException Eccezione Remota.
 	 */
 	public RemoteParcmanClient login(String name, String password) throws
 		RemoteException

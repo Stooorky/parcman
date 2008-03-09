@@ -15,6 +15,15 @@ import parcmanclient.RemoteParcmanClient;
 public interface RemoteLoginServer extends Remote
 {
 	
+	/**
+	 * Esegue il login di un Client alla rete Parcman.
+	 * Ritorna un MobileServer esportato nel caso in cui il login abbia successo.
+	 * 
+	 * @param name Nome utente
+	 * @param password Password utente
+	 * @return Un MobileServer di tipo ParcmanClient se il login ha successo, null altrimenti.
+	 * @throws RemoteException Eccezione Remota.
+	 */
  	public RemoteParcmanClient login(String name, String password) throws
 		RemoteException;
 

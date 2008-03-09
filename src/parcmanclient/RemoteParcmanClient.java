@@ -13,7 +13,12 @@ import remoteexceptions.*;
  */
 public interface RemoteParcmanClient extends Remote
 {
- 	public void startConnection() throws
+	/**
+	 * Lancia la connessione alla rete Parcman.
+	 *
+	 * @throws RemoteException Eccezione Remota
+	 */
+	public void startConnection() throws
 		RemoteException;
 
    /**

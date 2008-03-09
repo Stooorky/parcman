@@ -44,9 +44,9 @@ public class PLog
 	 *
 	 * @param str Messaggio
 	 */
-	public static void log(String str)
+	public static void log(String func, String str)
 	{
-		System.out.println("[LOG] " + str);
+		System.out.println("[LOG]<" + func + "> "  + str);
 	}
 }
 

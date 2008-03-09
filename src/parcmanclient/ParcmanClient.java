@@ -51,6 +51,11 @@ public class ParcmanClient
 		this.parcmanServerStub = parcmanServerStub;
 	}
 
+	/**
+	 * Lancia la connessione alla rete Parcman.
+	 *
+	 * @throws RemoteException Eccezione Remota
+	 */
 	public void startConnection() throws
 		RemoteException
 	{

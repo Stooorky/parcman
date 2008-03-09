@@ -10,5 +10,8 @@ database/beans/*.java \
 database/exceptions/*.java \
 database/xmlhandlers/*.java \
 databaseserver/*.java \
-remoteexceptions/*.java
-
+remoteexceptions/*.java \
+loginserver/*.java \
+parcmanclient/*.java \
+parcmanserver/*.java \
+indexingserver/*.java

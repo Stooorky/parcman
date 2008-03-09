@@ -15,6 +15,7 @@ import parcmanclient.RemoteParcmanClient;
  */
 public class RemoteClientUser implements RemoteClient
 {
+	private static final String LOGIN_SERVER_ADRESS = "//:1098/LoginServer";
 	/**
 	 * SerialVersionUID
 	 */
@@ -48,9 +49,17 @@ public class RemoteClientUser implements RemoteClient
 
 		try
 		{
-			RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup("//:1098/LoginServer");
-			RemoteParcmanClient parcmanServer = (RemoteParcmanClient) loginServer.login(userName, password);
-			//java.rmi.server.UnicastRemoteObject.exportObject(parcmanServer);
+			// Faccio la lookup al server remoto di login
+			RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(this.LOGIN_SERVER_ADRESS);
+			RemoteParcmanClient parcmanServer = (RemoteParcmanClient)loginServer.login(userName, password);
+			
+			if (parcmanServer == null)
+			{
+				System.out.println("Nome utente o password errati.");
+				return;	
+			}
+
+			// Avvio il MobileServer
 			parcmanServer.startConnection();
 		}
 		catch(Exception e)
@@ -59,3 +68,4 @@ public class RemoteClientUser implements RemoteClient
 		}
 	}
 }
+
