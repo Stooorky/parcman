@@ -3,19 +3,24 @@ package loginserver;
 import java.io.*;
 
 import parcmanserver.RemoteParcmanServer;
+import databaseserver.RemoteDBServer;
 
 public class LoginServerAtDate
     implements Serializable
 {
     private int activationsCount;
-    private RemoteParcmanServer remoteParcmanServerStub;
+    private RemoteParcmanServer parcmanServerStub;
+	private RemoteDBServer dBServerStub;
+	private static final long serialVersionUID = 42L;
 
     public LoginServerAtDate(
         int activationsCount,
-        RemoteParcmanServer remoteParcmanServerStub)
+        RemoteParcmanServer ParcmanServerStub,
+		RemoteDBServer dBServerStub)
     {
         this.activationsCount = activationsCount;
-        this.remoteParcmanServerStub = remoteParcmanServerStub;
+        this.parcmanServerStub = parcmanServerStub;
+		this.dBServerStub = dBServerStub;
     }
 
     public int getActivationsCount()
@@ -28,14 +33,24 @@ public class LoginServerAtDate
         this.activationsCount = activationsCount;
     }
 
-    public RemoteParcmanServer getRemoteParcmanServerStub()
+    public RemoteParcmanServer getParcmanServerStub()
     {
-        return this.remoteParcmanServerStub;
+        return this.parcmanServerStub;
     }
 
-    public void setRemoteParcmanServerStub(RemoteParcmanServer remoteParcmanServerStub)
+    public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub)
     {
-        this.remoteParcmanServerStub = remoteParcmanServerStub;
+        this.parcmanServerStub = parcmanServerStub;
     }
+
+	public RemoteDBServer getDBServerStub()
+	{
+		return this.dBServerStub;
+	}
+
+	public void setDBServerStub(RemoteDBServer dBServerStub)
+	{
+		this.dBServerStub = dBServerStub;
+	}
 }
 

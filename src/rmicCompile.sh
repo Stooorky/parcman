@@ -7,4 +7,3 @@ cp parcmanserver/RemoteParcmanServer.class ~/public_html/common/parcmanserver/
 cp loginserver/RemoteLoginServer.class ~/public_html/common/loginserver/
 cp remoteexceptions/*.class ~/public_html/common/remoteexceptions/
 
-

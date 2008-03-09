@@ -52,11 +52,11 @@ public final class Setup
 
             PLog.debug("Setup", "Creo un'istanza del DBServer.");
             // Creo il DBServer
-            RemoteDBServer dbServer = new DBServer(dbDirectory);
+            RemoteDBServer dBServer = new DBServer(dbDirectory);
 
             PLog.debug("Setup", "Creo un'istanza del ParcmanServer.");
             // Creo il ParcmanServer
-            RemoteParcmanServer parcmanServer = new ParcmanServer(dbServer);
+            RemoteParcmanServer parcmanServer = new ParcmanServer(dBServer);
 
             PLog.debug("Setup", "Creo e registro il primo gruppo di attivazione.");
             // Creo e registro il primo gruppo di attivazione
@@ -65,7 +65,7 @@ public final class Setup
             PLog.debug("Setup", "L'identificazione del primo gruppo di attivazione e': " + groupID);
 
             // Creo il MashalledObject per il LoginServer
-            LoginServerAtDate loginServerAtDate = new LoginServerAtDate(0, parcmanServer);
+            LoginServerAtDate loginServerAtDate = new LoginServerAtDate(0, parcmanServer, dBServer);
             ActivationDesc actDesc = new ActivationDesc(groupID, loginServerClass, implCodebase, new MarshalledObject(loginServerAtDate));
 
             PLog.debug("Setup", "Creo un'istanza del LoginServer.");
@@ -74,8 +74,8 @@ public final class Setup
 
             PLog.debug("Setup", "Registro per i Test il DBServer e il ParcmanServer sul registro RMI alla porta 4242.");
             // TODO Togliere la registrazione al registro RMI dei server.
-            reg.rebind("DBServer", dbServer);
-            reg.rebind("ParcmanServer", parcmanServer);
+            //reg.rebind("DBServer", dBServer);
+            //reg.rebind("ParcmanServer", parcmanServer);
             Naming.rebind("//:1098/LoginServer", loginServer);
         } // TODO Creare una funzione da lanciare prima di un return per ripulire.
         catch(ParcmanDBServerErrorRemoteException e)

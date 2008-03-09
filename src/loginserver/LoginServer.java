@@ -5,10 +5,14 @@ import java.rmi.server.*;
 import java.util.*;
 import java.io.*;
 import java.rmi.activation.*;
+import java.lang.*;
 
 import plog.*;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServer;
+import parcmanclient.*;
+import database.beans.UserBean;
+import databaseserver.RemoteDBServer;
 
 /**
  * Server di login.
@@ -27,7 +31,12 @@ public class LoginServer
     /**
      * Stub del ParcmanServer.
      */
-    private RemoteParcmanServer remoteParcmanServerStub;
+    private RemoteParcmanServer parcmanServerStub;
+
+	/**
+	 * Stub del DBServer.
+	 */
+	private RemoteDBServer dBServerStub;
 
     /**
      * Contatore del numero di attivazioni.
@@ -55,7 +64,8 @@ public class LoginServer
         // Ricavo l'ActivationDesc dall'ActivationSystem
         ActivationDesc actDesc = actSystem.getActivationDesc(id);
        
-        this.remoteParcmanServerStub = null;
+        this.parcmanServerStub = null;
+		this.dBServerStub = null;
         this.activationsCount = 1;
  
         PLog.debug("LoginServer", "Inizializzo il LoginServer.");
@@ -63,7 +73,8 @@ public class LoginServer
         {
             PLog.debug("LoginServer", "Ripristino i dati di sessione.");
             LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
-            this.remoteParcmanServerStub = onAtDate.getRemoteParcmanServerStub();
+            this.parcmanServerStub = onAtDate.getParcmanServerStub();
+			this.dBServerStub = onAtDate.getDBServerStub();
             this.activationsCount = onAtDate.getActivationsCount();
         }
         else
@@ -73,9 +84,41 @@ public class LoginServer
 
         // Creo un nuovo LoginServerAtDate con i dati di sessione aggiornati
         PLog.debug("LoginServer", "Aggiorno i dati di sessione");
-        LoginServerAtDate newAtDate = new LoginServerAtDate(this.activationsCount+1, this.remoteParcmanServerStub);
+        LoginServerAtDate newAtDate = new LoginServerAtDate(this.activationsCount+1, this.parcmanServerStub, this.dBServerStub);
         ActivationDesc newActDesc = new ActivationDesc(actDesc.getGroupID(), actDesc.getClassName(), actDesc.getLocation(), new MarshalledObject(newAtDate));
         actDesc = actSystem.setActivationDesc(id, newActDesc);
+	}
+
+	/**
+	 *
+	 */
+	public RemoteParcmanClient login(String name, String password) throws
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("LoginServer.login", "E' stata ricevuta una richiesta di login dall'host " + this.getClientHost());
+		}
+		catch(ServerNotActiveException e)
+		{
+            PLog.err(e, "LoginServer.login", "E' stata ricevuta una richiesta di login ma l'Host risulta irraggiungibile.");
+			return null;
+		}
+
+		UserBean user = this.dBServerStub.getUser(name);
+
+		if (user == null || !(user.getPassword().equals(password)))
+		{
+			PLog.debug("LoginServer.login", "Richiesta rifiutata, password o nome utente errati.");
+			return null;
+		}
+
+		// Creo un'istanza di ParcmanClient da passare al Client
+		ParcmanClient parcmanClient = new ParcmanClient(this.parcmanServerStub);
+		// Deesporto il server appena creato
+		unexportObject(parcmanClient, true);
+
+		return parcmanClient;
 	}
 
     /**

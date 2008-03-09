@@ -5,6 +5,7 @@ import java.rmi.server.*;
 import java.util.*;
 
 import remoteexceptions.*;
+import parcmanclient.RemoteParcmanClient;
 
 /**
  * Interfaccia remota del LoginServer.
@@ -13,7 +14,11 @@ import remoteexceptions.*;
  */
 public interface RemoteLoginServer extends Remote
 {
-    /**
+	
+ 	public RemoteParcmanClient login(String name, String password) throws
+		RemoteException;
+
+   /**
      * Ping.
      *
      * @throws RemoteException Eccezione Remota

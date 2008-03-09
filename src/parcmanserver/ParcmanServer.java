@@ -34,18 +34,6 @@ public class ParcmanServer
         RemoteException
 	{
 		this.dbServer = dbServer;
-
-		// Testo il DBServer
-		try
-		{
-			PLog.debug("PArcmanServer", "Tentativo di Ping verso il dbServer.");
-			dbServer.ping();
-		}
-		catch (Exception e)
-		{
-			PLog.err(e, "ParcmanServer", "Impossibile pingare il DBServer");
-			throw new RemoteException();
-		}
 	}
 
     /**
