@@ -113,6 +113,8 @@ public class LoginServer
 		// Deesporto il server appena creato
 		unexportObject(parcmanClient, true);
 
+		PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
+
 		return parcmanClient;
 	}
 

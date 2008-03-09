@@ -61,7 +61,7 @@ public class ParcmanClient
 	{
 		try
 		{
-			PLog.debug("PArcmanClient.startConnection", "Avvio della connessione in corso.");
+			PLog.debug("ParcmanClient.startConnection", "Avvio della connessione in corso.");
 			this.parcmanServerStub.ping();
 		}
 		catch(Exception e)
