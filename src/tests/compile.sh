@@ -1,9 +1,10 @@
 #!/bin/bash
 
-sourcefile=(RunTests.java \
-	Test.java \
+sourcefile=(Test.java \
 	TestDBManager.java \
-    TestSetup.java)
+	TestPasswordService.java \
+	TestSetup.java \
+	RunTests.java)
 
 clpath=`pwd`"/../"
 dom="[TESTS]"

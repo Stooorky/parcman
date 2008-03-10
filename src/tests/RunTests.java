@@ -6,7 +6,9 @@ public class RunTests
 	{
 		TestDBManager testDBManager = new TestDBManager();
 		testDBManager.run();
-        //TestSetup testSetup = new TestSetup();
-        //testSetup.run();
+		TestPasswordService testPasswordService = new TestPasswordService();
+		testPasswordService.run();
+		//TestSetup testSetup = new TestSetup();
+		//testSetup.run();
 	}
 }

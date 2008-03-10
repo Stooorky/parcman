@@ -21,7 +21,7 @@ public class TestDBManager implements Test
 		this.testCall();
 		this.testDrop();
 		this.testLoad();
-        this.testDB();
+		this.testDB();
 		this.testDBServer();
 		System.out.println("> TestDBManager END");
 		System.out.println("");

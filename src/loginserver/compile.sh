@@ -1,7 +1,8 @@
 #!/bin/bash
 
 sourcefile=(RemoteLoginServer.java \
-	LoginServer.java)
+	LoginServer.java \ 
+	PasswordService.java)
 
 clpath=`pwd`"/../"
 dom="[LOGINSERVER]"

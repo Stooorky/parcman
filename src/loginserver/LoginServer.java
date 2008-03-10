@@ -29,54 +29,54 @@ public class LoginServer
 	 */
 	private static final long serialVersionUID = 42L;
 
-    /**
-     * Stub del ParcmanServer.
-     */
-    private RemoteParcmanServer parcmanServerStub;
+	/**
+	 * Stub del ParcmanServer.
+	 */
+	private RemoteParcmanServer parcmanServerStub;
 
 	/**
 	 * Stub del DBServer.
 	 */
 	private RemoteDBServer dBServerStub;
 
-    /**
-     * Contatore del numero di attivazioni.
-     */
-    private int activationsCount;
+	/**
+	 * Contatore del numero di attivazioni.
+	 */
+	private int activationsCount;
 
 	/**
 	 * Costruttore.
-     *
-     * @param id Id del server, assegnato dal sistema di attivazione
-     * @param atDate Dati utente
-     * @throws ActivationException Impossibile attivare il server
-     * @throws IOException Errore generico di IO
-     * @throws ClassNotFoundException Impossibile trovare la definizione della classe
+	 *
+	 * @param id Id del server, assegnato dal sistema di attivazione
+	 * @param atDate Dati utente
+	 * @throws ActivationException Impossibile attivare il server
+	 * @throws IOException Errore generico di IO
+	 * @throws ClassNotFoundException Impossibile trovare la definizione della classe
 	 */
 	public LoginServer(ActivationID id, MarshalledObject atDate) throws
-        ActivationException,
-        IOException,
-        ClassNotFoundException
+		ActivationException,
+		IOException,
+		ClassNotFoundException
 	{
-        super(id, 35000);
+		super(id, 35000);
 
-        // Ricavo l'ActivationSystem
-        ActivationSystem actSystem = ActivationGroup.getSystem();
-        // Ricavo l'ActivationDesc dall'ActivationSystem
-        ActivationDesc actDesc = actSystem.getActivationDesc(id);
-       
-        PLog.debug("LoginServer", "Inizializzo il LoginServer.");
+		// Ricavo l'ActivationSystem
+		ActivationSystem actSystem = ActivationGroup.getSystem();
+		// Ricavo l'ActivationDesc dall'ActivationSystem
+		ActivationDesc actDesc = actSystem.getActivationDesc(id);
+
+		PLog.debug("LoginServer", "Inizializzo il LoginServer.");
 		PLog.debug("LoginServer", "Ripristino e aggiornamento dei dati di sessione.");
 		// Ricavo dall'atDate i dati della sessione
 		LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
-        this.parcmanServerStub = onAtDate.getParcmanServerStub();
+		this.parcmanServerStub = onAtDate.getParcmanServerStub();
 		this.dBServerStub = onAtDate.getDBServerStub();
-        this.activationsCount = onAtDate.getActivationsCount();
+		this.activationsCount = onAtDate.getActivationsCount();
 
-        // Creo un nuovo LoginServerAtDate con i dati di sessione aggiornati
-        LoginServerAtDate newAtDate = new LoginServerAtDate(this.activationsCount+1, this.parcmanServerStub, this.dBServerStub);
-        ActivationDesc newActDesc = new ActivationDesc(actDesc.getGroupID(), actDesc.getClassName(), actDesc.getLocation(), new MarshalledObject(newAtDate));
-        actDesc = actSystem.setActivationDesc(id, newActDesc);
+		// Creo un nuovo LoginServerAtDate con i dati di sessione aggiornati
+		LoginServerAtDate newAtDate = new LoginServerAtDate(this.activationsCount+1, this.parcmanServerStub, this.dBServerStub);
+		ActivationDesc newActDesc = new ActivationDesc(actDesc.getGroupID(), actDesc.getClassName(), actDesc.getLocation(), new MarshalledObject(newAtDate));
+		actDesc = actSystem.setActivationDesc(id, newActDesc);
 	}
 
 	/**
@@ -97,29 +97,16 @@ public class LoginServer
 		}
 		catch(ServerNotActiveException e)
 		{
-            PLog.err(e, "LoginServer.login", "E' stata ricevuta una richiesta di login ma l'Host risulta irraggiungibile.");
+			PLog.err(e, "LoginServer.login", "E' stata ricevuta una richiesta di login ma l'Host risulta irraggiungibile.");
 			return null;
 		}
 
 		UserBean user = this.dBServerStub.getUser(name);
 
-        /*
-        MessageDigest md;
+		// cripto la password
+		String encryptedPassword = PasswordService.getInstance().encrypt(password);
 
-        try
-        {
-            md = MessageDigest.getInstance("MD5");
-        }
-        catch(NoSuchAlgorithmException e)
-        {
-            PLog.err(e, "LoginServer.login", "Algoritmo di criptazione Md5 mancante.");
-            throw new RemoteException();
-        }
-
-        String md5Password = new String(md.digest(password.getBytes()));
-        */
-
-		if (user == null || !(password.equals(user.getPassword())))
+		if (user == null || !(encryptedPassword.equals(user.getPassword())))
 		{
 			PLog.debug("LoginServer.login", "Richiesta rifiutata, password o nome utente errati.");
 			return null;
@@ -127,7 +114,7 @@ public class LoginServer
 
 		// Creo un'istanza di ParcmanClient da passare al Client
 		RemoteParcmanClient parcmanClient = new ParcmanClient();
-        parcmanClient.setParcmanServerStub(this.parcmanServerStub);
+		parcmanClient.setParcmanServerStub(this.parcmanServerStub);
 		// Deesporto il server appena creato
 		// unexportObject(parcmanClient, true);
 
@@ -136,109 +123,96 @@ public class LoginServer
 		return parcmanClient;
 	}
 
-    /**
+	/**
 	 * Esegue la registrazione di un nuovo account.
 	 * 
 	 * @param name Nome utente
 	 * @param password Password utente
-     * @throws ParcmanDBServerUserExistRemoteException Utente gia' presente nel database
+	 * @throws ParcmanDBServerUserExistRemoteException Utente gia' presente nel database
 	 * @throws RemoteException Eccezione Remota
 	 */
- 	public void createAccount(String name, String password) throws
+	public void createAccount(String name, String password) throws
 		RemoteException,
-        ParcmanDBServerUserExistRemoteException,
-        ParcmanDBServerUserNotValidRemoteException
-    {
- 		try
+		ParcmanDBServerUserExistRemoteException,
+		ParcmanDBServerUserNotValidRemoteException
+	{
+		try
 		{
 			PLog.debug("LoginServer.createAccount", "E' stata ricevuta una richiesta di creazione account da " + this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
 		{
-            PLog.err(e, "LoginServer.createAccount", "E' stata ricevuta una richiesta di creazione account ma l'Host risulta irraggiungibile.");
+			PLog.err(e, "LoginServer.createAccount", "E' stata ricevuta una richiesta di creazione account ma l'Host risulta irraggiungibile.");
 			throw new RemoteException();
 		}
 
-        /*
-        MessageDigest md;
+		// cripto la password
+		String encryptedPassword = PasswordService.getInstance().encrypt(password);
 
-        try
-        {
-            md = MessageDigest.getInstance("MD5");
-        }
-        catch(NoSuchAlgorithmException e)
-        {
-            PLog.err(e, "LoginServer.createAccount", "Algoritmo di criptazione Md5 mancante.");
-            throw new RemoteException();
-        }
+		// Creo lo UserBean con i dati utente
+		// TODO Sistemare i privilegi.
+		UserBean user = new UserBean();
+		user.setName(name);
+		user.setPassword(encryptedPassword);
+		user.setPrivilege("Privilege");
 
-        String md5Password = new String(md.digest(password.getBytes()));
-        */
+		try
+		{
+			this.dBServerStub.addUser(user);
+		}
+		catch(ParcmanDBServerUserExistRemoteException e)
+		{
+			PLog.debug("LoginServer.createAccount", "Richiesta rifiutata, il nome utente fornito e' gia' in uso.");
+			throw new ParcmanDBServerUserExistRemoteException();
+		}
+		catch(ParcmanDBServerUserNotValidRemoteException e)
+		{
+			PLog.debug("LoginServer.createAccount", "Richiesta rifiutata, i dati forniti non sono validi.");
+			throw new ParcmanDBServerUserNotValidRemoteException();
+		}
+		catch(RemoteException e)
+		{
+			PLog.err(e, "LoginServer.createAccount", "Impossibile soddisfare la richiesta.");
+			throw new RemoteException();
+		}
+	}
 
-        // Creo lo UserBean con i dati utente
-        // TODO Sistemare i privilegi.
-        UserBean user = new UserBean();
-        user.setName(name);
-        user.setPassword(password);
-        user.setPrivilege("Privilege");
+	/**
+	 * Metodo ping.
+	 *
+	 * @throws RemoteException Eccezione remota
+	 */
+	public void ping() throws
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("LoginServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "LoginServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+		}
+	}
 
-        try
-        {
-            this.dBServerStub.addUser(user);
-        }
-        catch(ParcmanDBServerUserExistRemoteException e)
-        {
-            PLog.debug("LoginServer.createAccount", "Richiesta rifiutata, il nome utente fornito e' gia' in uso.");
-            throw new ParcmanDBServerUserExistRemoteException();
-        }
-        catch(ParcmanDBServerUserNotValidRemoteException e)
-        {
-            PLog.debug("LoginServer.createAccount", "Richiesta rifiutata, i dati forniti non sono validi.");
-            throw new ParcmanDBServerUserNotValidRemoteException();
-        }
-        catch(RemoteException e)
-        {
-            PLog.err(e, "LoginServer.createAccount", "Impossibile soddisfare la richiesta.");
-            throw new RemoteException();
-        }
-    }
-
-    /**
-     * Metodo ping.
-     *
-     * @throws RemoteException Eccezione remota
-     */
-    public void ping() throws
-        RemoteException
-    {
-        try
-        {
-            PLog.debug("LoginServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
-        }
-        catch(ServerNotActiveException e)
-        {
-            PLog.err(e, "LoginServer.ping", "Errore di rete, ClientHost irraggiungibile.");
-        }
-    }
-
-    public void unreferenced()
-    {
-        try
-        {
-            PLog.debug("LoginServer.unreferenced", "Disattivazione del LoginServer in corso");
+	public void unreferenced()
+	{
+		try
+		{
+			PLog.debug("LoginServer.unreferenced", "Disattivazione del LoginServer in corso");
 			// Rendo inattivo il LoginServer
 			this.inactive(getID());
 
 			// Invoco il Garbage Collector
-            System.gc();
+			System.gc();
 
-            PLog.debug("LoginServer.unreferenced", "Disattivazione avvenuta con succeso");
-        }
-        catch (Exception e)
-        {
-            PLog.err(e, "LoginServer.unreferenced", "Impossibile disattivare il LoginServer");
-            System.out.close();
-        }
-    }
+			PLog.debug("LoginServer.unreferenced", "Disattivazione avvenuta con succeso");
+		}
+		catch (Exception e)
+		{
+			PLog.err(e, "LoginServer.unreferenced", "Impossibile disattivare il LoginServer");
+			System.out.close();
+		}
+	}
 }
 
