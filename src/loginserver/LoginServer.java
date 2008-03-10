@@ -109,9 +109,10 @@ public class LoginServer
 		}
 
 		// Creo un'istanza di ParcmanClient da passare al Client
-		ParcmanClient parcmanClient = new ParcmanClient(this.parcmanServerStub);
+		RemoteParcmanClient parcmanClient = new ParcmanClient();
+        parcmanClient.setParcmanServerStub(this.parcmanServerStub);
 		// Deesporto il server appena creato
-		unexportObject(parcmanClient, true);
+		// unexportObject(parcmanClient, true);
 
 		PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
 

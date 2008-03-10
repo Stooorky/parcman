@@ -3,6 +3,7 @@ package parcmanserver;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
+import java.io.*;
 
 import remoteexceptions.*;
 
@@ -11,7 +12,7 @@ import remoteexceptions.*;
  *
  * @author Parcman Tm
  */
-public interface RemoteParcmanServer extends Remote
+public interface RemoteParcmanServer extends Remote, Serializable
 {
     /**
      * Ping.

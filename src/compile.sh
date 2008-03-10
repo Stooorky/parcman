@@ -17,7 +17,7 @@ indexingserver=("indexingserverm remoteexceptions plog")
 loginserver=("loginserver remoteexceptions plog")
 parcmanclient=("parcmanclient plog remoteexceptions")
 
-all=("clientbootstrap plog remoteclient tests database remoteexceptions databaseserver loginserver parcmanserver parcmanclient setup indexingserver")
+all=("parcmanclient clientbootstrap plog remoteclient tests database remoteexceptions databaseserver loginserver parcmanserver parcmanclient setup indexingserver")
 
 
 

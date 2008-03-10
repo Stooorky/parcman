@@ -15,7 +15,7 @@ import parcmanclient.RemoteParcmanClient;
  */
 public class RemoteClientUser implements RemoteClient
 {
-	private static final String LOGIN_SERVER_ADRESS = "//:1098/LoginServer";
+	private static final String LOGIN_SERVER_ADRESS = "//gamma10:1098/LoginServer";
 	/**
 	 * SerialVersionUID
 	 */
@@ -58,13 +58,15 @@ public class RemoteClientUser implements RemoteClient
 				System.out.println("Nome utente o password errati.");
 				return;	
 			}
-
+            
+            UnicastRemoteObject.exportObject(parcmanServer);
 			// Avvio il MobileServer
-			parcmanServer.startConnection();
+            parcmanServer.startConnection();
 		}
 		catch(Exception e)
 		{
 			PLog.err(e, "RemoteClientUser.run", "Impossibile eseguire il Login.");
+            e.printStackTrace();
 		}
 	}
 }
