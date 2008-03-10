@@ -6,6 +6,7 @@ import java.util.*;
 import java.io.*;
 import java.rmi.activation.*;
 import java.lang.*;
+import java.security.*;
 
 import plog.*;
 import remoteexceptions.*;
@@ -102,7 +103,23 @@ public class LoginServer
 
 		UserBean user = this.dBServerStub.getUser(name);
 
-		if (user == null || !(user.getPassword().equals(password)))
+        /*
+        MessageDigest md;
+
+        try
+        {
+            md = MessageDigest.getInstance("MD5");
+        }
+        catch(NoSuchAlgorithmException e)
+        {
+            PLog.err(e, "LoginServer.login", "Algoritmo di criptazione Md5 mancante.");
+            throw new RemoteException();
+        }
+
+        String md5Password = new String(md.digest(password.getBytes()));
+        */
+
+		if (user == null || !(password.equals(user.getPassword())))
 		{
 			PLog.debug("LoginServer.login", "Richiesta rifiutata, password o nome utente errati.");
 			return null;
@@ -118,6 +135,73 @@ public class LoginServer
 
 		return parcmanClient;
 	}
+
+    /**
+	 * Esegue la registrazione di un nuovo account.
+	 * 
+	 * @param name Nome utente
+	 * @param password Password utente
+     * @throws ParcmanDBServerUserExistRemoteException Utente gia' presente nel database
+	 * @throws RemoteException Eccezione Remota
+	 */
+ 	public void createAccount(String name, String password) throws
+		RemoteException,
+        ParcmanDBServerUserExistRemoteException,
+        ParcmanDBServerUserNotValidRemoteException
+    {
+ 		try
+		{
+			PLog.debug("LoginServer.createAccount", "E' stata ricevuta una richiesta di creazione account da " + this.getClientHost());
+		}
+		catch(ServerNotActiveException e)
+		{
+            PLog.err(e, "LoginServer.createAccount", "E' stata ricevuta una richiesta di creazione account ma l'Host risulta irraggiungibile.");
+			throw new RemoteException();
+		}
+
+        /*
+        MessageDigest md;
+
+        try
+        {
+            md = MessageDigest.getInstance("MD5");
+        }
+        catch(NoSuchAlgorithmException e)
+        {
+            PLog.err(e, "LoginServer.createAccount", "Algoritmo di criptazione Md5 mancante.");
+            throw new RemoteException();
+        }
+
+        String md5Password = new String(md.digest(password.getBytes()));
+        */
+
+        // Creo lo UserBean con i dati utente
+        // TODO Sistemare i privilegi.
+        UserBean user = new UserBean();
+        user.setName(name);
+        user.setPassword(password);
+        user.setPrivilege("Privilege");
+
+        try
+        {
+            this.dBServerStub.addUser(user);
+        }
+        catch(ParcmanDBServerUserExistRemoteException e)
+        {
+            PLog.debug("LoginServer.createAccount", "Richiesta rifiutata, il nome utente fornito e' gia' in uso.");
+            throw new ParcmanDBServerUserExistRemoteException();
+        }
+        catch(ParcmanDBServerUserNotValidRemoteException e)
+        {
+            PLog.debug("LoginServer.createAccount", "Richiesta rifiutata, i dati forniti non sono validi.");
+            throw new ParcmanDBServerUserNotValidRemoteException();
+        }
+        catch(RemoteException e)
+        {
+            PLog.err(e, "LoginServer.createAccount", "Impossibile soddisfare la richiesta.");
+            throw new RemoteException();
+        }
+    }
 
     /**
      * Metodo ping.

@@ -7,6 +7,7 @@ import java.rmi.server.*;
 import plog.*;
 import loginserver.RemoteLoginServer;
 import parcmanclient.RemoteParcmanClient;
+import remoteexceptions.*;
 
 /**
  * Client remoto per utenti.
@@ -31,15 +32,63 @@ public class RemoteClientUser implements RemoteClient
 		String userName = null;
 		String password = null;
 
+        System.out.println("Parcman, The Italian Arcade Network v1.0.");
+        System.out.println("Bootstrap del Client avvenuto correttamente.");
+
 		try
 		{
 			// Inserimento del nome utente
-			System.out.println("Inserisci il nome utente:");
+			System.out.print("\tInserisci il nome utente (Oppure NUOVO per creare un nuovo account): ");
 			userName = new String(myInput.readLine());
 
-			// Inserimento della password
-			System.out.println("Inserisci la Password: ");
-			password = new String(myInput.readLine());
+            if (userName.equals("NUOVO"))
+            {
+                System.out.print("\tInserisci il nome utente per il nuovo account: ");
+                String newUserName = new String(myInput.readLine());
+
+                System.out.print("\tInserisci la password: ");
+                String newPassword = new String(myInput.readLine());
+
+                System.out.print("\tReinserisci la password per conferma: ");
+                String newPasswordR = new String(myInput.readLine());
+
+                if (!newPassword.equals(newPasswordR))
+                {
+                    System.out.print("Le password non corrispondono.\n");
+                    return;
+                }
+
+                try
+                {
+    			    // Faccio la lookup al server remoto di login
+                    RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(this.LOGIN_SERVER_ADRESS);
+                    
+                    loginServer.createAccount(newUserName, newPassword);
+
+                    System.out.println("Account creato con successo, verra' attivato quanto prima.");
+                    return;
+                }
+                catch(ParcmanDBServerUserExistRemoteException e)
+                {
+                    System.out.println("Registrazione fallita, questo nome utente e' gia' in uso.");
+                }
+                catch(ParcmanDBServerUserNotValidRemoteException e)
+                {
+                    System.out.println("Registrazione fallita, nome utente o password non validi.");
+                }
+                catch(Exception e)
+                {
+                    System.out.println("La rete Parcman non e' al momento raggiungibile.");
+                }
+
+                return;
+            }
+            else
+            {
+			    // Inserimento della password
+			    System.out.print("\tInserisci la password: ");
+			    password = new String(myInput.readLine());
+            }
 		}
 		catch(IOException e)
 		{
@@ -55,10 +104,11 @@ public class RemoteClientUser implements RemoteClient
 			
 			if (parcmanServer == null)
 			{
-				System.out.println("Nome utente o password errati.");
+				System.out.println("Spiacente, nome utente o password errati.");
 				return;	
 			}
             
+            // Esporto il server remoto
             UnicastRemoteObject.exportObject(parcmanServer);
 			// Avvio il MobileServer
             parcmanServer.startConnection();
