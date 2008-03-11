@@ -17,7 +17,6 @@ import remoteexceptions.*;
 public class RemoteClientUser 
 	implements RemoteClient
 {
-	private static final String LOGIN_SERVER_ADRESS = "//:1098/LoginServer";
 	/**
 	 * SerialVersionUID
 	 */
@@ -32,6 +31,8 @@ public class RemoteClientUser
 		BufferedReader myInput = new BufferedReader(input);
 		String userName = null;
 		String password = null;
+
+        String loginServerAdress = System.getProperty("remoteclient.loginserveradress");
 
 		System.out.println("Parcman, The Italian Arcade Network v1.0.");
 		System.out.println("Bootstrap del Client avvenuto correttamente.");
@@ -48,12 +49,17 @@ public class RemoteClientUser
 				String newUserName = new String(myInput.readLine());
 
 				System.out.print("\tInserisci la password: ");
+                this.echo(false);
 				String newPassword = new String(myInput.readLine());
-
-				System.out.print("\tReinserisci la password per conferma: ");
+                this.echo(true);
+    
+				System.out.print("\n\tReinserisci la password per conferma: ");
+                this.echo(false);
 				String newPasswordR = new String(myInput.readLine());
+                this.echo(true);
+                System.out.print("\n");
 
-				if (!newPassword.equals(newPasswordR))
+                if (!newPassword.equals(newPasswordR))
 				{
 					System.out.print("Le password non corrispondono.\n");
 					return;
@@ -62,7 +68,7 @@ public class RemoteClientUser
 				try
 				{
 					// Faccio la lookup al server remoto di login
-					RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(this.LOGIN_SERVER_ADRESS);
+					RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(loginServerAdress);
 
 					loginServer.createAccount(newUserName, newPassword);
 
@@ -86,9 +92,12 @@ public class RemoteClientUser
 			}
 			else
 			{
+                this.echo(false); 
 				// Inserimento della password
 				System.out.print("\tInserisci la password: ");
 				password = new String(myInput.readLine());
+                this.echo(true);
+                System.out.print("\n");
 			}
 		}
 		catch(IOException e)
@@ -100,7 +109,7 @@ public class RemoteClientUser
 		try
 		{
 			// Faccio la lookup al server remoto di login
-			RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(this.LOGIN_SERVER_ADRESS);
+			RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(loginServerAdress);
 			RemoteParcmanClient parcmanServer = (RemoteParcmanClient)loginServer.login(userName, password);
 
 			if (parcmanServer == null)
@@ -116,8 +125,19 @@ public class RemoteClientUser
 		}
 		catch(Exception e)
 		{
-			PLog.err(e, "RemoteClientUser.run", "Impossibile eseguire il Login.");
-			e.printStackTrace();
+			System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");
 		}
 	}
+
+    public void echo(boolean on)
+    {
+        try
+        {
+            String[] cmd = {"/bin/sh", "-c", "/bin/stty " + (on ? "echo" : "-echo") + " < /dev/tty"};
+            Process p = Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+        }
+        catch (IOException e) { }
+        catch (InterruptedException e) { }
+    } 
 }

@@ -3,12 +3,14 @@ package clientbootstrap;
 import java.net.*;
 import java.rmi.server.*;
 import java.rmi.RMISecurityManager;
+import java.util.Properties;
 
 import plog.*;
 
 /**
  * Client Minimale per il BootStrap.
- *
+ * Specificare:
+ * remoteclient.loginserveradress, indirizzo del registro RMI su cui trovare il LoginServer
  * @author Parcman Tm
  */
 public class ClientBootstrap
@@ -26,7 +28,7 @@ public class ClientBootstrap
 		// Istanzio il security manager
 		if (System.getSecurityManager() == null)
 			System.setSecurityManager(new RMISecurityManager());
-
+        
 		try
 		{
 			// Carico il codice client dal codebase e lancio l'esecuzione
