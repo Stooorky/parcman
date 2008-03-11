@@ -21,7 +21,7 @@ public class DBManager
 	 * Lista dei database
 	 */
 	private Map<String, DBFile> dbMap;
-	
+
 	/**
 	 * Costruttore.
 	 */
@@ -39,22 +39,22 @@ public class DBManager
 		this.dbMap = dbMap;
 	}
 
-    /**
-     * Ritorna un'istanza di DBManager.
-     *
-     * @return Un'istanza di DBManager
-     */
+	/**
+	 * Ritorna un'istanza di DBManager.
+	 *
+	 * @return Un'istanza di DBManager
+	 */
 	public static DBManager getInstance()
 	{
 		return getInstance(new HashMap<String, DBFile>());
 	}
 
-    /**
-     * Ritorna un'istanza di DBManager a partire da dbMap.
-     *
-     * @param dbMap Un'istanza (anche vuota) di Map Utenti
-     * @return Un'istanza di DBManager
-     */
+	/**
+	 * Ritorna un'istanza di DBManager a partire da dbMap.
+	 *
+	 * @param dbMap Un'istanza (anche vuota) di Map Utenti
+	 * @return Un'istanza di DBManager
+	 */
 	public static DBManager getInstance(Map<String, DBFile> dbMap)
 	{
 		if (instance == null)
@@ -163,7 +163,7 @@ public class DBManager
 		// prev e` null se alla chiave non era associato nulla
 		// DB prev = this.dbMap.put(dbName, db);
 	}
-	
+
 	/**
 	 * Chiama un metodo del database specificato e ne ritorna l'output.
 	 *
@@ -172,13 +172,13 @@ public class DBManager
 	 * @param args Argomenti da passare al metodo
 	 * @return Output del metodo invocato
 	 * @throws NoSuchMethodException Il metodo specificato non esiste
-     * @throws InvocationTargetException Eccezioni sollevate dal metodo invocato
-     * @throws SecurityException Invocata solo in presenza di un SecurityManager
-     * @throws IllegalAccessException Impossibile accedere alla definizione della classe
-     * @throws IllegalArgumentException Gli argomenti passati non sono validi
+	 * @throws InvocationTargetException Eccezioni sollevate dal metodo invocato
+	 * @throws SecurityException Invocata solo in presenza di un SecurityManager
+	 * @throws IllegalAccessException Impossibile accedere alla definizione della classe
+	 * @throws IllegalArgumentException Gli argomenti passati non sono validi
 	 */
 	public Object call(String dbName, String methodName, Object[] args) throws
-        NoSuchMethodException, 
+		NoSuchMethodException, 
 		SecurityException,
 		IllegalAccessException,
 		IllegalArgumentException,
@@ -187,7 +187,7 @@ public class DBManager
 		// Prelevo dalla lista il db con nome dbName.
 		DBFile db = this.dbMap.get(dbName);
 
-        // Controllo che il db abbia il metodo richiesto.
+		// Controllo che il db abbia il metodo richiesto.
 		Class dbClass = db.getClass();
 		Class[] argsTypes;
 		if (args == null)
@@ -213,32 +213,32 @@ public class DBManager
 
 		try
 		{
-            // TODO Warning in fase di compilazione. Controllare se e' evitabile.
-		    Method m = dbClass.getMethod(methodName, argsTypes);
-		    Object returned = m.invoke(db, args);
-		    // Ritorno l'output del metodo.
-		    return returned;
+			// TODO Warning in fase di compilazione. Controllare se e' evitabile.
+			Method m = dbClass.getMethod(methodName, argsTypes);
+			Object returned = m.invoke(db, args);
+			// Ritorno l'output del metodo.
+			return returned;
 
-        }
-        catch (SecurityException e)
-        {
-            PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
-            throw new SecurityException();
-        }
-        catch (NullPointerException e)
-        {
-            PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
-            return new NullPointerException();
-        }
-        catch (NoSuchMethodException e)
-        {
-            PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
-            return new NoSuchMethodException();
-        }
-        catch (InvocationTargetException e)
-        {
-            throw e;
-        }
+		}
+		catch (SecurityException e)
+		{
+			PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
+			throw new SecurityException();
+		}
+		catch (NullPointerException e)
+		{
+			PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
+			return new NullPointerException();
+		}
+		catch (NoSuchMethodException e)
+		{
+			PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
+			return new NoSuchMethodException();
+		}
+		catch (InvocationTargetException e)
+		{
+			throw e;
+		}
 	}
 }
 

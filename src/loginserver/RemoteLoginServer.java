@@ -12,7 +12,8 @@ import parcmanclient.RemoteParcmanClient;
  *
  * @author Parcman Tm
  */
-public interface RemoteLoginServer extends Remote
+public interface RemoteLoginServer 
+	extends Remote
 {
 	/**
 	 * Esegue il login di un Client alla rete Parcman.
@@ -23,7 +24,7 @@ public interface RemoteLoginServer extends Remote
 	 * @return Un MobileServer di tipo ParcmanClient se il login ha successo, null altrimenti
 	 * @throws RemoteException Eccezione Remota
 	 */
- 	public RemoteParcmanClient login(String name, String password) throws
+	public RemoteParcmanClient login(String name, String password) throws
 		RemoteException;
 
 	/**
@@ -31,19 +32,19 @@ public interface RemoteLoginServer extends Remote
 	 * 
 	 * @param name Nome utente
 	 * @param password Password utente
-     * @throws ParcmanDBServerUserExistRemoteException Utente gia' presente nel database
+	 * @throws ParcmanDBServerUserExistRemoteException Utente gia' presente nel database
 	 * @throws RemoteException Eccezione Remota
 	 */
- 	public void createAccount(String name, String password) throws
+	public void createAccount(String name, String password) throws
 		RemoteException,
-        ParcmanDBServerUserExistRemoteException,
-        ParcmanDBServerUserNotValidRemoteException;
+		ParcmanDBServerUserExistRemoteException,
+		ParcmanDBServerUserNotValidRemoteException;
 
-   /**
-     * Ping.
-     *
-     * @throws RemoteException Eccezione Remota
-     */
-    public void ping() throws RemoteException;
+	/**
+	 * Ping.
+	 *
+	 * @throws RemoteException Eccezione Remota
+	 */
+	public void ping() throws RemoteException;
 }
 

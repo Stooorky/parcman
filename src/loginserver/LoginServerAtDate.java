@@ -11,17 +11,17 @@ import databaseserver.RemoteDBServer;
  * @author PAarcman Tm
  */
 public class LoginServerAtDate
-    implements Serializable
+implements Serializable
 {
 	/**
 	 * Contatore del numero di attivazioni.
 	 */
-    private int activationsCount;
+	private int activationsCount;
 
 	/**
 	 * Stub del ParcmanServer.
 	 */
-    private RemoteParcmanServer parcmanServerStub;
+	private RemoteParcmanServer parcmanServerStub;
 
 	/**
 	 * Stub del DBServer.
@@ -40,55 +40,55 @@ public class LoginServerAtDate
 	 * @param parcmanServerStub Stub del ParcmanServer
 	 * @param dBServerStub Stub del database Server
 	 */
-    public LoginServerAtDate(
-        int activationsCount,
-        RemoteParcmanServer parcmanServerStub,
+	public LoginServerAtDate(
+		int activationsCount,
+		RemoteParcmanServer parcmanServerStub,
 		RemoteDBServer dBServerStub)
-    {
-        this.activationsCount = activationsCount;
-        this.parcmanServerStub = parcmanServerStub;
+	{
+		this.activationsCount = activationsCount;
+		this.parcmanServerStub = parcmanServerStub;
 		this.dBServerStub = dBServerStub;
-    }
+	}
 
 	/**
 	 * Ritorna il valore del contatore del numero di attivazioni.
 	 *
 	 * @return Numero di attivazioni del LoginServer
 	 */
-    public int getActivationsCount()
-    {
-        return this.activationsCount;
-    }
+	public int getActivationsCount()
+	{
+		return this.activationsCount;
+	}
 
 	/**
 	 * Assegna un valore al numero di attivazioni.
 	 *
 	 * @param activationsCount Numero di attivazioni
 	 */
-    public void setActivationsCount(int activationsCount)
-    {
-        this.activationsCount = activationsCount;
-    }
+	public void setActivationsCount(int activationsCount)
+	{
+		this.activationsCount = activationsCount;
+	}
 
 	/**
 	 * Ritorna lo Stub del ParcmanServer.
 	 *
 	 * @return Stub del PArcmanServer
 	 */
-    public RemoteParcmanServer getParcmanServerStub()
-    {
-        return this.parcmanServerStub;
-    }
+	public RemoteParcmanServer getParcmanServerStub()
+	{
+		return this.parcmanServerStub;
+	}
 
 	/**
 	 * Assegna lo Stub del ParcmanServer.
 	 *
 	 * @param parcmanServer Stub del ParcmanServer
 	 */
-    public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub)
-    {
-        this.parcmanServerStub = parcmanServerStub;
-    }
+	public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub)
+	{
+		this.parcmanServerStub = parcmanServerStub;
+	}
 
 	/**
 	 * Ritorna lo Stub del DBServer.
@@ -110,4 +110,3 @@ public class LoginServerAtDate
 		this.dBServerStub = dBServerStub;
 	}
 }
-

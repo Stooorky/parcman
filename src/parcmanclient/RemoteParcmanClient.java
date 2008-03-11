@@ -13,7 +13,8 @@ import parcmanserver.RemoteParcmanServer;
  *
  * @author Parcman Tm
  */
-public interface RemoteParcmanClient extends Remote, Serializable
+public interface RemoteParcmanClient 
+	extends Remote, Serializable
 {
 	/**
 	 * Lancia la connessione alla rete Parcman.
@@ -23,15 +24,16 @@ public interface RemoteParcmanClient extends Remote, Serializable
 	public void startConnection() throws
 		RemoteException;
 
-   /**
-     * Ping.
-     *
-     * @throws RemoteException Eccezione Remota
-     */
-    public void ping() throws RemoteException;
+	/**
+	 * Ping.
+	 *
+	 * @throws RemoteException Eccezione Remota
+	 */
+	public void ping() throws 
+		RemoteException;
 
-    public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub) throws
-        RemoteException;
+	public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub) throws
+		RemoteException;
 }
 
 

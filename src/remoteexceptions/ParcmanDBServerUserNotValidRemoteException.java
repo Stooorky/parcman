@@ -7,23 +7,24 @@ import java.rmi.*;
  *
  * @author Parcman Tm
  */
-public class ParcmanDBServerUserNotValidRemoteException extends RemoteException
+public class ParcmanDBServerUserNotValidRemoteException 
+	extends RemoteException
 {
 	private static final long serialVersionUID = 42L;
-	
-    /**
-     * Costruttore.
-     *
-     * @param message Messaggio di errore.
-     */
+
+	/**
+	 * Costruttore.
+	 *
+	 * @param message Messaggio di errore.
+	 */
 	public ParcmanDBServerUserNotValidRemoteException(String message)
 	{
 		super(message);	
 	}
 
-    /**
-     * Costruttore.
-     */
+	/**
+	 * Costruttore.
+	 */
 	public ParcmanDBServerUserNotValidRemoteException()
 	{
 

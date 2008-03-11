@@ -7,11 +7,28 @@ import java.rmi.*;
 
 import plog.*;
 
+/**
+ * Classe di supporto per la criptazione delle password.
+ *
+ * @author Parcman Tm
+ */
 public class PasswordService
 {
+	/**
+	 * Instanza del singleton.
+	 */
 	private static PasswordService instance;
+	
+	/**
+	 * oggetto MessageDigest usato per la criptazione.
+	 */
 	private MessageDigest algorithm;
 
+	/**
+	 * Costruttore, privato utilizzato da getInstance().
+	 *
+	 * @throws RemoteException Algoritmo di criptazione sconosciuto.
+	 */
 	private PasswordService() throws 
 		RemoteException
 	{
@@ -22,11 +39,16 @@ public class PasswordService
 		}
 		catch (NoSuchAlgorithmException e)
 		{
-			PLog.err(e, "PasswordService", "Algoritmo di crirptazione " + algorithmName + " mancante.");
+			PLog.err(e, "PasswordService", "Algoritmo di criptazione " + algorithmName + " mancante.");
 			throw new RemoteException();
 		}
 	}
 
+	/**
+	 * Ritorna un'istanza del oggetto. 
+	 *
+	 * @throws RemoteException Algoritmo di criptazione sconosciuto.
+	 */
 	public static PasswordService getInstance() throws 
 		RemoteException
 	{
@@ -38,6 +60,13 @@ public class PasswordService
 		return instance;
 	}
 
+	/**
+	 * cripta una password e ne ritorna la forma criptata.
+	 *
+	 * @param password Password da criptare.
+	 * @return Una stringa contenente la password criptata.
+	 * @throws RemoteException Encoding sconosciuto per la conversione della password a byte array.
+	 */
 	public String encrypt(String password) throws 
 		RemoteException
 	{

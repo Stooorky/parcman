@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sourcefile=(RemoteDBServer.java \
-	DBServer.java)
+		DBServer.java)
 
 clpath=`pwd`"/../"
 dom="[DATABASESERVER]"
@@ -13,6 +13,6 @@ rm exceptions/*.class 2> /dev/null
 
 # Compilation
 if [ "$1" != "clean" ]; then
-    echo "$dom Compile: ${sourcefile[@]}"
-    javac -Xlint -classpath :$clpath ${sourcefile[@]}
+	echo "$dom Compile: ${sourcefile[@]}"
+	javac -Xlint -classpath :$clpath ${sourcefile[@]}
 fi

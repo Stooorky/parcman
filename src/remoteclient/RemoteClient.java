@@ -7,7 +7,8 @@ import java.io.*;
  *
  * @author Parcman Tm
  */
-public interface RemoteClient extends Runnable, Serializable
+public interface RemoteClient 
+	extends Runnable, Serializable
 {
 	/**
 	 * Avvia il Client remoto.

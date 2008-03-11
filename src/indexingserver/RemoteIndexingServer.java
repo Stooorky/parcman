@@ -11,13 +11,15 @@ import remoteexceptions.*;
  *
  * @author Parcman Tm
  */
-public interface RemoteIndexingServer extends Remote
+public interface RemoteIndexingServer extends 
+	Remote
 {
     /**
      * Ping.
      *
      * @throws RemoteException Eccezione Remota
      */
-    public void ping() throws RemoteException;
+    public void ping() throws 
+	RemoteException;
 }
 

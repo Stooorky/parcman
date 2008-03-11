@@ -30,11 +30,11 @@ public class ParcmanClient
 
 	/**
 	 * Costruttore.
-     *
-     * @throws RemoteException Eccezione remota
+	 *
+	 * @throws RemoteException Eccezione remota
 	 */
 	public ParcmanClient() throws
-        RemoteException
+		RemoteException
 	{
 	}
 
@@ -57,30 +57,29 @@ public class ParcmanClient
 		}
 	}
 
-    /**
-     * Metodo ping.
-     *
-     * @throws RemoteException Eccezione remota
-     */
-    public void ping() throws
-        RemoteException
-    {
-        /*
-        try
-        {
-            PLog.debug("ParcmanClient.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
-        }
-        catch(ServerNotActiveException e)
-        {
-            PLog.err(e, "ParcmanClient.ping", "Errore di rete, ClientHost irraggiungibile.");
-        }
-        */
-    }
+	/**
+	 * Metodo ping.
+	 *
+	 * @throws RemoteException Eccezione remota
+	 */
+	public void ping() throws
+		RemoteException
+	{
+		/*
+			try
+			{
+			PLog.debug("ParcmanClient.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+			}
+			catch(ServerNotActiveException e)
+			{
+			PLog.err(e, "ParcmanClient.ping", "Errore di rete, ClientHost irraggiungibile.");
+			}
+			*/
+	}
 
-    public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub) throws
-        RemoteException
-    {
-        this.parcmanServerStub = parcmanServerStub;
-    }
+	public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub) throws
+		RemoteException
+	{
+		this.parcmanServerStub = parcmanServerStub;
+	}
 }
-

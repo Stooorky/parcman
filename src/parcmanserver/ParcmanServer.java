@@ -26,32 +26,31 @@ public class ParcmanServer
 
 	/**
 	 * Costruttore.
-     *
+	 *
 	 * @param dbServer Stub del DBServer
-     * @throws RemoteException Eccezione remota
+	 * @throws RemoteException Eccezione remota
 	 */
 	public ParcmanServer(RemoteDBServer dbServer) throws
-        RemoteException
+		RemoteException
 	{
 		this.dbServer = dbServer;
 	}
 
-    /**
-     * Metodo ping.
-     *
-     * @throws RemoteException Eccezione remota
-     */
-    public void ping() throws
-        RemoteException
-    {
-        try
-        {
-            PLog.debug("ParcmanServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
-        }
-        catch(ServerNotActiveException e)
-        {
-            PLog.err(e, "ParcmanServer.ping", "Errore di rete, ClientHost irraggiungibile.");
-        }
-    }
+	/**
+	 * Metodo ping.
+	 *
+	 * @throws RemoteException Eccezione remota
+	 */
+	public void ping() throws
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("ParcmanServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+		}
+	}
 }
-

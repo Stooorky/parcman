@@ -6,23 +6,23 @@ package database.exceptions;
  * @author Parcman Tm
  */
 public class ParcmanDBUserNotExistException
-    extends Exception
+	extends Exception
 {
-    private static final long serialVersionUID = 42L;
+	private static final long serialVersionUID = 42L;
 
-    /**
-     * Costruttore.
-     *
-     * @param message Messaggio di errore.
-     */
-    public ParcmanDBUserNotExistException (String message)
-    {
-        super(message);
-    }
+	/**
+	 * Costruttore.
+	 *
+	 * @param message Messaggio di errore.
+	 */
+	public ParcmanDBUserNotExistException (String message)
+	{
+		super(message);
+	}
 
-    /**
-     * Costruttore.
-     */
+	/**
+	 * Costruttore.
+	 */
 	public ParcmanDBUserNotExistException ()
 	{
 

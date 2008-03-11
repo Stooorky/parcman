@@ -7,7 +7,8 @@ import plog.*;
  *
  * @author Parcman Tm
  */
-public class RemoteClientAdmin implements RemoteClient
+public class RemoteClientAdmin 
+	implements RemoteClient
 {
 	/**
 	 * SerialVersionUID

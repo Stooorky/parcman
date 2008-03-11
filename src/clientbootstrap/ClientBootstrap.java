@@ -13,7 +13,8 @@ import plog.*;
  */
 public class ClientBootstrap
 {
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args) throws 
+		Exception
 	{
 		// Controllo la correttezza dei parametri da linea di comando
 		if (args.length != 2)

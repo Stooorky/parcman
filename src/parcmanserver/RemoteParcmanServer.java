@@ -12,13 +12,15 @@ import remoteexceptions.*;
  *
  * @author Parcman Tm
  */
-public interface RemoteParcmanServer extends Remote, Serializable
+public interface RemoteParcmanServer 
+	extends Remote, Serializable
 {
     /**
      * Ping.
      *
      * @throws RemoteException Eccezione Remota
      */
-    public void ping() throws RemoteException;
+    public void ping() throws 
+	RemoteException;
 }
 

@@ -24,31 +24,30 @@ public class IndexingServer
 
 	/**
 	 * Costruttore.
-     *
-     * @throws RemoteException Eccezione remota
+	 *
+	 * @throws RemoteException Eccezione remota
 	 */
 	public IndexingServer() throws
-        RemoteException
+		RemoteException
 	{
 
 	}
 
-    /**
-     * Metodo ping.
-     *
-     * @throws RemoteException Eccezione remota
-     */
-    public void ping() throws
-        RemoteException
-    {
-        try
-        {
-            PLog.debug("IndexingServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
-        }
-        catch(ServerNotActiveException e)
-        {
-            PLog.err(e, "IndexingServer.ping", "Errore di rete, ClientHost irraggiungibile.");
-        }
-    }
+	/**
+	 * Metodo ping.
+	 *
+	 * @throws RemoteException Eccezione remota
+	 */
+	public void ping() throws
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("IndexingServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "IndexingServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+		}
+	}
 }
-

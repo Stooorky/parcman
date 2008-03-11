@@ -2,15 +2,15 @@
 
 sourcefile=(DBManager.java \
 	DBUsers.java \
-    DB.java \
-    DBFile.java \
+	DB.java \
+	DBFile.java \
 	beans/UserBean.java \
 	xmlhandlers/UserContentHandler.java \
-    exceptions/ParcmanDBDirectoryMalformedException.java \
-    exceptions/ParcmanDBNotCreateException.java \
+	exceptions/ParcmanDBDirectoryMalformedException.java \
+	exceptions/ParcmanDBNotCreateException.java \
 	exceptions/ParcmanDBErrorException.java \
 	exceptions/ParcmanDBUserExistException.java \
-    exceptions/ParcmanDBUserNotValidException.java)
+	exceptions/ParcmanDBUserNotValidException.java)
 
 clpath=`pwd`"/../"
 dom="[DATABASE]"
@@ -25,7 +25,7 @@ rm exceptions/*.class 2> /dev/null
 
 # Compilation
 if [ "$1" != "clean" ]; then
-    echo "$dom Compile: ${sourcefile[@]}"
-    javac -Xlint -classpath :$clpath ${sourcefile[@]}
+	echo "$dom Compile: ${sourcefile[@]}"
+	javac -Xlint -classpath :$clpath ${sourcefile[@]}
 fi
 

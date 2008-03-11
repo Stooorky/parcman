@@ -11,7 +11,8 @@ import plog.*;
  *
  * @author Parcman Tm
  */
-public class UserContentHandler implements ContentHandler
+public class UserContentHandler 
+	implements ContentHandler
 {
 	/** 
 	 * 'true' se stiamo indagando l'elemento <NAME></NAME>.
