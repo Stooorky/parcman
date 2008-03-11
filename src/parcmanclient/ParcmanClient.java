@@ -16,6 +16,7 @@ import parcmanserver.RemoteParcmanServer;
  * @author Parcman Tm
  */
 public class ParcmanClient
+    extends UnicastRemoteObject
 	implements RemoteParcmanClient, Serializable
 {
 	/**
@@ -46,14 +47,14 @@ public class ParcmanClient
 	public void startConnection() throws
 		RemoteException
 	{
-		try
-		{
-			PLog.debug("ParcmanClient.startConnection", "Avvio della connessione in corso.");
-			this.parcmanServerStub.ping();
+        try
+        {
+            parcmanServerStub.connect(this);
 		}
 		catch(Exception e)
 		{
 			PLog.err(e, "ParcmanClient.startConnection", "Impossibile contattare il ParcmanServer.");
+            return;
 		}
 	}
 
@@ -65,16 +66,14 @@ public class ParcmanClient
 	public void ping() throws
 		RemoteException
 	{
-		/*
-			try
-			{
+		try
+		{
 			PLog.debug("ParcmanClient.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
-			}
-			catch(ServerNotActiveException e)
-			{
+		}
+		catch(ServerNotActiveException e)
+		{
 			PLog.err(e, "ParcmanClient.ping", "Errore di rete, ClientHost irraggiungibile.");
-			}
-			*/
+		}
 	}
 
 	public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub) throws

@@ -116,7 +116,18 @@ public class LoginServer
 		RemoteParcmanClient parcmanClient = new ParcmanClient();
 		parcmanClient.setParcmanServerStub(this.parcmanServerStub);
 		// Deesporto il server appena creato
-		// unexportObject(parcmanClient, true);
+		unexportObject(parcmanClient, true);
+
+        try
+        {
+            // Aggiungo il Client alla lista di attemp
+            parcmanServerStub.connectAttemp(name, this.getClientHost());
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "LoginServer.login", "Errore di rete, ClientHost irraggiungibile.");
+            return null;
+		}
 
 		PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
 

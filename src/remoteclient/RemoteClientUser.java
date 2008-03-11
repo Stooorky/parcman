@@ -17,7 +17,7 @@ import remoteexceptions.*;
 public class RemoteClientUser 
 	implements RemoteClient
 {
-	private static final String LOGIN_SERVER_ADRESS = "//gamma10:1098/LoginServer";
+	private static final String LOGIN_SERVER_ADRESS = "//:1098/LoginServer";
 	/**
 	 * SerialVersionUID
 	 */
@@ -110,7 +110,7 @@ public class RemoteClientUser
 			}
 
 			// Esporto il server remoto
-			UnicastRemoteObject.exportObject(parcmanServer);
+			// UnicastRemoteObject.exportObject(parcmanServer);
 			// Avvio il MobileServer
 			parcmanServer.startConnection();
 		}
