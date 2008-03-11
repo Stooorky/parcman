@@ -88,7 +88,7 @@ public class UserContentHandler
 		{
 			this.users.add(this.bean);
             PLog.debug("UserContentHandler.endElement",
-				"Caricato nuovo utente: " + this.bean.getName() + " " + this.bean.getPassword() + " " + this.bean.getPrivilege());
+				"Caricato nuovo utente. Nome: " + this.bean.getName() + " Privilegi: " + this.bean.getPrivilege());
 		}
 	}
 

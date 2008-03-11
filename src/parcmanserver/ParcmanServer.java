@@ -67,13 +67,13 @@ public class ParcmanServer
     {
         if (attempUsers.containsValue(username))
         {
-            PLog.debug("parcmanserver.connectattemp", "l'utente " + username + " e' gia' nella lista di attemp.");
+            PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " e' gia' nella lista di attemp.");
             throw new RemoteException();
         }
 
         // aggiungo l'host in attemp
         attempUsers.put(host, username);
-        PLog.debug("parcmanserver.connectattemp", "Aggiunto l'utente " + username + " (" + host + ") nella lista di attemp.");
+        PLog.debug("ParcmanServer.connectAttemp", "Aggiunto l'utente " + username + " (" + host + ") nella lista di attemp.");
     }
 
     /**
@@ -103,8 +103,8 @@ public class ParcmanServer
             }
             else
             {
-                PLog.debug("ParcmanServer.connet", "Connessione fantasma dall'host " + this.getClientHost());
-                throw new RemoteException();
+                PLog.debug("ParcmanServer.connet", "Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
+                throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
             }
         }
  		catch(ServerNotActiveException e)
@@ -112,11 +112,12 @@ public class ParcmanServer
 			PLog.err(e, "ParcmanServer.connet", "Errore di rete, ClientHost irraggiungibile.");
             throw new RemoteException();
         }
+        /*
         catch(Exception e)
         {
             PLog.err(e, "ParcmanServer.connect", "Impossibile aggiungere l'utente alla lista."); 
             throw new RemoteException();
-        }
+        }*/
     }
 
 	/**

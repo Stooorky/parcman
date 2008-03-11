@@ -49,13 +49,17 @@ public class ParcmanClient
 	{
         try
         {
+            // Spedisco lo stub del ParcmanClient al ParcmanServer
             parcmanServerStub.connect(this);
 		}
-		catch(Exception e)
+		catch(RemoteException e)
 		{
-			PLog.err(e, "ParcmanClient.startConnection", "Impossibile contattare il ParcmanServer.");
-            return;
+            System.out.println(e.getMessage());
+            System.out.println("Autenticazione fallita.");
+            System.exit(0);
 		}
+        
+        System.out.println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
 	}
 
 	/**

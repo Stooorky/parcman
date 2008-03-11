@@ -1,7 +1,8 @@
 #!/bin/bash
 
 sourcefile=(RemoteParcmanServer.java \
-	ParcmanServer.java)
+	ParcmanServer.java \
+    ClientData.java)
 
 clpath=`pwd`"/../"
 dom="[PARCMANSERVER]"

@@ -67,7 +67,8 @@ public class LoginServer
 
 		PLog.debug("LoginServer", "Inizializzo il LoginServer.");
 		PLog.debug("LoginServer", "Ripristino e aggiornamento dei dati di sessione.");
-		// Ricavo dall'atDate i dati della sessione
+
+        // Ricavo dall'atDate i dati della sessione
 		LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
 		this.parcmanServerStub = onAtDate.getParcmanServerStub();
 		this.dBServerStub = onAtDate.getDBServerStub();
@@ -120,7 +121,7 @@ public class LoginServer
 
         try
         {
-            // Aggiungo il Client alla lista di attemp
+            // Aggiungo il Client alla lista di attemp del Parcmanserver
             parcmanServerStub.connectAttemp(name, this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
@@ -128,7 +129,11 @@ public class LoginServer
 			PLog.err(e, "LoginServer.login", "Errore di rete, ClientHost irraggiungibile.");
             return null;
 		}
-
+        catch(RemoteException e)
+        {
+ 			PLog.err(e, "LoginServer.login", "Errore interno del ParcmanServer.");
+            return null;
+        }
 		PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
 
 		return parcmanClient;
@@ -206,6 +211,10 @@ public class LoginServer
 		}
 	}
 
+    /**
+     * Dereferenziazione del Server.
+     * Chiamato dal sistema Rmid.
+     */
 	public void unreferenced()
 	{
 		try
