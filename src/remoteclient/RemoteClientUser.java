@@ -118,8 +118,6 @@ public class RemoteClientUser
 				return;	
 			}
 
-			// Esporto il server remoto
-			// UnicastRemoteObject.exportObject(parcmanServer);
 			// Avvio il MobileServer
 			parcmanServer.startConnection();
 		}
@@ -129,6 +127,11 @@ public class RemoteClientUser
 		}
 	}
 
+	/**
+	 * Accende o spegne l'echo sul terminale.
+	 *
+	 * @param on true per accendere l'echo, false per spegnere l'echo
+	 */
     public void echo(boolean on)
     {
         try
@@ -137,7 +140,13 @@ public class RemoteClientUser
             Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor();
         }
-        catch (IOException e) { }
-        catch (InterruptedException e) { }
-    } 
+        catch (IOException e)
+		{
+			PLog.err("RemoteClientUser.echo", "Impossibile disattivare l'echo.");
+		}
+        catch (InterruptedException e)
+		{
+			PLog.err("RemoteClientUser.echo", "Impossibile disattivare l'echo.");
+		}
+    }
 }

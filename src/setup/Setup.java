@@ -46,10 +46,6 @@ public final class Setup
 
 		try
 		{
-			PLog.debug("Setup", "Creo il registro RMI in ascolto sulla porta 4242.");
-			// Creo il registro RMI
-			Registry reg = LocateRegistry.createRegistry(4242);
-
 			PLog.debug("Setup", "Creo un'istanza del DBServer.");
 			// Creo il DBServer
 			RemoteDBServer dBServer = new DBServer(dbDirectory);
@@ -72,12 +68,9 @@ public final class Setup
 			// Creo e registro il LoginServer
 			RemoteLoginServer loginServer = (RemoteLoginServer)Activatable.register(actDesc);
 
-			PLog.debug("Setup", "Registro per i Test il DBServer e il ParcmanServer sul registro RMI alla porta 4242.");
-			// TODO Togliere la registrazione al registro RMI dei server.
-			//reg.rebind("DBServer", dBServer);
-			//reg.rebind("ParcmanServer", parcmanServer);
+			// Registro il LoginServer sul registro RMI avviato dal servizio Rmid
 			Naming.rebind("//:1098/LoginServer", loginServer);
-		} // TODO Creare una funzione da lanciare prima di un return per ripulire.
+		}
 		catch(ParcmanDBServerErrorRemoteException e)
 		{
 			PLog.err(e, "Setup", "Impossibile inizializzare il DBServer.");

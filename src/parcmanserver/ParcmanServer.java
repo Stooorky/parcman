@@ -99,7 +99,6 @@ public class ParcmanServer
                 ClientData user = new ClientData(this.getClientHost(), parcmanClientStub);
                 connectUsers.put(userName, user);
                 PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + this.getClientHost() + ") alla lista dei client connessi.");
-                parcmanClientStub.ping();
             }
             else
             {
@@ -112,12 +111,6 @@ public class ParcmanServer
 			PLog.err(e, "ParcmanServer.connet", "Errore di rete, ClientHost irraggiungibile.");
             throw new RemoteException();
         }
-        /*
-        catch(Exception e)
-        {
-            PLog.err(e, "ParcmanServer.connect", "Impossibile aggiungere l'utente alla lista."); 
-            throw new RemoteException();
-        }*/
     }
 
 	/**
