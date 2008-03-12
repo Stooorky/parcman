@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sourcefile=(RemoteParcmanServer.java \
+    RemoteParcmanServerUser.java \
 	ParcmanServer.java \
     ClientData.java)
 

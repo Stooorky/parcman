@@ -11,6 +11,7 @@ import java.security.*;
 import plog.*;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServer;
+import parcmanserver.RemoteParcmanServerUser;
 import parcmanclient.*;
 import database.beans.UserBean;
 import databaseserver.RemoteDBServer;
@@ -114,7 +115,7 @@ public class LoginServer
 		}
 
 		// Creo un'istanza di ParcmanClient da passare al Client
-		RemoteParcmanClient parcmanClient = new ParcmanClient(this.parcmanServerStub, user.getName());
+		RemoteParcmanClient parcmanClient = new ParcmanClient(((RemoteParcmanServerUser)this.parcmanServerStub), user.getName());
 		// Deesporto il server appena creato
 		unexportObject(parcmanClient, true);
 

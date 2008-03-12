@@ -8,7 +8,7 @@ import java.io.*;
 
 import plog.*;
 import remoteexceptions.*;
-import parcmanserver.RemoteParcmanServer;
+import parcmanserver.RemoteParcmanServerUser;
 
 /**
  * Mobile server in esecuzione presso il Client.
@@ -22,7 +22,7 @@ public class ParcmanClient
 	/**
 	 * Stub del ParcmanServer.
 	 */
-	private RemoteParcmanServer parcmanServerStub;
+	private RemoteParcmanServerUser parcmanServerStub;
 
     /**
      * Nome utente.
@@ -39,7 +39,7 @@ public class ParcmanClient
 	 *
 	 * @throws RemoteException Eccezione remota
 	 */
-	public ParcmanClient(RemoteParcmanServer parcmanServerStub, String userName) throws
+	public ParcmanClient(RemoteParcmanServerUser parcmanServerStub, String userName) throws
 		RemoteException
 	{
         this.parcmanServerStub = parcmanServerStub;

@@ -60,7 +60,7 @@ public class ParcmanServer
      *
      * @param username nome utente
      * @param host host del client
-     * @throws remoteexception eccezione remota
+     * @throws RemoteException eccezione remota
      */
     public void connectAttemp(String username, String host) throws
         RemoteException
