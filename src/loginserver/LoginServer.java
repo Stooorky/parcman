@@ -15,6 +15,7 @@ import parcmanserver.RemoteParcmanServerUser;
 import parcmanclient.*;
 import database.beans.UserBean;
 import databaseserver.RemoteDBServer;
+import privilege.Privilege;
 
 /**
  * Server di login.
@@ -114,29 +115,38 @@ public class LoginServer
 			return null;
 		}
 
-		// Creo un'istanza di ParcmanClient da passare al Client
-		RemoteParcmanClient parcmanClient = new ParcmanClient(((RemoteParcmanServerUser)this.parcmanServerStub), user.getName());
-		// Deesporto il server appena creato
-		unexportObject(parcmanClient, true);
+        if (user.getPrivilege().equals(Privilege.getUserPrivilege())) // Utente
+        {
+		    // Creo un'istanza di ParcmanClient da passare al Client
+		    RemoteParcmanClient parcmanClient = new ParcmanClient(((RemoteParcmanServerUser)this.parcmanServerStub), user.getName());
+		    // Deesporto il server appena creato
+		    unexportObject(parcmanClient, true);
 
-        try
+            try
+            {
+                // Aggiungo il Client alla lista di attemp del Parcmanserver
+                parcmanServerStub.connectAttemp(name, this.getClientHost());
+		    }
+		    catch(ServerNotActiveException e)
+		    {
+			    PLog.err(e, "LoginServer.login", "Errore di rete, ClientHost irraggiungibile.");
+                return null;
+		    }
+            catch(RemoteException e)
+            {
+ 		    	PLog.err(e, "LoginServer.login", "Errore interno del ParcmanServer.");
+                return null;
+            }
+
+		    PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
+
+		    return parcmanClient;
+        }
+        else
         {
-            // Aggiungo il Client alla lista di attemp del Parcmanserver
-            parcmanServerStub.connectAttemp(name, this.getClientHost());
-		}
-		catch(ServerNotActiveException e)
-		{
-			PLog.err(e, "LoginServer.login", "Errore di rete, ClientHost irraggiungibile.");
-            return null;
-		}
-        catch(RemoteException e)
-        {
- 			PLog.err(e, "LoginServer.login", "Errore interno del ParcmanServer.");
+            PLog.err("LoginServer.login", "Privilegi dell'utente " + user.getName() + " errati (" + user.getPrivilege() + ")");
             return null;
         }
-		PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
-
-		return parcmanClient;
 	}
 
 	/**
@@ -170,7 +180,7 @@ public class LoginServer
 		UserBean user = new UserBean();
 		user.setName(name);
 		user.setPassword(encryptedPassword);
-		user.setPrivilege("Privilege");
+		user.setPrivilege(Privilege.getUserPrivilege());
 
 		try
 		{
