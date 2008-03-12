@@ -6,7 +6,6 @@ import java.util.*;
 import java.io.*;
 
 import remoteexceptions.*;
-import parcmanserver.RemoteParcmanServer;
 
 /**
  * Interfaccia remota del ParcmanClient.
@@ -32,8 +31,14 @@ public interface RemoteParcmanClient
 	public void ping() throws 
 		RemoteException;
 
-	public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub) throws
-		RemoteException;
+    /**
+     * Ritorna il nome utente del proprietario della sessione.
+     *
+     * @return Nome utente del proprietario della sessione
+     * @throws RemoteException Eccezione remota
+     */
+    public String getUserName() throws
+        RemoteException;
 }
 
 

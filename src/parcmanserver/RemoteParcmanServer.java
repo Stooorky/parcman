@@ -20,9 +20,10 @@ public interface RemoteParcmanServer
      * Esegue la connessione di un nuovo RemoteParcmanClient alla rete Parcman.
      *
      * @param parcmanClientStub Stub del MobileServer
+     * @param userName Nome utente proprietario della sessione
      * @throws RemoteException Eccezione Remota
      */
-    public void connect(RemoteParcmanClient parcmanClientStub) throws
+    public void connect(RemoteParcmanClient parcmanClientStub, String userName) throws
         RemoteException;
 
 

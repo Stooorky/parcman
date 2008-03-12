@@ -20,12 +20,17 @@ public class ParcmanClient
 	implements RemoteParcmanClient, Serializable
 {
 	/**
-	 * Stub del ParcmanServer
+	 * Stub del ParcmanServer.
 	 */
 	private RemoteParcmanServer parcmanServerStub;
 
+    /**
+     * Nome utente.
+     */
+    private String userName;
+
 	/**
-	 * SerialVersionUID
+	 * SerialVersionUID.
 	 */
 	private static final long serialVersionUID = 4242L;
 
@@ -34,9 +39,11 @@ public class ParcmanClient
 	 *
 	 * @throws RemoteException Eccezione remota
 	 */
-	public ParcmanClient() throws
+	public ParcmanClient(RemoteParcmanServer parcmanServerStub, String userName) throws
 		RemoteException
 	{
+        this.parcmanServerStub = parcmanServerStub;
+        this.userName = userName;
 	}
 
 	/**
@@ -50,7 +57,7 @@ public class ParcmanClient
         try
         {
             // Spedisco lo stub del ParcmanClient al ParcmanServer
-            parcmanServerStub.connect(this);
+            parcmanServerStub.connect(this, this.userName);
 		}
 		catch(RemoteException e)
 		{
@@ -80,9 +87,16 @@ public class ParcmanClient
 		}
 	}
 
-	public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub) throws
-		RemoteException
-	{
-		this.parcmanServerStub = parcmanServerStub;
-	}
+    /**
+     * Ritorna il nome utente del proprietario della sessione.
+     *
+     * @return Nome utente del proprietario della sessione
+     * @throws RemoteException Eccezione remota
+     */
+    public String getUserName() throws
+        RemoteException
+    {
+        return this.userName;
+    }
 }
+

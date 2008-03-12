@@ -114,8 +114,7 @@ public class LoginServer
 		}
 
 		// Creo un'istanza di ParcmanClient da passare al Client
-		RemoteParcmanClient parcmanClient = new ParcmanClient();
-		parcmanClient.setParcmanServerStub(this.parcmanServerStub);
+		RemoteParcmanClient parcmanClient = new ParcmanClient(this.parcmanServerStub, user.getName());
 		// Deesporto il server appena creato
 		unexportObject(parcmanClient, true);
 

@@ -64,7 +64,7 @@ public final class Setup
 			LoginServerAtDate loginServerAtDate = new LoginServerAtDate(0, parcmanServer, dBServer);
 			ActivationDesc actDesc = new ActivationDesc(groupID, loginServerClass, implCodebase, new MarshalledObject(loginServerAtDate));
 
-			PLog.debug("Setup", "Creo un'istanza del LoginServer.");
+			PLog.debug("Setup", "Creo un'istanza del LoginServer e la registro al primo gruppo di attivazione.");
 			// Creo e registro il LoginServer
 			RemoteLoginServer loginServer = (RemoteLoginServer)Activatable.register(actDesc);
 

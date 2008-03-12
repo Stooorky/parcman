@@ -27,7 +27,7 @@ public class ParcmanServer
 
     /**
      * Mappa degli utenti attemp.
-     * Host, nome utente
+     * Nome utente, host
      */
     private Map<String, String> attempUsers;
 
@@ -72,7 +72,7 @@ public class ParcmanServer
         }
 
         // aggiungo l'host in attemp
-        attempUsers.put(host, username);
+        attempUsers.put(username, host);
         PLog.debug("ParcmanServer.connectAttemp", "Aggiunto l'utente " + username + " (" + host + ") nella lista di attemp.");
     }
 
@@ -82,23 +82,29 @@ public class ParcmanServer
      * @param parcmanClientStub Stub del MobileServer
      * @throws RemoteException Eccezione Remota
      */
-    public void connect(RemoteParcmanClient parcmanClientStub) throws
+    public void connect(RemoteParcmanClient parcmanClientStub, String userName) throws
         RemoteException
     {
         try
         {
             PLog.debug("ParcmanServer.connect", "Nuovo tentativo di connessione alla rete parcman.");
             // Controllo che l'host sia nella lista di attemp
-            if (attempUsers.containsKey(this.getClientHost()))
+            if (attempUsers.containsKey(userName))
             {
                 // Rimuovo l'utente dalla lista di attemp
-                String userName = attempUsers.remove(this.getClientHost());
-                PLog.debug("ParcmanServer.connect", "Rimosso " + userName + " (" + this.getClientHost() + ") dalla lista di attemp.");
+                String host = attempUsers.remove(userName);
+                if (!this.getClientHost().equals(host))
+                {
+                    PLog.debug("ParcmanServer.connet", "Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
+                    throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+                }
+
+                PLog.debug("ParcmanServer.connect", "Rimosso " + userName + " (" + host + ") dalla lista di attemp.");
 
                 // Aggiungo l'utente alla lista connectUsers
-                ClientData user = new ClientData(this.getClientHost(), parcmanClientStub);
+                ClientData user = new ClientData(host, parcmanClientStub);
                 connectUsers.put(userName, user);
-                PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + this.getClientHost() + ") alla lista dei client connessi.");
+                PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + host + ") alla lista dei client connessi.");
             }
             else
             {
