@@ -48,10 +48,10 @@ function exec_recursively()
 function usage()
 {
 	echo "Usage:"
-	echo "./runTests.sh -clean test1 [ test2 ... ]"
-	echo "./runTests.sh -run test1 [ test2 ... ]"
-	echo "./runTests.sh -compile test1 [ test2 ... ]"
-	echo "./runTests.sh -all test1 [ test2 ... ]"
+	echo "./runTests.sh -clean path/to/test/test1.java [ path/to/test/test2.java ... ]"
+	echo "./runTests.sh -run path/to/test/test1.java [ path/to/test/test2.java ... ]"
+	echo "./runTests.sh -compile path/to/test/test1.java [ path/to/test/test2.java ... ]"
+	echo "./runTests.sh -all path/to/test/test1.java [ path/to/test/test2.java ... ]"
 }
 
 # print function 
