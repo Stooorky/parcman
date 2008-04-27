@@ -95,6 +95,14 @@ public class DBManager
 	}
 
 	/**
+	 * Pulisce la mappa dei database registrati nel manager.
+	 */
+	public void clear() 
+	{
+		this.dbMap.clear();
+	}
+
+	/**
 	 * Permette di ottenere la lista dei nomi dei database registrati nel 
 	 * manager.
 	 *

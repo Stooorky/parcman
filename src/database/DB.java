@@ -26,6 +26,11 @@ public class DB
 	private static String DB_USERS_FILE = "dbUsers.xml";
 
 	/**
+	 * Nome del file xml del database lista files.
+	 */
+	private static String DB_SHARING_LIST_FILE= "dbSharing.xml";
+
+	/**
 	 * Costruttore.
 	 *
 	 * @param dbDirectory Directory radice del DataBase

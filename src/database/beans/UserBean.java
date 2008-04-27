@@ -15,6 +15,11 @@ public class UserBean
 	implements Serializable
 {
 	/**
+	 * Serial Version UID per il check di compatibilita'.
+	 */
+	private static final long serialVersionUID = 42L;
+
+	/**
 	 * Nome utente.
 	 */
 	private String name;
@@ -28,11 +33,6 @@ public class UserBean
 	 * Privilegi utente.
 	 */
 	private String privilege;
-
-	/**
-	 * Serial Version UID per il check di compatibilita'.
-	 */
-	private static final long serialVersionUID = 42L;
 
 	/**
 	 * Restituisce il nome utente.
@@ -109,8 +109,8 @@ public class UserBean
 
 		UserBean bean = (UserBean) obj;
 		if (!this.name.equals(bean.getName())
-				|| !this.password.equals(bean.getPassword())
-				|| !this.privilege.equals(bean.getPrivilege()))
+			|| !this.password.equals(bean.getPassword())
+			|| !this.privilege.equals(bean.getPrivilege()))
 		{
 			return false;
 		}
