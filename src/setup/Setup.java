@@ -43,6 +43,7 @@ public final class Setup
 		Properties prop = new Properties();
 		prop.put("java.security.policy", policyGroup);
 		prop.put("java.class.path", "no_classpath");
+		prop.put("java.rmi.dgc.leaseValue", 60000);
 
 		try
 		{

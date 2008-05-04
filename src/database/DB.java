@@ -28,7 +28,7 @@ public class DB
 	/**
 	 * Nome del file xml del database lista files.
 	 */
-	private static String DB_SHARING_LIST_FILE= "dbSharing.xml";
+	private static String DB_SHARINGS_FILE= "dbSharings.xml";
 
 	/**
 	 * Costruttore.
@@ -45,6 +45,7 @@ public class DB
 		DBManager dbManager = DBManager.getInstance();
 		// Aggiungo il DataBase Utenti al DBManager
 		dbManager.add("USERS", new DBUsers(this.dbDirectory + "/" + this.DB_USERS_FILE));
+		dbManager.add("SHARINGS", new DBSharings(this.dbDirectory + "/" + this.DB_SHARINGS_FILE));
 
 		// Fixo la Directory del DataBase
 		try
@@ -130,7 +131,7 @@ public class DB
 		{
 			// Utente gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBUserNotExistException)
-				throw new ParcmanDBUserNotExistException();
+					throw (ParcmanDBUserNotExistException) e.getTargetException();
 
 			throw new ParcmanDBErrorException();
 		}
@@ -138,6 +139,51 @@ public class DB
 		{
 			throw new ParcmanDBErrorException();
 		}
+	}
+
+	/**
+	 * Aggiunge un nuovo file condiviso alla lista file.
+	 *
+	 * @param share Dati del file
+	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	 * @throws ParcmanDBShareExistException File gia' presente nel database
+	 * @throws ParcmanDBShareNotValidException Elementi del file non validi
+	 */
+	public void addShare(ShareBean share) throws
+		ParcmanDBErrorException,
+		ParcmanDBShareNotValidException,
+		ParcmanDBShareExistException
+	{
+		Object[] args = { share };
+
+		// Controllo la validita' dei dati contenuti nello ShareBean
+		if (!share.validate())
+			throw new ParcmanDBShareNotValidException();
+
+		DBManager dbManager = DBManager.getInstance();
+
+		try
+		{
+			dbManager.call("SHARINGS", "addShare", args);
+		}
+		catch (InvocationTargetException e)
+		{
+			// Utente gia' presente nel DataBase
+			if (e.getTargetException() instanceof ParcmanDBShareExistException)
+				throw (ParcmanDBShareExistException) e.getTargetException();
+
+			throw new ParcmanDBErrorException();
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+
+		// Salvo il DB Utenti
+		dbManager.save("USERS");
+
+		PLog.debug("DB.addShare", "Nuovo utente aggiunto al DB Utenti: " + share.getName());
+		
 	}
 
 	/**
@@ -158,11 +204,11 @@ public class DB
 			// Creo la directory, comprese le directory nel PATH
 			dir.mkdirs();
 
-			PLog.debug("DB.fixDirectory", "Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
+			PLog.debug("DB.fixDirectory", "Creo i file \n\t" + DB_USERS_FILE + "\n\t" + DB_SHARINGS_FILE + "\nnella directory " + this.dbDirectory);
 			// Creo il file XML del DB Utenti invocando save della classe DBUsers
 			DBManager dbManager = DBManager.getInstance();
 
-			dbManager.save("USERS");
+			dbManager.save();
 
 		}
 		else // Esiste un file di nome this.dbDirectory
@@ -170,6 +216,7 @@ public class DB
 			if (dir.isDirectory()) // E' una Directory
 			{
 				File dbUsers = new File(this.dbDirectory + "/" + DB_USERS_FILE);
+				File dbSharings = new File(this.dbDirectory + "/" + DB_SHARINGS_FILE);
 
 				if (!dbUsers.exists()) // Il file XML per il DB Utenti non esiste
 				{
@@ -187,6 +234,24 @@ public class DB
 
 					dbManager.load("USERS");
 				}
+
+				if (!dbSharings.exists()) // Il file XML per il DB Utenti non esiste
+				{
+					PLog.debug("DB.fixDirectory", "Creo il file " + DB_SHARINGS_FILE + " nella directory " + this.dbDirectory);
+					// Creo il file XML del DB Utenti invocando save della classe DBUsers
+					DBManager dbManager = DBManager.getInstance();
+
+					dbManager.save("SHARINGS");
+				}
+				else // Il file XML per il DB Utenti esiste
+				{
+					PLog.debug("DB.fixDirectory", "Carico il DB dei file condivisi");
+					// Carico il file XML del DB Utenti
+					DBManager dbManager = DBManager.getInstance();
+
+					dbManager.load("SHARINGS");
+				}
+
 			}
 			else // Non e' una Directory
 			{
