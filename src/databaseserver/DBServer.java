@@ -17,118 +17,242 @@ import remoteexceptions.*;
  * @author Parcman Tm
  */
 public class DBServer
-	extends UnicastRemoteObject
-	implements RemoteDBServer
+    extends UnicastRemoteObject
+    implements RemoteDBServer
 {
-	private transient DB db;
+    private transient DB db;
 
-	/**
-	 * SerialVersionUID
-	 */
-	private static final long serialVersionUID = 42L;
+    /**
+     * SerialVersionUID
+     */
+    private static final long serialVersionUID = 42L;
 
 
 
-	/**
-	 * Costruttore.
-	 *
-	 * @param dbDirectory Path della directory radice del database
-	 * @throws ParcmanDBServerErrorRemoteException Impossibile creare il DB
-	 * @throws RemoteException Eccezione Remota
-	 */
-	public DBServer(String dbDirectory) throws
-		ParcmanDBServerErrorRemoteException,
-		RemoteException
-	{
-		try
-		{
-			db = new DB(dbDirectory);
-		}
-		catch (ParcmanDBNotCreateException e)
-		{
-			PLog.err(e, "DBServer", "Impossibile istanziare il database.");
-			throw new ParcmanDBServerErrorRemoteException();
-		}
-	}
+    /**
+     * Costruttore.
+     *
+     * @param dbDirectory Path della directory radice del database
+     * @throws ParcmanDBServerErrorRemoteException Impossibile creare il DB
+     * @throws RemoteException Eccezione Remota
+     */
+    public DBServer(String dbDirectory) throws
+        ParcmanDBServerErrorRemoteException,
+        RemoteException
+        {
+            try
+            {
+                db = new DB(dbDirectory);
+            }
+            catch (ParcmanDBNotCreateException e)
+            {
+                PLog.err(e, "DBServer", "Impossibile istanziare il database.");
+                throw new ParcmanDBServerErrorRemoteException();
+            }
+        }
 
-	/**
-	 * Restituisce i dati di un utente a partire dal nome.
-	 * Se l'utente non e' presente all'interno del database restituisce null.
-	 *
-	 * @param name Nome Utente
-	 * @return UserBean contenente i dati utente se esiste, null altrimenti
-	 * @throws ParcmanDBServerErrorRemoteException Errore interno al database
-	 * @throws RemoteException Eccezione remota
-	 */
-	public UserBean getUser(String name) throws
-		ParcmanDBServerErrorRemoteException,
-		RemoteException
-	{
-		try
-		{	UserBean user = db.getUser(name);
-			return user;
-		}
-		catch(ParcmanDBErrorException e)
-		{
-			throw new ParcmanDBServerErrorRemoteException();
-		}
-		catch(ParcmanDBUserNotExistException e)
-		{
-			return null;
-		}
-	}
+    /**
+     * Restituisce i dati di un utente a partire dal nome.
+     * Se l'utente non e' presente all'interno del database restituisce null.
+     *
+     * @param name Nome Utente
+     * @return UserBean contenente i dati utente se esiste, null altrimenti
+     * @throws ParcmanDBServerErrorRemoteException Errore interno al database
+     * @throws RemoteException Eccezione remota
+     */
+    public UserBean getUser(String name) throws
+        ParcmanDBServerErrorRemoteException,
+        RemoteException
+        {
+            try
+            {	UserBean user = db.getUser(name);
+                return user;
+            }
+            catch(ParcmanDBErrorException e)
+            {
+                throw new ParcmanDBServerErrorRemoteException();
+            }
+            catch(ParcmanDBUserNotExistException e)
+            {
+                return null;
+            }
+        }
 
-	/**
-	 * Aggiunge un utente al database.
-	 * Se l'utente e' gia' presente all'interno del database solleva
-	 * l'eccezione remota ParcmanDBServerUserExistRemoteException.
-	 * Se i dati forniti non sono coerenti, cioe' non superano il test
-	 * UserBean.validate(), solleva l'eccezione ParcmanDBUserNotValidException.
-	 *
-	 * @param user UserBean contenente i dati dell'utente
-	 * @throws ParcmanDBServerUserExistRemoteException L'utente e' gia' presente all'interno del database
-	 * @throws ParcmanDBServerUserNotValidRemoteException I dati forniti per l'utente non sono validi
-	 * @throws RemoteException Eccezione remota
-	 */
-	public void addUser(UserBean user) throws
-		ParcmanDBServerUserExistRemoteException,
-		ParcmanDBServerUserNotValidRemoteException,
-		RemoteException
-	{
-		try
-		{
-			db.addUser(user);
-		}
-		catch(ParcmanDBErrorException e)
-		{
-			throw new ParcmanDBServerErrorRemoteException();
-		}
-		catch(ParcmanDBUserExistException e)
-		{
-			throw new ParcmanDBServerUserExistRemoteException();
-		}
-		catch(ParcmanDBUserNotValidException e)
-		{
-			throw new ParcmanDBServerUserNotValidRemoteException();
-		}
-	}
+    /**
+     * Aggiunge un utente al database.
+     * Se l'utente e' gia' presente all'interno del database solleva
+     * l'eccezione remota ParcmanDBServerUserExistRemoteException.
+     * Se i dati forniti non sono coerenti, cioe' non superano il test
+     * UserBean.validate(), solleva l'eccezione ParcmanDBUserNotValidException.
+     *
+     * @param user UserBean contenente i dati dell'utente
+     * @throws ParcmanDBServerUserExistRemoteException L'utente e' gia' presente all'interno del database
+     * @throws ParcmanDBServerUserNotValidRemoteException I dati forniti per l'utente non sono validi
+     * @throws RemoteException Eccezione remota
+     */
+    public void addUser(UserBean user) throws
+        ParcmanDBServerUserExistRemoteException,
+        ParcmanDBServerUserNotValidRemoteException,
+        RemoteException
+        {
+            try
+            {
+                db.addUser(user);
+            }
+            catch(ParcmanDBErrorException e)
+            {
+                throw new ParcmanDBServerErrorRemoteException();
+            }
+            catch(ParcmanDBUserExistException e)
+            {
+                throw new ParcmanDBServerUserExistRemoteException();
+            }
+            catch(ParcmanDBUserNotValidException e)
+            {
+                throw new ParcmanDBServerUserNotValidRemoteException();
+            }
+        }
 
-	/**
-	 * Metodo ping.
-	 *
-	 * @throws RemoteException Eccezione remota
-	 */
-	public void ping() throws
-		RemoteException
-	{
-		try
-		{
-			PLog.debug("DBServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
-		}
-		catch(ServerNotActiveException e)
-		{
-			PLog.err(e, "DBServer.ping", "Errore di rete, ClientHost irraggiungibile.");
-		}
-	}
+    /**
+     * Aggiunge un file condiviso al database. 
+     * Se il file e` gia` presente all'interno del database solleva l'eccezione
+     * remota ParcmanDBShareExistException. Se i dati forniti non sono coerenti
+     * solleva l'eccezione ParcmanDBShareNotValidException. 
+     *
+     * @param share ShareBean contenente i dai del file condiviso.
+     * @throws ParcmanDBServerShareExistRemoteException L'utente e` gia` presente all'interno del database.
+     * @throws ParcmanDBServerShareNotValidException I dati forniti per il file da aggiundere non sono validi.
+     * @throws RemoteException Eccezione remota.
+     */
+    public void addShare(ShareBean share) throws 
+        ParcmanDBServerShareExistRemoteException,
+        ParcmanDBServerShareNotValidRemoteException,
+        RemoteException
+        {
+            try
+            {
+                db.addShare(share);
+            }
+            catch (ParcmanDBErrorException e)
+            {
+                throw new ParcmanDBServerErrorRemoteException();
+            }
+            catch (ParcmanDBShareExistException e) 
+            {
+                throw new ParcmanDBServerShareExistRemoteException();
+            }
+            catch (ParcmanDBShareNotValidException e)
+            {
+                throw new ParcmanDBServerShareNotValidRemoteException();
+            }
+        }
+
+    /**
+     * Ritorna un oggetto ShareBean contenente i dati del file condiviso.
+     * Se il file non e` presente all'interno del database solleva una 
+     * ParcmanDBServerShareNotExistException.
+     */
+    public ShareBean getShareById(String id) throws 
+        ParcmanDBServerShareNotExistException,
+        ParcmanDBServerShareNotValidException,
+        RemoteException
+        {
+            try 
+            {
+                ShareBean share = db.getShareById(id);
+                return share;
+            }
+            catch (ParcmanDBErrorException e) 
+            {
+                throw new ParcmanDBServerErrorRemoteException();
+            }
+            catch (ParcmanDBShareNotValidException e) 
+            {
+                throw new ParcmanDBServerShareNotValidException();
+            }
+            catch (ParcmanDBShareNShareNotValidException e) 
+            {
+                throw new ParcmanDBServerShareNotValidException();
+            }
+            catch (ParcmanDBShareExistException e)
+            {
+                throw new ParcmanDBServerShareNotExistException();
+            }
+        }
+
+
+    public ShareBean getShareByName(String name) throws 
+        ParcmanDBServerShareNotExistException,
+        ParcmanDBServerShareNotValidException,
+        RemoteException
+        {
+            try 
+            {
+                ShareBean share = db.getShareByName(name);
+                return share;
+            }
+            catch (ParcmanDBErrorException e) 
+            {
+                throw new ParcmanDBServerErrorRemoteException();
+            }
+            catch (ParcmanDBShareNotValidException e) 
+            {
+                throw new ParcmanDBServerShareNotValidException();
+            }
+            catch (ParcmanDBShareNShareNotValidException e) 
+            {
+                throw new ParcmanDBServerShareNotValidException();
+            }
+            catch (ParcmanDBShareExistException e)
+            {
+                throw new ParcmanDBServerShareNotExistException();
+            }
+        }
+
+    public ShareBean getShareByIndex(int index) throws 
+        ParcmanDBServerShareNotExistException,
+        ParcmanDBServerShareNotValidException,
+        RemoteException
+        {
+            try 
+            {
+                ShareBean share = db.getShareByIndex(index);
+                return share;
+            }
+            catch (ParcmanDBErrorException e) 
+            {
+                throw new ParcmanDBServerErrorRemoteException();
+            }
+            catch (ParcmanDBShareNotValidException e) 
+            {
+                throw new ParcmanDBServerShareNotValidException();
+            }
+            catch (ParcmanDBShareNShareNotValidException e) 
+            {
+                throw new ParcmanDBServerShareNotValidException();
+            }
+            catch (ParcmanDBShareExistException e)
+            {
+                throw new ParcmanDBServerShareNotExistException();
+            }
+        }
+
+    /**
+     * Metodo ping.
+     *
+     * @throws RemoteException Eccezione remota
+     */
+    public void ping() throws
+        RemoteException
+        {
+            try
+            {
+                PLog.debug("DBServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+            }
+            catch(ServerNotActiveException e)
+            {
+                PLog.err(e, "DBServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+            }
+        }
 
 }
