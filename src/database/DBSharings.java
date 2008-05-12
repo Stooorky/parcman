@@ -168,7 +168,7 @@ public class DBSharings
 	 *
 	 * @param id Stringa che rappresenta un id
 	 * @return ShareBean che contiene i dati del file
-	 * @throws ParcmanDBUserNotExistException
+	 * @throws ParcmanDBShareNotExistException 
 	 */
 	public ShareBean getShareById(String id)
 		throws ParcmanDBShareNotExistException
@@ -193,7 +193,7 @@ public class DBSharings
 	 *
 	 * @param tag Stringa che rappresenta una tag 
 	 * @return ShareBean che contiene i dati del file
-	 * @throws ParcmanDBUserNotExistException
+	 * @throws ParcmanDBShareNotExistException
 	 */
 	public ShareBean getShareByTag(String tag)
 		throws ParcmanDBShareNotExistException
@@ -213,12 +213,12 @@ public class DBSharings
 	/**
 	 * Rimuove un file condiviso.
 	 * In caso contrario viene sollevata l'eccezione 
-	 * ParcmanDBUserNotExistException
+	 * ParcmanDBShareNotExistException
 	 * 
 	 * @param index indice dello share
 	 * @throws ParcmanDBShareNotExistException
 	 */
-	public void removeShareByIndex(int index)
+	public void removeShare(int index)
 		throws ParcmanDBShareNotExistException
 	{
 		try 
@@ -239,7 +239,7 @@ public class DBSharings
 	 * @param id id del file condiviso
 	 * @throws ParcmanDBSharedExistException
 	 */
-	public void removeShareById(String id)
+	public void removeShare(String id)
 		throws ParcmanDBShareNotExistException
 	{
 		Iterator i = this.sharings.iterator();

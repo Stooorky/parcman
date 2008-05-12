@@ -168,7 +168,7 @@ public class DB
 		}
 		catch (InvocationTargetException e)
 		{
-			// Utente gia' presente nel DataBase
+			// File gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBShareExistException)
 				throw (ParcmanDBShareExistException) e.getTargetException();
 
@@ -179,12 +179,51 @@ public class DB
 			throw new ParcmanDBErrorException();
 		}
 
-		// Salvo il DB Utenti
-		dbManager.save("USERS");
+		// Salvo il DB Sharings
+		dbManager.save("SHARINGS");
 
-		PLog.debug("DB.addShare", "Nuovo utente aggiunto al DB Utenti: " + share.getName());
-		
+		PLog.debug("DB.addShare", "File aggiunto al DB Sharings: " + share.getName());
 	}
+
+	/**
+	 * Rimuove un file condiviso dalla lista file.
+	 *
+	 * @param id Id del file
+	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	 * @throws ParcmanDBShareNotExistException File non presente all'interno del DB
+	 */
+	public void removeShare(String id) throws
+		ParcmanDBErrorException,
+                ParcmanDBShareNotExistException
+	{
+		Object[] args = { id };
+
+		DBManager dbManager = DBManager.getInstance();
+
+		try
+		{
+			dbManager.call("SHARINGS", "removeShare", args);
+		}
+		catch (InvocationTargetException e)
+		{
+			// File gia' presente nel DataBase
+			if (e.getTargetException() instanceof ParcmanDBShareNotExistException)
+				throw (ParcmanDBShareNotExistException) e.getTargetException();
+
+			throw new ParcmanDBErrorException();
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+
+		// Salvo il DB Sharings
+		dbManager.save("SHARINGS");
+
+		PLog.debug("DB.removeShare", "File rimosso dal DB Sharings: id@" + id);
+	}
+
+
 
 	/**
 	 * Controlla e Fixa la Directory radice del DataBase.

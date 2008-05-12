@@ -118,7 +118,11 @@ public class RemoteClientUser
 				return;	
 			}
 
-			// Avvio il MobileServer
+            // Elimino la referenza al LoginServer
+            loginServer =  null;
+            System.gc();
+
+            // Avvio il MobileServer
 			parcmanServer.startConnection();
 		}
 		catch(Exception e)
