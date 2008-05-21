@@ -42,7 +42,7 @@ public class DBSharings
 	/**
 	 * Esegue il salvataggio del DataBase Sharings su File.
 	 */
-	public void save() 
+	public void save()
 	{
 		File f = new File(dbFile);
 		FileOutputStream fos;
@@ -143,7 +143,7 @@ public class DBSharings
 	 * 
 	 * @param name Stringa che rappresenta il nome del file
 	 * @return ShareBean che contiene i dati del file
-	 * @throws ParcmanDBShareNotExistException
+	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
 	public ShareBean getShareByName(String name)
 		throws ParcmanDBShareNotExistException
@@ -168,7 +168,7 @@ public class DBSharings
 	 *
 	 * @param id Stringa che rappresenta un id
 	 * @return ShareBean che contiene i dati del file
-	 * @throws ParcmanDBShareNotExistException 
+	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
 	public ShareBean getShareById(String id)
 		throws ParcmanDBShareNotExistException
@@ -193,7 +193,7 @@ public class DBSharings
 	 *
 	 * @param tag Stringa che rappresenta una tag 
 	 * @return ShareBean che contiene i dati del file
-	 * @throws ParcmanDBShareNotExistException
+	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
 	public ShareBean getShareByTag(String tag)
 		throws ParcmanDBShareNotExistException
@@ -216,7 +216,7 @@ public class DBSharings
 	 * ParcmanDBShareNotExistException
 	 * 
 	 * @param index indice dello share
-	 * @throws ParcmanDBShareNotExistException
+	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
 	public void removeShare(int index)
 		throws ParcmanDBShareNotExistException
@@ -237,7 +237,7 @@ public class DBSharings
 	 * ParcmanDBShareNotExistException.
 	 *
 	 * @param id id del file condiviso
-	 * @throws ParcmanDBSharedExistException
+	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
 	public void removeShare(String id)
 		throws ParcmanDBShareNotExistException

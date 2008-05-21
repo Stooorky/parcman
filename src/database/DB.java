@@ -186,6 +186,88 @@ public class DB
 	}
 
 	/**
+	 * Ritorna un ShareBean contenente i dati di un file condiviso.
+	 *
+	 * @param id Id del file
+	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	 * @throws ParcmanDBShareNotExistException File non presente all'interno del DB
+	 */
+	public ShareBean getShareById(String id) throws
+		ParcmanDBErrorException,
+		ParcmanDBShareNotExistException
+	{
+		ShareBean share = null;
+		Object[] args = { id };
+
+		DBManager dbManager = DBManager.getInstance();
+
+		try
+		{
+			share = (ShareBean) dbManager.call("SHARINGS", "getShareById", args);
+		}
+		catch (InvocationTargetException e)
+		{
+			// File gia' presente nel DataBase
+			if (e.getTargetException() instanceof ParcmanDBShareNotExistException)
+				throw (ParcmanDBShareNotExistException) e.getTargetException();
+
+			throw new ParcmanDBErrorException();
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+
+		// Salvo il DB Sharings
+		dbManager.save("SHARINGS");
+
+		PLog.debug("DB.removeShare", "Richiesto i dati di un file condiviso: id@" + id);
+
+		return share;
+	}
+
+	/**
+	 * Ritorna un ShareBean contenente i dati di un file condiviso.
+	 *
+	 * @param name Nome del file
+	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	 * @throws ParcmanDBShareNotExistException File non presente all'interno del DB
+	 */
+	public ShareBean getShareByName(String name) throws
+		ParcmanDBErrorException,
+		ParcmanDBShareNotExistException
+	{
+		ShareBean share = null;
+		Object[] args = { name };
+
+		DBManager dbManager = DBManager.getInstance();
+
+		try
+		{
+			share = (ShareBean) dbManager.call("SHARINGS", "getShareByName", args);
+		}
+		catch (InvocationTargetException e)
+		{
+			// File gia' presente nel DataBase
+			if (e.getTargetException() instanceof ParcmanDBShareNotExistException)
+				throw (ParcmanDBShareNotExistException) e.getTargetException();
+
+			throw new ParcmanDBErrorException();
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+
+		// Salvo il DB Sharings
+		dbManager.save("SHARINGS");
+
+		PLog.debug("DB.removeShare", "Richiesto i dati di un file condiviso: name@" + name);
+
+		return share;
+	}
+
+	/**
 	 * Rimuove un file condiviso dalla lista file.
 	 *
 	 * @param id Id del file
@@ -194,7 +276,7 @@ public class DB
 	 */
 	public void removeShare(String id) throws
 		ParcmanDBErrorException,
-                ParcmanDBShareNotExistException
+		ParcmanDBShareNotExistException
 	{
 		Object[] args = { id };
 

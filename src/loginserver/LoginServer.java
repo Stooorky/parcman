@@ -104,7 +104,17 @@ public class LoginServer
 			return null;
 		}
 
-		UserBean user = this.dBServerStub.getUser(name);
+		UserBean user;
+
+		try
+		{
+			user = this.dBServerStub.getUser(name);
+		}
+		catch(ParcmanDBServerUserNotExistRemoteException e)
+		{
+			PLog.debug("LoginServer.login", "Richiesta rifiutata, nome utente errato.");
+			return null;
+		}
 
 		// cripto la password
 		String encryptedPassword = PasswordService.getInstance().encrypt(password);

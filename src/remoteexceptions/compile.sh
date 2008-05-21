@@ -2,6 +2,7 @@
 
 sourcefile=(ParcmanDBServerErrorRemoteException.java \
 	ParcmanDBServerUserExistRemoteException.java \
+	ParcmanDBServerUserNotExistRemoteException.java \
 	ParcmanDBServerUserNotValidRemoteException.java \
     ParcmanServerHackWarningRemoteException.java \
  	ParcmanDBServerShareExistRemoteException.java \
