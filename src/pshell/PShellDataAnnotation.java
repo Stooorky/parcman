@@ -12,6 +12,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 public @interface PShellDataAnnotation
 {
+    String method();
     String name();
     String info() default "[unassigned]";
     String help() default "[unassigned]";

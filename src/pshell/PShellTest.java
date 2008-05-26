@@ -25,16 +25,17 @@ class PShellTestClass extends PShellData
 
     public void writePrompt()
     {
-        out.println(">");
+        out.print("> ");
     }
 
     @PShellDataAnnotation(
-        name = "help",
-        info = "use: help --command",
-        help = "use: help --command blbl"
+        method = "commandYes",
+        name = "yes",
+        info = "use: yes",
+        help = "stampa la stringa yes"
     )
-    public void help(String param)
+    public void commandYes (String param)
     {
-         
+        out.println("yes"); 
     }
 }
