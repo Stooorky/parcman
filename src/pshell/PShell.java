@@ -2,9 +2,11 @@ package pshell;
 
 import java.io.*;
 import java.lang.reflect.*;
+import java.util.*;
 
 import plog.*;
 import pshell.*;
+
 
 /**
  * Gestore di Shell
@@ -18,44 +20,66 @@ public class PShell
      */
     private PShellData shell;
 
+    /**
+     * Comandi di Shell.
+     */
     private Vector<CommandBean> commands;
 
     /**
-     * Stream di output.
+     * Input di Shell.
      */
-    private BufferedOutputStream out;
+    protected BufferedReader in;
+
+    /**
+     * Output di Shell.
+     */
+    protected PrintStream out;
 
     /**
      * Costruttore.
      *
-     * @param out OutputStream per la Shell
      * @param shell Dati della Shell
      */
-    public PShell(BufferedOutputStream out, PShellData shell)
+    public PShell(PrintStream out, BufferedReader in, PShellData shell)
     {
-        this.out = out;
         this.shell = shell;
+        this.out = out;
+        this.in = in;
+        this.commands = new Vector<CommandBean>();
 
+        PLog.debug("Pshell", "Prova");
+        for (Method m : shell.getClass().getMethods())
+        {
+            PLog.debug("PShell", m.toString());
+            if (m.isAnnotationPresent(PShellDataAnnotation.class))
+            {
+                PLog.debug("PShell", "Nuova Annotazione");
+            }
+        }
     }
 
-    /**
-     * Stampa il prompt di shell
-     */
-    private void printPrompt()
+    public void run()
     {
-        out.println(shell.getPrompt());
+        String input = "";
+
+        while(true)
+        {
+            shell.writePrompt();
+            try
+            {
+                input = in.readLine();
+            }
+            catch(IOException e)
+            {
+
+            }
+
+            out.println("Hai scritto " + input);          
+        }
     }
 }
 
-/**
- * Bean dati di shell
- *
- * @author Parcman Tm
- */
-private class CommandBean
+class CommandBean
 {
-    private String name;
-    private String desc;
-    private String help;
-}
 
+}

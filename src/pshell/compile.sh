@@ -1,7 +1,8 @@
 #!/bin/bash
 
 sourcefile=(PShell.java \
-		PShellData.java \ 
+		PShellData.java \
+        PShellTest.java \
 		)
 
 clpath=`pwd`"/../"
