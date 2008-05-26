@@ -75,6 +75,9 @@ public class PShell
         }
     }
 
+    /**
+     * Lancio l'esecuzione della Shell
+     */
     public void run()
     {
         String input = "";
@@ -93,16 +96,30 @@ public class PShell
 
             String[] inputsp = input.split(" ", 2);
 
-            if (this.isCommand(inputsp[0]))
+            if (inputsp[0].equals("help"))
                 if (inputsp.length > 1)
-                    this.runCommand(inputsp[0], inputsp[1]);
+                    this.runHelp(inputsp[1]);
                 else
-                    this.runCommand(inputsp[0], "");
+                    this.runHelp(null);
             else
-                out.println("Command not found: " + inputsp[0]);
+            {
+                if (this.isCommand(inputsp[0]))
+                    if (inputsp.length > 1)
+                        this.runCommand(inputsp[0], inputsp[1]);
+                    else
+                        this.runCommand(inputsp[0], "");
+                else
+                    out.println("Command not found: " + inputsp[0]);
+            }
         }
     }
 
+    /**
+     * Controlla se la stringa data rappresenta un comando.
+     *
+     * @param c Stringa del comando
+     * @return true se c e' un comando, false altrimenti
+     */
     private boolean isCommand(String c)
     {
         for (int i=0; i<commands.size(); i++)
@@ -111,6 +128,12 @@ public class PShell
         return false;
     }
 
+    /**
+     * Restituisce il nome del Metodo per il comando c
+     *
+     * @param c Stringa del comando
+     * @return Nome del metodo per il comando c
+     */
     private String getMethodCommand(String c)
     {
         for (int i=0; i<commands.size(); i++)
@@ -119,7 +142,36 @@ public class PShell
         return null;
     }
 
-    public void runCommand(String c, String arg)
+    private void runHelp(String arg)
+    {
+        if (arg != null)
+        {
+            for (int i=0; i<commands.size(); i++)
+                if (commands.get(i).name.equals(arg))
+                {
+                    out.println("Help per il comando \"" + commands.get(i).name + "\"\n" +
+                            commands.get(i).help);
+                    return;
+                }
+
+            out.println("Nessun help per " + arg);
+            return;
+        }
+
+        out.println("Elenco comandi:");
+        for (int i=0; i<commands.size(); i++)
+            out.println("\t" + commands.get(i).name + "-> " + commands.get(i).info);
+
+        out.println("Per vedere l'help di un comando specifico digita \"help <nome comando>\"");
+    }
+
+    /**
+     * Esegue il comando c con parametri arg
+     *
+     * @param c Stringa del comando
+     * @param arg Stringa dei parametri
+     */
+    private void runCommand(String c, String arg)
     {
 		Class shellClass = shell.getClass();
 		Class[] argsTypes;
@@ -171,11 +223,31 @@ public class PShell
     }
 }
 
+/**
+ * Classe Bean per un Comando
+ *
+ * @author Parcman Tm
+ */
 class CommandBean
 {
+    /**
+     * Nome del metodo.
+     */
     public String method;
+
+    /**
+     * Nome del comando.
+     */
     public String name;
+
+    /**
+     * Info del comando.
+     */
     public String info;
+
+    /**
+     * Help per il comando.
+     */
     public String help;
 }
 

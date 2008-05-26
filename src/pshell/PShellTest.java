@@ -31,11 +31,23 @@ class PShellTestClass extends PShellData
     @PShellDataAnnotation(
         method = "commandYes",
         name = "yes",
-        info = "use: yes",
-        help = "stampa la stringa yes"
+        info = "Stampa a video yes",
+        help = "\tstampa a video la stringa yes.\n\tuse: yes" 
     )
     public void commandYes (String param)
     {
         out.println("yes"); 
+    }
+
+    @PShellDataAnnotation(
+        method = "commandHello",
+        name = "hello",
+        info = "Stampa a video Hello seguito da un nome",
+        help = "\tstampa a video la stringa \"hello\" seguita dal nome dato come parametro.\n\t" +
+            "use: hello <nome>"
+    )
+    public void commandHello (String param)
+    {
+        out.println("hello " + param);
     }
 }
