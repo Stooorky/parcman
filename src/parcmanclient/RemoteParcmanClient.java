@@ -28,7 +28,15 @@ public interface RemoteParcmanClient
 	 *
 	 * @throws RemoteException Eccezione Remota
 	 */
-	public void ping() throws 
+	public void ping() throws
+		RemoteException;
+
+	/**
+	 * Disconnessione dalla rete Parcman.
+	 *
+	 * @throws RemoteException Eccezione Remota
+	 */
+	public void exit() throws
 		RemoteException;
 
     /**

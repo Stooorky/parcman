@@ -125,6 +125,13 @@ public class RemoteClientUser
             // Avvio il MobileServer
 			parcmanServer.startConnection();
 		}
+		catch(RemoteException e)
+		{
+			if (e.getCause() instanceof ParcmanServerUserIsConnectRemoteException)
+				System.out.println("Richiesta di login rifiutata, l'utente e' gia' connesso alla rete.");
+			else
+				System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");
+		}
 		catch(Exception e)
 		{
 			System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");

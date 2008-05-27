@@ -26,6 +26,16 @@ public interface RemoteParcmanServerUser
         RemoteException;
 
     /**
+     * Esegue la disconnessione di RemoteParcmanClient dalla rete Parcman.
+     *
+     * @param parcmanClientStub Stub del MobileServer
+     * @param userName Nome utente proprietario della sessione
+     * @throws RemoteException Eccezione Remota
+     */
+    public void disconnect(RemoteParcmanClient parcmanClientStub, String userName) throws
+        RemoteException;
+
+    /**
      * Ping.
      *
      * @throws RemoteException Eccezione Remota

@@ -3,12 +3,12 @@ package parcmanclient;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
-import java.rmi.*;
 import java.io.*;
 
 import plog.*;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
+import pshell.*;
 
 /**
  * Mobile server in esecuzione presso il Client.
@@ -16,7 +16,7 @@ import parcmanserver.RemoteParcmanServerUser;
  * @author Parcman Tm
  */
 public class ParcmanClient
-    extends UnicastRemoteObject
+	extends UnicastRemoteObject
 	implements RemoteParcmanClient, Serializable
 {
 	/**
@@ -24,56 +24,59 @@ public class ParcmanClient
 	 */
 	private RemoteParcmanServerUser parcmanServerStub;
 
-    /**
-     * Nome utente.
-     */
-    private String userName;
+	/**
+	* Nome utente.
+	*/
+	private String userName;
 
 	/**
-	 * SerialVersionUID.
-	 */
+	* SerialVersionUID.
+	*/
 	private static final long serialVersionUID = 4242L;
 
 	/**
-	 * Costruttore.
-	 *
-	 * @throws RemoteException Eccezione remota
-	 */
+	* Costruttore.
+	*
+	* @throws RemoteException Eccezione remota
+	*/
 	public ParcmanClient(RemoteParcmanServerUser parcmanServerStub, String userName) throws
 		RemoteException
 	{
-        this.parcmanServerStub = parcmanServerStub;
-        this.userName = userName;
+		this.parcmanServerStub = parcmanServerStub;
+		this.userName = userName;
 	}
 
 	/**
-	 * Lancia la connessione alla rete Parcman.
-	 *
-	 * @throws RemoteException Eccezione Remota
-	 */
+	* Lancia la connessione alla rete Parcman.
+	*
+	* @throws RemoteException Eccezione Remota
+	*/
 	public void startConnection() throws
 		RemoteException
 	{
-        try
-        {
-            // Spedisco lo stub del ParcmanClient al ParcmanServer
-            parcmanServerStub.connect(this, this.userName);
+		try
+		{
+			// Spedisco lo stub del ParcmanClient al ParcmanServer
+			parcmanServerStub.connect(this, this.userName);
 		}
 		catch(RemoteException e)
 		{
-            System.out.println(e.getMessage());
-            System.out.println("Autenticazione fallita.");
-            System.exit(0);
+			System.out.println(e.getMessage());
+			System.out.println("Autenticazione fallita.");
+			System.exit(0);
 		}
-        
-        System.out.println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
+
+		System.out.println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
+
+		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
+		shell.run();
 	}
 
 	/**
-	 * Metodo ping.
-	 *
-	 * @throws RemoteException Eccezione remota
-	 */
+	* Metodo ping.
+	*
+	* @throws RemoteException Eccezione remota
+	*/
 	public void ping() throws
 		RemoteException
 	{
@@ -87,16 +90,39 @@ public class ParcmanClient
 		}
 	}
 
-    /**
-     * Ritorna il nome utente del proprietario della sessione.
-     *
-     * @return Nome utente del proprietario della sessione
-     * @throws RemoteException Eccezione remota
-     */
-    public String getUserName() throws
-        RemoteException
-    {
-        return this.userName;
-    }
-}
+	/**
+	* Esegue la disconnessione dalla rete.
+	*
+	* @throws RemoteException Eccezione remota
+	*/
+	public void exit() throws
+		RemoteException
+	{
+		PLog.debug("ParcmanClient.exit", "Disconnessione in corso.");
 
+		try
+		{
+			this.parcmanServerStub.disconnect(this, this.userName);
+		}
+		catch(RemoteException e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println("Disconnessione fallita. (force exit)");
+			System.exit(1);
+		}
+
+		System.exit(0);
+	}
+
+	/**
+	* Ritorna il nome utente del proprietario della sessione.
+	*
+	* @return Nome utente del proprietario della sessione
+	* @throws RemoteException Eccezione remota
+	*/
+	public String getUserName() throws
+		RemoteException
+	{
+		return this.userName;
+	}
+}

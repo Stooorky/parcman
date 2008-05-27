@@ -16,7 +16,7 @@ public class PLog
 	public static void err(Exception e, String func, String str)
 	{
 		System.err.println("[ERROR]<" + func + "> " + str);
-		System.err.println(e);
+		e.printStackTrace();
 	}
 
 	/**

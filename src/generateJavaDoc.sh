@@ -14,4 +14,5 @@ remoteexceptions/*.java \
 loginserver/*.java \
 parcmanclient/*.java \
 parcmanserver/*.java \
-indexingserver/*.java
+indexingserver/*.java \
+pshell/*.java

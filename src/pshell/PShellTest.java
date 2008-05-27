@@ -10,22 +10,16 @@ public class PShellTest
 {
     public static void main (String[] args)
     {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        PShell s = new PShell(System.out, in, new PShellTestClass(in));
+        PShell s = new PShell(new PShellTestClass());
         s.run();
     }
 }
 
 class PShellTestClass extends PShellData
 {
-    public PShellTestClass(BufferedReader in)
+    public PShellTestClass()
     {
-        super(System.out, in);
-    }
-
-    public void writePrompt()
-    {
-        out.print("> ");
+        super(System.out, new BufferedReader(new InputStreamReader(System.in)));
     }
 
     @PShellDataAnnotation(

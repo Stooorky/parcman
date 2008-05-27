@@ -19,111 +19,164 @@ public class ParcmanServer
 	extends UnicastRemoteObject
 	implements RemoteParcmanServer
 {
-    /**
-     * Mappa degli utenti connessi.
-     * Nome utente, Dati utente 
-     */
-    private Map<String, ClientData> connectUsers;
+	/**
+	* Mappa degli utenti connessi.
+	* Nome utente, Dati utente 
+	*/
+	private Map<String, ClientData> connectUsers;
 
-    /**
-     * Mappa degli utenti attemp.
-     * Nome utente, host
-     */
-    private Map<String, String> attempUsers;
+	/**
+	* Mappa degli utenti attemp.
+	* Nome utente, host
+	*/
+	private Map<String, String> attempUsers;
 
-    /**
-     * Stub del DBServer.
-     */
+	/**
+	* Stub del DBServer.
+	*/
 	private RemoteDBServer dBServer;
 
-    /**
-	 * SerialVersionUID.
-	 */
+	/**
+	* SerialVersionUID.
+	*/
 	private static final long serialVersionUID = 42L;
 
 	/**
-	 * Costruttore.
-	 *
-	 * @param dbServer Stub del DBServer
-	 * @throws RemoteException Eccezione remota
-	 */
+	* Costruttore.
+	*
+	* @param dbServer Stub del DBServer
+	* @throws RemoteException Eccezione remota
+	*/
 	public ParcmanServer(RemoteDBServer dBServer) throws
 		RemoteException
 	{
 		this.dBServer = dBServer;
-        this.connectUsers = new HashMap<String, ClientData>();
-        this.attempUsers = new HashMap<String, String>();
+		this.connectUsers = new HashMap<String, ClientData>();
+		this.attempUsers = new HashMap<String, String>();
 	}
 
-    /**
-     * esegue l'aggiunta di un nuovo client alla lista dei tentativi di connessione.
-     *
-     * @param username nome utente
-     * @param host host del client
-     * @throws RemoteException eccezione remota
-     */
-    public void connectAttemp(String username, String host) throws
-        RemoteException
-    {
-        if (attempUsers.containsValue(username))
-        {
-            PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " e' gia' nella lista di attemp.");
-            throw new RemoteException();
-        }
-
-        // aggiungo l'host in attemp
-        attempUsers.put(username, host);
-        PLog.debug("ParcmanServer.connectAttemp", "Aggiunto l'utente " + username + " (" + host + ") nella lista di attemp.");
-    }
-
-    /**
-     * Esegue la connessione di un nuovo RemoteParcmanClient alla rete Parcman.
-     *
-     * @param parcmanClientStub Stub del MobileServer
-     * @throws RemoteException Eccezione Remota
-     */
-    public void connect(RemoteParcmanClient parcmanClientStub, String userName) throws
-        RemoteException
-    {
-        try
-        {
-            PLog.debug("ParcmanServer.connect", "Nuovo tentativo di connessione alla rete parcman.");
-            // Controllo che l'host sia nella lista di attemp
-            if (attempUsers.containsKey(userName))
-            {
-                // Rimuovo l'utente dalla lista di attemp
-                String host = attempUsers.remove(userName);
-                if (!this.getClientHost().equals(host))
-                {
-                    PLog.debug("ParcmanServer.connet", "Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
-                    throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
-                }
-
-                PLog.debug("ParcmanServer.connect", "Rimosso " + userName + " (" + host + ") dalla lista di attemp.");
-
-                // Aggiungo l'utente alla lista connectUsers
-                ClientData user = new ClientData(host, parcmanClientStub);
-                connectUsers.put(userName, user);
-                PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + host + ") alla lista dei client connessi.");
-            }
-            else
-            {
-                PLog.debug("ParcmanServer.connet", "Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
-                throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
-            }
-        }
- 		catch(ServerNotActiveException e)
+	/**
+	* Esegue l'aggiunta di un nuovo client alla lista dei tentativi di connessione.
+	*
+	* @param username nome utente
+	* @param host host del client
+	* @throws ParcmanServerUserIsConnectRemoteException Utente gia' connesso
+	* @throws RemoteException eccezione remota
+	*/
+	public void connectAttemp(String username, String host) throws
+		ParcmanServerUserIsConnectRemoteException,
+		RemoteException
+	{
+		if (this.attempUsers.containsKey(username))
 		{
-			PLog.err(e, "ParcmanServer.connet", "Errore di rete, ClientHost irraggiungibile.");
-            throw new RemoteException();
-        }
-    }
+			PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " e' gia' nella lista di attemp.");
+			throw new ParcmanServerUserIsConnectRemoteException("Esiste gia' un tentativo di connessione con questo nome utente");
+		}
+
+		if (this.connectUsers.containsKey(username))
+		{
+			PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " e' gia' connesso alla rete.");
+			throw new ParcmanServerUserIsConnectRemoteException("Utente gia' connesso alla rete");
+		}
+
+		// aggiungo l'host in attemp
+		attempUsers.put(username, host);
+		PLog.debug("ParcmanServer.connectAttemp", "Aggiunto l'utente " + username + " (" + host + ") nella lista di attemp.");
+	}
 
 	/**
-	 * Metodo ping.
-	 *
-	 * @throws RemoteException Eccezione remota
-	 */
+	* Esegue la connessione di un nuovo RemoteParcmanClient alla rete Parcman.
+	*
+	* @param parcmanClientStub Stub del MobileServer
+	* @param userName Nome utente proprietario della sessione
+	* @throws RemoteException Eccezione Remota
+	*/
+	public void connect(RemoteParcmanClient parcmanClientStub, String userName) throws
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("ParcmanServer.connect", "Nuovo tentativo di connessione alla rete parcman.");
+
+			// Controllo che l'host sia nella lista di attemp
+			if (attempUsers.containsKey(userName))
+			{
+				// Rimuovo l'utente dalla lista di attemp
+				String host = attempUsers.remove(userName);
+				if (!this.getClientHost().equals(host))
+				{
+					PLog.debug("ParcmanServer.connect", "Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
+					throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo ost.");
+				}
+
+				PLog.debug("ParcmanServer.connect", "Rimosso " + userName + " (" + host + ") dalla lista di attemp.");
+
+				// Aggiungo l'utente alla lista connectUsers
+				ClientData user = new ClientData(host, parcmanClientStub);
+				connectUsers.put(userName, user);
+				PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + host + ") alla lista dei client connessi.");
+			}
+			else
+			{
+				PLog.debug("ParcmanServer.connect", "Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
+				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+			}
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanServer.connect", "Errore di rete, ClientHost irraggiungibile.");
+			throw new RemoteException();
+		}
+	}
+
+	/**
+	* Esegue la disconnessione di RemoteParcmanClient dalla rete Parcman.
+	*
+	* @param parcmanClientStub Stub del MobileServer
+	* @param userName Nome utente proprietario della sessione
+	* @throws RemoteException Eccezione Remota
+	*/
+	public void disconnect(RemoteParcmanClient parcmanClientStub, String userName) throws
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("ParcmanServer.disconnect", "Nuova richiesta di disconnessione.");
+			// Controllo che l'utente sia connesso
+			if (connectUsers.containsKey(userName))
+			{
+				ClientData user = connectUsers.get(userName);
+
+				if (!this.getClientHost().equals(user.getHost()) || !parcmanClientStub.equals(user.getStub()))
+				{
+					PLog.debug("ParcmanServer.disconnect", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+					throw new ParcmanServerHackWarningRemoteException
+							("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+				}
+
+				//Rimuovo l'utente dalla lista dei Client Connessi
+				connectUsers.remove(userName);
+
+				PLog.debug("ParcmanServer.disconnect", "Rimosso " + userName + " (" + this.getClientHost() + ") dalla lista dei Client Connessi.");
+			}
+			else
+			{
+				PLog.debug("ParcmanServer.disconnect", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+			}
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanServer.disconnet", "Errore di rete, ClientHost irraggiungibile.");
+			throw new RemoteException();
+		}
+	}
+
+	/**
+	* Metodo ping.
+	*
+	* @throws RemoteException Eccezione remota
+	*/
 	public void ping() throws
 		RemoteException
 	{

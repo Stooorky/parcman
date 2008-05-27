@@ -4,9 +4,10 @@ sourcefile=(ParcmanDBServerErrorRemoteException.java \
 	ParcmanDBServerUserExistRemoteException.java \
 	ParcmanDBServerUserNotExistRemoteException.java \
 	ParcmanDBServerUserNotValidRemoteException.java \
-    ParcmanServerHackWarningRemoteException.java \
- 	ParcmanDBServerShareExistRemoteException.java \
-	ParcmanDBServerShareNotValidRemoteException.java )
+	ParcmanServerHackWarningRemoteException.java \
+	ParcmanDBServerShareExistRemoteException.java \
+	ParcmanDBServerShareNotValidRemoteException.java \
+	ParcmanServerUserIsConnectRemoteException.java )
 
 clpath=`pwd`"/../"
 dom="[REMOTEEXCEPTIONS]"

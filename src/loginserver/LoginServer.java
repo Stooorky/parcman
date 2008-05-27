@@ -144,8 +144,15 @@ public class LoginServer
 		    }
             catch(RemoteException e)
             {
- 		    	PLog.err(e, "LoginServer.login", "Errore interno del ParcmanServer.");
-                return null;
+				if (e.getCause() instanceof ParcmanServerUserIsConnectRemoteException)
+				{
+					PLog.debug("LoginServer.login", "Richiesta rifiutata, Utente gia' connesso.");
+					throw new ParcmanServerUserIsConnectRemoteException(e.getMessage());
+				}
+				else
+		    		PLog.err(e, "LoginServer.login", "Errore interno del ParcmanServer.");
+
+				return null;
             }
 
 		    PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
