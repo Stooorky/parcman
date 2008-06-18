@@ -182,8 +182,6 @@ public class DB
 
 		// Salvo il DB Sharings
 		dbManager.save("SHARINGS");
-
-		PLog.debug("DB.addShare", "File aggiunto al DB Sharings: " + share.getName());
 	}
 
 	/**
@@ -218,8 +216,6 @@ public class DB
 		{
 			throw new ParcmanDBErrorException();
 		}
-
-		PLog.debug("DB.removeShare", "Richiesto i dati di un file condiviso: id@" + id);
 
 		return share;
 	}
@@ -256,8 +252,6 @@ public class DB
 		{
 			throw new ParcmanDBErrorException();
 		}
-
-		PLog.debug("DB.removeShare", "Richiesto i dati di un file condiviso: name@" + name);
 
 		return share;
 	}
@@ -327,8 +321,6 @@ public class DB
 
 		// Salvo il DB Sharings
 		dbManager.save("SHARINGS");
-
-		PLog.debug("DB.removeShare", "File rimosso dal DB Sharings: id@" + id);
 	}
 
 
