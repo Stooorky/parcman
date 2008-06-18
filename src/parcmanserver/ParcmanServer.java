@@ -7,6 +7,7 @@ import java.rmi.*;
 
 import plog.*;
 import remoteexceptions.*;
+import database.beans.ShareBean;
 import databaseserver.RemoteDBServer;
 import parcmanclient.RemoteParcmanClient;
 
@@ -147,7 +148,7 @@ public class ParcmanServer
 			{
 				ClientData user = connectUsers.get(userName);
 
-				if (!this.getClientHost().equals(user.getHost()) || !parcmanClientStub.equals(user.getStub()))
+				if (!this.getClientHost().equals(user.getHost()) || !user.getStub().equals(parcmanClientStub))
 				{
 					PLog.debug("ParcmanServer.disconnect", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
 					throw new ParcmanServerHackWarningRemoteException
@@ -168,6 +169,69 @@ public class ParcmanServer
 		catch(ServerNotActiveException e)
 		{
 			PLog.err(e, "ParcmanServer.disconnet", "Errore di rete, ClientHost irraggiungibile.");
+			throw new RemoteException();
+		}
+	}
+
+	/**
+	* Restituisce la lista file condivisi dell'utente.
+	* E' necessario possedere lo stub dell'utente per poter fare questa richiesta.
+	*
+	* @param parcmanClientStub Stub del MobileServer
+	* @param userName Nome utente proprietario della sessione
+	* @throws ParcmanServerRequestErrorRemoteException Impossibile esaudire la richiesta
+	* @throws RemoteException Eccezione Remota
+	*/
+	public Vector<ShareBean> getSharings(RemoteParcmanClient parcmanClientStub, String userName) throws
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("ParcmanServer.getSharings", "Rishiesta lista dei file condivisi dell'utente " + userName + ".");
+			// Controllo che l'utente sia connesso
+			if (connectUsers.containsKey(userName))
+			{
+				ClientData user = connectUsers.get(userName);
+
+				if (!this.getClientHost().equals(user.getHost()) || !user.getStub().equals(parcmanClientStub))
+				{
+					PLog.debug("ParcmanServer.getSharings", "Richiesta non valida, host " + this.getClientHost());
+					throw new ParcmanServerHackWarningRemoteException
+							("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+				}
+
+				try
+				{
+					Vector<ShareBean> shares = dBServer.getSharings(userName);
+					PLog.debug("ParcmanServer.getSharings", "Spedita la lista file condivisi (" + shares.size() + " file)");
+					return shares;
+				}
+				catch (ParcmanDBServerErrorRemoteException e)
+				{
+					PLog.debug("ParcmanServer.getSharings", "Richiesta non esaudita, errore interno del database.");
+					throw new ParcmanServerRequestErrorRemoteException();
+				}
+				catch (ParcmanDBServerUserNotExistRemoteException e)
+				{
+					PLog.debug("ParcmanServer.getSharings", "Richiesta non esaudita, Nome utente non presente nel database.");
+					throw new ParcmanServerRequestErrorRemoteException();
+				}
+				catch (RemoteException e)
+				{
+					PLog.debug("ParcmanServer.getSharings", "Richiesta non esaudita, errore interno del database.");
+					throw new ParcmanServerRequestErrorRemoteException();
+				}
+			}
+			else
+			{
+				PLog.debug("ParcmanServer.getSharings", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+			}
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanServer.getSharings", "Errore di rete, ClientHost irraggiungibile.");
 			throw new RemoteException();
 		}
 	}

@@ -12,8 +12,8 @@ import remoteexceptions.*;
  *
  * @author Parcman Tm
  */
-public interface RemoteParcmanClient 
-	extends Remote, Serializable
+public interface RemoteParcmanClient
+	extends RemoteParcmanClientUser
 {
 	/**
 	 * Lancia la connessione alla rete Parcman.
@@ -38,15 +38,6 @@ public interface RemoteParcmanClient
 	 */
 	public void exit() throws
 		RemoteException;
-
-    /**
-     * Ritorna il nome utente del proprietario della sessione.
-     *
-     * @return Nome utente del proprietario della sessione
-     * @throws RemoteException Eccezione remota
-     */
-    public String getUserName() throws
-        RemoteException;
 }
 
 

@@ -209,7 +209,31 @@ public class DBSharings
 		}
 		throw new ParcmanDBShareNotExistException();
 	}
-	
+
+	/**
+	* Restituisce la lista Sharings di un utente.
+	*
+	* @param userName Nome utente
+	* @return Vettore di ShareBean contenente la lista dei file condivisi dell'utente
+	* @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	*/
+	public Vector<ShareBean> getSharings(String userName)
+	{
+		Vector<ShareBean> v = new Vector<ShareBean>();
+
+		Iterator i = this.sharings.iterator();
+		while (i.hasNext())
+		{
+			ShareBean s = (ShareBean) i.next();
+			if (s.getOwner().equals(userName))
+			{
+				v.add(s);
+			}
+		}
+
+		return v;
+	}
+
 	/**
 	 * Rimuove un file condiviso.
 	 * In caso contrario viene sollevata l'eccezione 

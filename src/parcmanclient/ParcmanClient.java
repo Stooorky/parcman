@@ -66,6 +66,24 @@ public class ParcmanClient
 			System.exit(0);
 		}
 
+		System.out.println("Autenticazione in corso...");
+		System.out.println("Invio richiesta file condivisi.");
+
+		try
+		{
+			parcmanServerStub.getSharings(this, this.userName);
+		}
+		catch(ParcmanServerRequestErrorRemoteException e)
+		{
+			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			System.exit(0);
+		}
+		catch(RemoteException e)
+		{
+			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			System.exit(0);
+		}
+
 		System.out.println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
 
 		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));

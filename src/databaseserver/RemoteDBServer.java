@@ -12,35 +12,55 @@ import remoteexceptions.*;
  *
  * @author Parcman Tm
  */
-public interface RemoteDBServer 
+public interface RemoteDBServer
 	extends Remote
 {
 	/**
-	 * Restituisce i dati di un utente registrato nel database.
-	 *
-	 * @param name Nome dell'utente da ricercare
-	 * @return UserBean dell'utente se esiste, null altrimenti
-	 * @throws RemoteException Eccezione remota
-	 * @throws ParcmanDBServerErrorRemoteException Errore interno del database
-	 */
-
+	* Restituisce i dati di un utente a partire dal nome.
+	*
+	* @param name Nome Utente
+	* @return UserBean contenente i dati utente se esiste, null altrimenti
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws ParcmanDBServerUserNotExistRemoteException Utente non presente nel database
+	* @throws RemoteException Eccezione remota
+	*/
 	public UserBean getUser(String name) throws
-		RemoteException,
-		ParcmanDBServerErrorRemoteException;
+		ParcmanDBServerErrorRemoteException,
+		ParcmanDBServerUserNotExistRemoteException,
+		RemoteException;
 
 	/**
-	 * Aggiunge un utente al database.
-	 *
-	 * @param user UserBean dell'utente da aggiungere.
-	 * @throws RemoteException Eccezione remota
-	 * @throws ParcmanDBServerUserExistRemoteException L'utente e' gia' presente all'interno del database
-	 * @throws ParcmanDBServerUserNotValidRemoteException I dati forniti per l'utente non sono validi
-	 */
-
+	* Aggiunge un utente al database.
+	* Se l'utente e' gia' presente all'interno del database solleva
+	* l'eccezione remota ParcmanDBServerUserExistRemoteException.
+	* Se i dati forniti non sono coerenti, cioe' non superano il test
+	* UserBean.validate(), solleva l'eccezione ParcmanDBUserNotValidException.
+	*
+	* @param user UserBean contenente i dati dell'utente
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws ParcmanDBServerUserExistRemoteException L'utente e' gia' presente all'interno del database
+	* @throws ParcmanDBServerUserNotValidRemoteException I dati forniti per l'utente non sono validi
+	* @throws RemoteException Eccezione remota
+	*/
 	public void addUser(UserBean user) throws
-		RemoteException,
+		ParcmanDBServerErrorRemoteException,
 		ParcmanDBServerUserExistRemoteException,
-		ParcmanDBServerUserNotValidRemoteException;
+		ParcmanDBServerUserNotValidRemoteException,
+		RemoteException;
+
+	/**
+	* Restituisce la lista Sharings di un utente.
+	*
+	* @param userName Nome utente
+	* @return Vettore di ShareBean contenente la lista dei file condivisi dell'utente
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws ParcmanDBServerUserNotExistRemoteException Utente non presente nel database
+	* @throws RemoteException Eccezione remota
+	*/
+	public Vector<ShareBean> getSharings(String userName) throws
+		ParcmanDBServerErrorRemoteException,
+		ParcmanDBServerUserNotExistRemoteException,
+		RemoteException;
 
 	/**
 	 * Ping.

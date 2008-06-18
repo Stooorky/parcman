@@ -1,6 +1,7 @@
 package database;
 
 import java.io.*;
+import java.util.*;
 import java.lang.reflect.*;
 
 import database.*;
@@ -218,9 +219,6 @@ public class DB
 			throw new ParcmanDBErrorException();
 		}
 
-		// Salvo il DB Sharings
-		dbManager.save("SHARINGS");
-
 		PLog.debug("DB.removeShare", "Richiesto i dati di un file condiviso: id@" + id);
 
 		return share;
@@ -259,12 +257,40 @@ public class DB
 			throw new ParcmanDBErrorException();
 		}
 
-		// Salvo il DB Sharings
-		dbManager.save("SHARINGS");
-
 		PLog.debug("DB.removeShare", "Richiesto i dati di un file condiviso: name@" + name);
 
 		return share;
+	}
+
+	/**
+	* Restituisce la lista Sharings di un utente.
+	*
+	* @param userName Nome utente
+	* @return Vettore di ShareBean contenente la lista dei file condivisi dell'utente
+	* @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	*/
+	public Vector<ShareBean> getSharings(String userName) throws
+		ParcmanDBErrorException
+	{
+		Vector<ShareBean> shares;
+		Object[] args = { userName };
+
+		DBManager dbManager = DBManager.getInstance();
+
+		try
+		{
+			shares = (Vector<ShareBean>) dbManager.call("SHARINGS", "getSharings", args);
+		}
+		catch (InvocationTargetException e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+
+		return shares;
 	}
 
 	/**

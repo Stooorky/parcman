@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sourcefile=(RemoteParcmanClient.java \
+	RemoteParcmanClientUser.java \
 	ParcmanClient.java)
 
 clpath=`pwd`"/../"

@@ -215,6 +215,37 @@ public class DBServer
 	}
 
 	/**
+	* Restituisce la lista Sharings di un utente.
+	*
+	* @param userName Nome utente
+	* @return Vettore di ShareBean contenente la lista dei file condivisi dell'utente
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws ParcmanDBServerUserNotExistRemoteException Utente non presente nel database
+	* @throws RemoteException Eccezione remota
+	*/
+	public Vector<ShareBean> getSharings(String userName) throws
+		ParcmanDBServerErrorRemoteException,
+		ParcmanDBServerUserNotExistRemoteException,
+		RemoteException
+	{
+		try
+		{
+			// Controllo l'esistenza dell'utente
+			db.getUser(userName);
+			Vector<ShareBean> shares = db.getSharings(userName);
+			return shares;
+		}
+		catch(ParcmanDBErrorException e)
+		{
+			throw new ParcmanDBServerErrorRemoteException();
+		}
+		catch(ParcmanDBUserNotExistException e)
+		{
+			throw new ParcmanDBServerUserNotExistRemoteException();
+		}
+	}
+
+	/**
 	* Metodo ping.
 	*
 	* @throws RemoteException Eccezione remota
