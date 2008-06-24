@@ -9,6 +9,7 @@ import plog.*;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
 import pshell.*;
+import database.beans.ShareBean;
 
 /**
  * Mobile server in esecuzione presso il Client.
@@ -34,6 +35,11 @@ public class ParcmanClient
 	*/
 	private static final long serialVersionUID = 4242L;
 
+    /**
+    * Vettore dei file condivisi. 
+    */
+    private Vector<ShareBean> shares;
+
 	/**
 	* Costruttore.
 	*
@@ -44,6 +50,7 @@ public class ParcmanClient
 	{
 		this.parcmanServerStub = parcmanServerStub;
 		this.userName = userName;
+        this.shares = new Vector<ShareBean>();
 	}
 
 	/**
@@ -71,8 +78,8 @@ public class ParcmanClient
 
 		try
 		{
-			parcmanServerStub.getSharings(this, this.userName);
-		}
+			this.shares = parcmanServerStub.getSharings(this, this.userName);
+        }
 		catch(ParcmanServerRequestErrorRemoteException e)
 		{
 			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
@@ -86,7 +93,7 @@ public class ParcmanClient
 
 		System.out.println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
 
-		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
+		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName, this.shares));
 		shell.run();
 	}
 
@@ -143,4 +150,13 @@ public class ParcmanClient
 	{
 		return this.userName;
 	}
+
+    public RemoteParcmanClient get()
+        throws RemoteException
+    {
+        unexportObject(this, true);
+        return this;
+    }
+    
+
 }

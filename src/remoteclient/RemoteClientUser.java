@@ -110,9 +110,9 @@ public class RemoteClientUser
 		{
 			// Faccio la lookup al server remoto di login
 			RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(loginServerAdress);
-			RemoteParcmanClient parcmanServer = (RemoteParcmanClient)loginServer.login(userName, password);
+			RemoteParcmanClient parcmanClient = (RemoteParcmanClient)loginServer.login(userName, password);
 
-			if (parcmanServer == null)
+			if (parcmanClient == null)
 			{
 				System.out.println("Spiacente, nome utente o password errati.");
 				return;	
@@ -123,7 +123,9 @@ public class RemoteClientUser
             System.gc();
 
             // Avvio il MobileServer
-			parcmanServer.startConnection();
+            parcmanClient.startConnection();
+		    //RemoteParcmanClient parcmanClient2 = parcmanClient.get();
+            //parcmanClient2.startConnection();
 		}
 		catch(RemoteException e)
 		{
