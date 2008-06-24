@@ -10,6 +10,7 @@ import plog.*;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
 import database.beans.ShareBean;
+import database.beans.SearchBean;
 
 public class ShellData extends PShellData
 {
@@ -116,38 +117,88 @@ public class ShellData extends PShellData
 	)
 	public void commandShareList (String param)
 	{
-        try
-        {
-            if (shares.size()==0)
-                out.println("Nessun file condiviso.");
-            else
-            {
-                out.println("Lista dei file condivisi:");
-                for (int i=0; i<shares.size(); i++)
-                    this.writeShare(i+1, shares.elementAt(i));
-            }
-        }
-        catch(ArrayIndexOutOfBoundsException e)
-        {
-            return;
-        }
+		try
+		{
+			if (shares.size()==0)
+				out.println("Nessun file condiviso.");
+			else
+			{
+				out.println("Lista dei file condivisi:");
+				for (int i=0; i<shares.size(); i++)
+					this.writeShare(i+1, shares.elementAt(i));
+			}
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			return;
+		}
 	}
 
-    /**
-     * Stampa i dati di un file.
-     *
-     * @param index Indice del file
-     * @param share ShareBean del file
-     */
-    private void writeShare(int index, ShareBean share)
-    {
-        out.println(index + ") " + share.getName() +
-            "\n\tID: " + share.getId() +
-            "\n\tURL: " + share.getUrl() +
-            "\n\tProprietario: " + share.getOwner() +
-            "\n\tHash: " + share.getHash() +
-            "\n\tKeywords: " + share.getKeywordsToString());
-    }
+	/**
+	* Metodo per il comando di shell sharelist.
+	*
+	* @param param Stringa dei parametri per il comando
+	*/
+	@PShellDataAnnotation(
+		method = "commandSearchFile",
+		name = "search",
+		info = "Esegue la ricerca di un file sulla rete parcman",
+		help = "\tEsegue la ricerca di un file sulla rete parcman.\n\tuse: search <keywords>"
+	)
+	public void commandSearchFile (String param)
+	{
+		try
+		{
+			out.print("Inviata la richiesta di ricerca, attendere...");
+			Vector<SearchBean> result = parcmanServerStub.search(this.parcmanClientStub, this.userName, param);
+			out.println("done.");
+
+			if (result.size() == 0)
+			{
+				out.println("La ricerca non ha prodotto risultati.");
+				return;
+			}
+
+			out.println("Risultato della ricerca:");
+			for (int i=0; i<result.size(); i++)
+				this.writeSearch(result.elementAt(i));
+			
+		}
+		catch (RemoteException e)
+		{
+			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			return;
+		}
+	}
+
+	/**
+	* Stampa i dati di un file.
+	*
+	* @param index Indice del file
+	* @param share ShareBean del file
+	*/
+	private void writeShare(int index, ShareBean share)
+	{
+		out.println(index + ") " + share.getName() +
+			"\n\tID: " + share.getId() +
+			"\n\tURL: " + share.getUrl() +
+			"\n\tProprietario: " + share.getOwner() +
+			"\n\tHash: " + share.getHash() +
+			"\n\tKeywords: " + share.getKeywordsToString());
+	}
+
+	/**
+	* Stampa i dati di un SearchBean.
+	*
+	* @param share SearchBean del file
+	*/
+	private void writeSearch(SearchBean search)
+	{
+		out.println("ID:" + search.getId() +
+			" Proprietario: " + search.getOwner() +
+			"\n\tNome: " + search.getName() +
+			" Keywords: " + search.getKeywordsToString());
+	}
 
 	/**
 	* Stampa il prompt della shell.

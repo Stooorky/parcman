@@ -63,6 +63,18 @@ public interface RemoteDBServer
 		RemoteException;
 
 	/**
+	* Esegue una ricerca di file sul database.
+	*
+	* @param keywords Keywords per la ricerca
+	* @return Vettore di SearchBean contenente il risultato della ricerca
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws RemoteException Eccezione remota
+	*/
+	public Vector<SearchBean> searchFiles(String keywords) throws
+		ParcmanDBServerErrorRemoteException,
+		RemoteException;
+
+	/**
 	 * Ping.
 	 *
 	 * @throws RemoteException Eccezione Remota

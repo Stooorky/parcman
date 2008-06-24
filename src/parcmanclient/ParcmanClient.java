@@ -10,6 +10,7 @@ import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
 import pshell.*;
 import database.beans.ShareBean;
+import database.beans.SearchBean;
 
 /**
  * Mobile server in esecuzione presso il Client.

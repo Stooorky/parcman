@@ -246,6 +246,28 @@ public class DBServer
 	}
 
 	/**
+	* Esegue una ricerca di file sul database.
+	*
+	* @param keywords Keywords per la ricerca
+	* @return Vettore di SearchBean contenente il risultato della ricerca
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws RemoteException Eccezione remota
+	*/
+	public Vector<SearchBean> searchFiles(String keywords) throws
+		ParcmanDBServerErrorRemoteException,
+		RemoteException
+	{
+		try
+		{
+			return db.searchFiles(keywords);
+		}
+		catch(Exception e) // Non serve
+		{
+			throw new ParcmanDBServerErrorRemoteException();
+		}
+	}
+
+	/**
 	* Metodo ping.
 	*
 	* @throws RemoteException Eccezione remota

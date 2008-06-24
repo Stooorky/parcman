@@ -7,6 +7,7 @@ import org.xml.sax.helpers.*;
 
 import plog.*;
 import database.beans.ShareBean;
+import database.beans.SearchBean;
 import database.xmlhandlers.ShareContentHandler;
 import database.exceptions.*;
 
@@ -63,12 +64,12 @@ public class DBSharings
 		ps.println("<?xml version=\"1.0\"?>");
 		ps.println("<!DOCTYPE DB_SHARINGS [");
 		ps.println("<!ELEMENT DB_SHARINGS (FILE)*>");
-		ps.println("<!ELEMENT FILE (ID, URL, OWNER, HASH, KEYWORD)>");
+		ps.println("<!ELEMENT FILE (ID, URL, OWNER, HASH, KEYWORDS)>");
 		ps.println("<!ELEMENT ID (#PCDATA)>");
 		ps.println("<!ELEMENT URL (#PCDATA)>");
 		ps.println("<!ELEMENT OWNER (#PCDATA)>");
 		ps.println("<!ELEMENT HASH (#PCDATA)>");
-		ps.println("<!ELEMENT KEYWORD (#PCDATA)>");
+		ps.println("<!ELEMENT KEYWORDS (#PCDATA)>");
 		ps.println("]>");
 
 		// XML
@@ -215,7 +216,6 @@ public class DBSharings
 	*
 	* @param userName Nome utente
 	* @return Vettore di ShareBean contenente la lista dei file condivisi dell'utente
-	* @throws ParcmanDBErrorException Errore interno del database dei file condivisi
 	*/
 	public Vector<ShareBean> getSharings(String userName)
 	{
@@ -228,6 +228,31 @@ public class DBSharings
 			if (s.getOwner().equals(userName))
 			{
 				v.add(s);
+			}
+		}
+
+		return v;
+	}
+
+	/**
+	* Esegue una ricerca di file sul database.
+	* TODO Attualmente viene usata la keywords pura
+	* ma e' bene estrarre da keywords le parole chiave per una ricerca piu' efficace
+	*
+	* @param keywords Keywords per la ricerca
+	* @return Vettore di SearchBean contenente il risultato della ricerca
+	*/
+	public Vector<SearchBean> searchFiles(String keywords)
+	{
+		Vector<SearchBean> v = new Vector<SearchBean>();
+
+		Iterator i = this.sharings.iterator();
+		while (i.hasNext())
+		{
+			ShareBean s = (ShareBean) i.next();
+			if (s.hasKeyword(keywords))
+			{
+				v.add(new SearchBean(s));
 			}
 		}
 

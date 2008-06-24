@@ -14,7 +14,7 @@ import remoteexceptions.*;
  *
  * @author Parcman Tm
  */
-public class RemoteClientUser 
+public class RemoteClientUser
 	implements RemoteClient
 {
 	/**

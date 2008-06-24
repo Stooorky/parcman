@@ -77,7 +77,7 @@ public class ShareContentHandler
 		}
 		else 
 		{
-			throw new SAXException("Elemento non riconosciuto.");
+			throw new SAXException("Elemento non riconosciuto (" + data + ").");
 		}
 	}
 
@@ -165,7 +165,7 @@ public class ShareContentHandler
 		}
 		else 
 		{
-			throw new SAXException("Elemento non riconosciuto.");
+			throw new SAXException("Elemento non riconosciuto (" + localName + ").");
 		}
 	}
 

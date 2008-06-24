@@ -8,6 +8,7 @@ import java.rmi.*;
 import plog.*;
 import remoteexceptions.*;
 import database.beans.ShareBean;
+import database.beans.SearchBean;
 import databaseserver.RemoteDBServer;
 import parcmanclient.RemoteParcmanClient;
 
@@ -232,6 +233,65 @@ public class ParcmanServer
 		catch(ServerNotActiveException e)
 		{
 			PLog.err(e, "ParcmanServer.getSharings", "Errore di rete, ClientHost irraggiungibile.");
+			throw new RemoteException();
+		}
+	}
+
+	/**
+	* Restituisce il risultato di una ricerca sul database.
+	* E' necessario possedere lo stub dell'utente per poter fare questa richiesta.
+	*
+	* @param parcmanClientStub Stub del MobileServer
+	* @param userName Nome utente proprietario della sessione
+	* @param keywords Lista di Keyword per la ricerca
+	* @throws ParcmanServerRequestErrorRemoteException Impossibile esaudire la richiesta
+	* @throws RemoteException Eccezione Remota
+	*/
+	public Vector<SearchBean> search(RemoteParcmanClient parcmanClientStub, String userName, String keywords) throws
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("ParcmanServer.search", "Richiesta nuova ricerca " + userName + "@" + keywords);
+			// Controllo che l'utente sia connesso
+			if (connectUsers.containsKey(userName))
+			{
+				ClientData user = connectUsers.get(userName);
+
+				if (!this.getClientHost().equals(user.getHost()) || !user.getStub().equals(parcmanClientStub))
+				{
+					PLog.debug("ParcmanServer.search", "Richiesta non valida, host " + this.getClientHost());
+					throw new ParcmanServerHackWarningRemoteException
+							("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+				}
+
+				try
+				{
+					Vector<SearchBean> searchList = dBServer.searchFiles(keywords);
+					PLog.debug("ParcmanServer.search", "Ricerca effettuata (" + searchList.size() + " file trovati)");
+					return searchList;
+				}
+				catch (ParcmanDBServerErrorRemoteException e)
+				{
+					PLog.debug("ParcmanServer.search", "Richiesta non esaudita, errore interno del database.");
+					throw new ParcmanServerRequestErrorRemoteException();
+				}
+				catch (RemoteException e)
+				{
+					PLog.debug("ParcmanServer.search", "Richiesta non esaudita, errore interno del database.");
+					throw new ParcmanServerRequestErrorRemoteException();
+				}
+			}
+			else
+			{
+				PLog.debug("ParcmanServer.search", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+			}
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanServer.search", "Errore di rete, ClientHost irraggiungibile.");
 			throw new RemoteException();
 		}
 	}

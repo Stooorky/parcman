@@ -7,6 +7,7 @@ import java.io.*;
 
 import remoteexceptions.*;
 import parcmanclient.RemoteParcmanClient;
+import database.beans.SearchBean;
 import database.beans.ShareBean;
 
 /**
@@ -40,14 +41,6 @@ public interface RemoteParcmanServerUser
 		RemoteException;
 
 	/**
-	* Ping.
-	*
-	* @throws RemoteException Eccezione Remota
-	*/
-	public void ping() throws
-		RemoteException;
-
-	/**
 	* Restituisce la lista file condivisi dell'utente.
 	* E' necessario possedere lo stub dell'utente per poter fare questa richiesta.
 	*
@@ -58,6 +51,28 @@ public interface RemoteParcmanServerUser
 	*/
 	public Vector<ShareBean> getSharings(RemoteParcmanClient parcmanClientStub, String userName) throws
 		ParcmanServerRequestErrorRemoteException,
+		RemoteException;
+
+	/**
+	* Restituisce il risultato di una ricerca sul database.
+	* E' necessario possedere lo stub dell'utente per poter fare questa richiesta.
+	*
+	* @param parcmanClientStub Stub del MobileServer
+	* @param userName Nome utente proprietario della sessione
+	* @param keywords Lista di Keyword per la ricerca
+	* @throws ParcmanServerRequestErrorRemoteException Impossibile esaudire la richiesta
+	* @throws RemoteException Eccezione Remota
+	*/
+	public Vector<SearchBean> search(RemoteParcmanClient parcmanClientStub, String userName, String keywords) throws
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException;
+
+	/**
+	* Ping.
+	*
+	* @throws RemoteException Eccezione Remota
+	*/
+	public void ping() throws
 		RemoteException;
 }
 

@@ -288,6 +288,37 @@ public class DB
 	}
 
 	/**
+	* Esegue una ricerca di file sul database.
+	*
+	* @param keywords Keywords per la ricerca
+	* @return Vettore di SearchBean contenente il risultato della ricerca
+	* @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	*/
+	public Vector<SearchBean> searchFiles(String keywords) throws
+		ParcmanDBErrorException
+	{
+		Vector<SearchBean> searchList;
+		Object[] args = { keywords };
+
+		DBManager dbManager = DBManager.getInstance();
+
+		try
+		{
+			searchList = (Vector<SearchBean>) dbManager.call("SHARINGS", "searchFiles", args);
+		}
+		catch (InvocationTargetException e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+
+		return searchList;
+	}
+
+	/**
 	 * Rimuove un file condiviso dalla lista file.
 	 *
 	 * @param id Id del file
