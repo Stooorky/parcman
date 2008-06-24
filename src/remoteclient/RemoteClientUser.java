@@ -124,8 +124,6 @@ public class RemoteClientUser
 
             // Avvio il MobileServer
             parcmanClient.startConnection();
-		    //RemoteParcmanClient parcmanClient2 = parcmanClient.get();
-            //parcmanClient2.startConnection();
 		}
 		catch(RemoteException e)
 		{

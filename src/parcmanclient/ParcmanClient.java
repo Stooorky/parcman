@@ -150,13 +150,4 @@ public class ParcmanClient
 	{
 		return this.userName;
 	}
-
-    public RemoteParcmanClient get()
-        throws RemoteException
-    {
-        unexportObject(this, true);
-        return this;
-    }
-    
-
 }

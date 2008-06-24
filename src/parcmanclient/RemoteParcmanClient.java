@@ -23,9 +23,6 @@ public interface RemoteParcmanClient
 	public void startConnection() throws
 		RemoteException;
 
-
-    public RemoteParcmanClient get() throws RemoteException;
-
 	/**
 	 * Ping.
 	 *
