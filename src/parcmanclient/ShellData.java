@@ -27,30 +27,24 @@ public class ShellData extends PShellData
 	/**
 	* Stub del ParcmanClient.
 	*/
-	private RemoteParcmanClient parcmanClientStub;
-
-    /**
-    * Vettore dei file condivisi. 
-    */
-    private Vector<ShareBean> shares;
+	private ParcmanClient parcmanClient;
 
 	/**
 	* Costruttore.
 	*
 	* @param parcmanServerStub Stub del MainServer della rete Parcman
+    * @param parcmanClient Referenza al ParcmanClient
 	* @param userName Nome utente
 	*/
 	public ShellData(RemoteParcmanServerUser parcmanServerStub,
-            RemoteParcmanClient parcmanClientStub,
-            String userName,
-            Vector<ShareBean> shares)
+            ParcmanClient parcmanClient,
+            String userName)
 	{
 		super(System.out, new BufferedReader(new InputStreamReader(System.in)));
 
 		this.parcmanServerStub = parcmanServerStub;
-		this.parcmanClientStub = parcmanClientStub;
+		this.parcmanClient = parcmanClient;
 		this.userName = userName;
-        this.shares = shares;
 	}
 
 	/**
@@ -92,16 +86,7 @@ public class ShellData extends PShellData
 	public void commandExit (String param)
 	{
 		this.parcmanServerStub = null;
-
-		try
-		{
-			this.parcmanClientStub.exit();
-		}
-		catch (RemoteException e)
-		{
-			PLog.err(e, "ShellData.commandPing", "Impossibile eseguire la disconnessione dalla rete.");
-			return;
-		}
+		this.parcmanClient.exit();
 	}
 
 	/**
@@ -117,6 +102,8 @@ public class ShellData extends PShellData
 	)
 	public void commandShareList (String param)
 	{
+        Vector<ShareBean> shares = this.parcmanClient.getShares();
+
 		try
 		{
 			if (shares.size()==0)
@@ -150,7 +137,7 @@ public class ShellData extends PShellData
 		try
 		{
 			out.print("Inviata la richiesta di ricerca, attendere...");
-			Vector<SearchBean> result = parcmanServerStub.search(this.parcmanClientStub, this.userName, param);
+			Vector<SearchBean> result = parcmanServerStub.search(this.parcmanClient.getStub(), this.userName, param);
 			out.println("done.");
 
 			if (result.size() == 0)
@@ -169,6 +156,24 @@ public class ShellData extends PShellData
 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 			return;
 		}
+	}
+
+	/**
+	* Metodo per il comando di scancollection
+	*
+	* @param param Stringa dei parametri per il comando
+	*/
+	@PShellDataAnnotation(
+		method = "commandScanCollection",
+		name = "scancollection",
+		info = "Esegue la scansione della cartella dei file condivisi",
+		help = "\tEsegue la scansione della cartella dei file condivisi.\n\tuse: scancollection"
+	)
+	public void commandScanCollection (String param)
+	{
+        out.println("Avvio la scansione della Directory dei file condivisi...");
+        this.parcmanClient.scanSharingDirectory();
+        out.print("Done.");
 	}
 
 	/**

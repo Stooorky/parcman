@@ -1,5 +1,5 @@
-pkill rmid
-pkill rmid
+rmid -stop
+rm -rf $HOME/Desktop/log-rmid/*
 sleep 1
 
 rmid -log $HOME/Desktop/log-rmid/ \

@@ -104,7 +104,7 @@ public class ParcmanClient
 		this.scanSharingDirectory();
 
 		// Lancio la shell
-		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName, this.shares));
+		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
 		shell.run();
 	}
 
@@ -131,8 +131,7 @@ public class ParcmanClient
 	*
 	* @throws RemoteException Eccezione remota
 	*/
-	public void exit() throws
-		RemoteException
+	public void exit()
 	{
 		PLog.debug("ParcmanClient.exit", "Disconnessione in corso.");
 
@@ -179,24 +178,26 @@ public class ParcmanClient
 		{
 			System.out.println("Attenzione. La direcotory " + this.getSharingDirectory() + " non puo' essere creata.");
 
-			try
-			{
-				this.exit();
-			}
-			catch (RemoteException e)
-			{
-				System.out.println("Disconnessione fallita. (force exit)");
-				System.exit(1);
-			}
+			this.exit();
 		}
 	}
 
-	private void scanSharingDirectory()
+	public void scanSharingDirectory()
 	{
 		File mainDir = new File(this.getSharingDirectory());
 
 		scanSharingDirectory(mainDir);
 	}
+
+    public Vector<ShareBean> getShares()
+    {
+        return this.shares;
+    }
+
+    public RemoteParcmanClient getStub()
+    {
+        return (RemoteParcmanClient)this;
+    }
 
 	private void scanSharingDirectory(File dir)
 	{
