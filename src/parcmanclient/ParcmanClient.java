@@ -47,6 +47,11 @@ public class ParcmanClient
 	private static final String SHARE_DIRECTORY = "/ParcmanShare";
 
 	/**
+	* TimerTask per la scansione della directory condivisa.
+	*/
+	private TimerTask scanDirectoryTimerTask;
+
+	/**
 	* Costruttore.
 	*
 	* @throws RemoteException Eccezione remota
@@ -101,29 +106,16 @@ public class ParcmanClient
 
 		// Fixo e ricontrollo la directory di condivisione.
 		this.fixSharingDirectory();
-		this.scanSharingDirectory();
+
+		Timer timer = new Timer();
+		this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
+		// La scansione della directory condivisa viene effettuata ogni 60 secondi
+		// con una attesa iniziale di 10 secondi.
+		timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
 
 		// Lancio la shell
 		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
 		shell.run();
-	}
-
-	/**
-	* Metodo ping.
-	*
-	* @throws RemoteException Eccezione remota
-	*/
-	public void ping() throws
-		RemoteException
-	{
-		try
-		{
-			PLog.debug("ParcmanClient.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
-		}
-		catch(ServerNotActiveException e)
-		{
-			PLog.err(e, "ParcmanClient.ping", "Errore di rete, ClientHost irraggiungibile.");
-		}
 	}
 
 	/**
@@ -161,11 +153,20 @@ public class ParcmanClient
 		return this.userName;
 	}
 
+	/**
+	* Restituisce il PATH assoluto della directory condivisa.
+	*
+	* @return PATH assoluto della directory condivisa
+	*/
 	private String getSharingDirectory()
 	{
 		return System.getenv("HOME") + SHARE_DIRECTORY;
 	}
 
+	/**
+	* Controlla l'esistenza/Crea la directory condivisa.
+	* In caso non possa essere creata la directory condivisa chiama la routine this.exit().
+	*/
 	private void fixSharingDirectory()
 	{
 		File mainDir = new File(this.getSharingDirectory());
@@ -182,23 +183,51 @@ public class ParcmanClient
 		}
 	}
 
+	/**
+	* Esegue la scansione ricorsiva della directory dei file condivisi.
+	*/
 	public void scanSharingDirectory()
 	{
 		File mainDir = new File(this.getSharingDirectory());
 
-		scanSharingDirectory(mainDir);
+		this.scanSharingDirectory(mainDir);
 	}
 
+	/**
+	* Restituisce la lista dei file condivisi.
+	*
+	* @return Vector di ShareBean contenente la lista dei file condivisi
+	*/
     public Vector<ShareBean> getShares()
     {
         return this.shares;
     }
 
+	/**
+	* Restituisce il TimerTask dello scan della directory condivisa.
+	*
+	* @return TimerTask scansione della directory condivisa
+	*/
+	public TimerTask getScanDirectoryTimerTask()
+	{
+		return this.scanDirectoryTimerTask;
+	}
+
+	/**
+	* Restituisce lo stub del ParcmanClient.
+	*
+	* @return ParcmanClient Stub dell'oggetto locale
+	*/
     public RemoteParcmanClient getStub()
     {
         return (RemoteParcmanClient)this;
     }
 
+	/**
+	* Esegue la scansione ricorsiva della directory dei file condivisi.
+	*
+	* @param dir File directory condivisa
+	*/
 	private void scanSharingDirectory(File dir)
 	{
 		File[] content = dir.listFiles();
@@ -206,9 +235,59 @@ public class ParcmanClient
 		for (int i=0; i<content.length; i++)
 		{
 			if (content[i].isDirectory())
-				scanSharingDirectory(content[i]);
+				this.scanSharingDirectory(content[i]);
 			else if (content[i].isFile())
 				System.out.println(content[i].getPath());
 		}
+	}
+
+	/**
+	* Metodo ping.
+	*
+	* @throws RemoteException Eccezione remota
+	*/
+	public void ping() throws
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("ParcmanClient.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanClient.ping", "Errore di rete, ClientHost irraggiungibile.");
+		}
+	}
+}
+
+
+/**
+* TimerTask per la scansione della directory condivisa.
+*
+* @author Parcman Tm
+*/
+class ScanDirectoryTimerTask extends TimerTask
+{
+	/**
+	* Puntatore al ParcmanClient locale.
+	*/
+	ParcmanClient parcmanClient;
+
+	/**
+	* Costruttore.
+	*
+	* @param parcmanClient ParcmanClient locale
+	*/
+	public ScanDirectoryTimerTask(ParcmanClient parcmanClient)
+	{
+		this.parcmanClient = parcmanClient;
+	}
+
+	/**
+	* Metodo run.
+	*/
+	public void run()
+	{
+        this.parcmanClient.scanSharingDirectory();
 	}
 }

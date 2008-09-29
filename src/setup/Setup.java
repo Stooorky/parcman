@@ -13,6 +13,7 @@ import parcmanserver.*;
 import plog.*;
 import remoteexceptions.*;
 import loginserver.*;
+import indexingserver.*;
 
 /**
  * Setup globale lato server.
@@ -54,6 +55,10 @@ public final class Setup
 			PLog.debug("Setup", "Creo un'istanza del ParcmanServer.");
 			// Creo il ParcmanServer
 			RemoteParcmanServer parcmanServer = new ParcmanServer(dBServer);
+
+			PLog.debug("Setup", "Creo un'istanza dell'IndexingServer.");
+			// Creo l'IndexingServer
+			RemoteIndexingServer indexingServer = new IndexingServer(dBServer, parcmanServer);
 
 			PLog.debug("Setup", "Creo e registro il primo gruppo di attivazione.");
 			// Creo e registro il primo gruppo di attivazione

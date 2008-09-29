@@ -25,7 +25,7 @@ public class ShellData extends PShellData
 	private String userName;
 
 	/**
-	* Stub del ParcmanClient.
+	* ParcmanClient.
 	*/
 	private ParcmanClient parcmanClient;
 
@@ -203,6 +203,23 @@ public class ShellData extends PShellData
 			" Proprietario: " + search.getOwner() +
 			"\n\tNome: " + search.getName() +
 			" Keywords: " + search.getKeywordsToString());
+	}
+
+	/**
+	* Metodo per il comando scaninfo
+	*
+	* @param param Stringa dei parametri per il comando
+	*/
+	@PShellDataAnnotation(
+		method = "commandScanInfo",
+		name = "scaninfo",
+		info = "Restituisce informazioni sullo scan dei file condivisi",
+		help = "\tRestituisce informazioni sullo scan dei file condivisi.\n\tuse: scaninfo"
+	)
+	public void commandScanInfo (String param)
+	{
+		Date date = new Date(this.parcmanClient.getScanDirectoryTimerTask().scheduledExecutionTime());
+        out.println("Ultima scansione effettuata: " + date.toString());
 	}
 
 	/**
