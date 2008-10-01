@@ -77,8 +77,27 @@ public class ParcmanServer
 
 		if (this.connectUsers.containsKey(username))
 		{
-			PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " e' gia' connesso alla rete.");
-			throw new ParcmanServerUserIsConnectRemoteException("Utente gia' connesso alla rete");
+			RemoteParcmanClient parcmanClient = (RemoteParcmanClient) this.connectUsers.get(username).getStub();
+
+			boolean pingOk = true;
+			try
+			{
+				parcmanClient.ping();
+				pingOk=true;
+
+			}
+			catch (Exception e)
+			{
+				pingOk = false;
+				PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " non e' piu' raggiungibile... disconnessione effettuata.");
+				this.connectUsers.remove(username);
+			}
+	
+			if (pingOk)
+			{
+				PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " e' gia' connesso alla rete.");
+				throw new ParcmanServerUserIsConnectRemoteException("Utente gia' connesso alla rete");
+			}
 		}
 
 		// aggiungo l'host in attemp

@@ -130,11 +130,12 @@ public class RemoteClientUser
 			if (e.getCause() instanceof ParcmanServerUserIsConnectRemoteException)
 				System.out.println("Richiesta di login rifiutata, l'utente e' gia' connesso alla rete.");
 			else
-				System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");
+				System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (0)");
+			e.printStackTrace();
 		}
 		catch(Exception e)
 		{
-			System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");
+			System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (1)");
 		}
 	}
 
