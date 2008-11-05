@@ -243,20 +243,32 @@ public class DBSharings
 	* @return Vettore di SearchBean contenente il risultato della ricerca
 	*/
 	public Vector<SearchBean> searchFiles(String keywords)
+		throws ParcmanDBShareNotExistException
 	{
 		Vector<SearchBean> v = new Vector<SearchBean>();
-
-		Iterator i = this.sharings.iterator();
-		while (i.hasNext())
+		String keySeparator = keywords.indexOf(",") != -1 ? "," : " ";
+		String[] keyArray = keywords.split(keySeparator);
+		for (int i=0; i<keyArray.length; i++)
 		{
-			ShareBean s = (ShareBean) i.next();
-			if (s.hasKeyword(keywords))
-			{
+			ShareBean s = getShareByTag(keyArray[i]);
+			if (s != null)
 				v.add(new SearchBean(s));
-			}
 		}
 
 		return v;
+		//Vector<SearchBean> v = new Vector<SearchBean>();
+
+		//Iterator i = this.sharings.iterator();
+		//while (i.hasNext())
+		//{
+		//	ShareBean s = (ShareBean) i.next();
+		//	if (s.hasKeyword(keywords))
+		//	{
+		//		v.add(new SearchBean(s));
+		//	}
+		//}
+
+		//return v;
 	}
 
 	/**

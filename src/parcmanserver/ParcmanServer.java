@@ -176,7 +176,9 @@ public class ParcmanServer
 				}
 
 				//Rimuovo l'utente dalla lista dei Client Connessi
+				user.setStub(null);
 				connectUsers.remove(userName);
+				
 
 				PLog.debug("ParcmanServer.disconnect", "Rimosso " + userName + " (" + this.getClientHost() + ") dalla lista dei Client Connessi.");
 			}
