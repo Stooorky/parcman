@@ -60,7 +60,7 @@ public class LoginServer
 		IOException,
 		ClassNotFoundException
 	{
-		super(id, 35000);
+		super(id, 38990);
 
 		// Ricavo l'ActivationSystem
 		ActivationSystem actSystem = ActivationGroup.getSystem();

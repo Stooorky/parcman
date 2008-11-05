@@ -130,6 +130,7 @@ public class ParcmanClient
 		try
 		{
 			this.parcmanServerStub.disconnect(this, this.userName);
+            this.parcmanServerStub = null;
 		}
 		catch(RemoteException e)
 		{
@@ -291,3 +292,4 @@ class ScanDirectoryTimerTask extends TimerTask
         this.parcmanClient.scanSharingDirectory();
 	}
 }
+
