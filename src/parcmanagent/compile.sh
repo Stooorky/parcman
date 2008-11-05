@@ -1,7 +1,8 @@
 #!/bin/bash
 
 sourcefile=(RemoteParcmanAgent.java \
-        ParcmanAgent.java)
+        ParcmanAgent.java \
+        SharingList.java)
 clpath=`pwd`"/../"
 dom="[PARCMANAGENT]"
 
