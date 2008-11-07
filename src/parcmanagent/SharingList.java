@@ -99,7 +99,7 @@ class ShareElement
      * ShareBean del nuovo file condiviso.
      */
     private ShareBean shareBean;
- 
+
     /**
      * Ritorna i dati del nuovo file condiviso.
      *

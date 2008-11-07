@@ -20,6 +20,11 @@ public class ClientData
     private RemoteParcmanClient stub;
 
     /**
+     * Versione della lista dei file condivisi.
+     */
+    private int version;
+
+    /**
      * Costruttore.
      *
      * @param host Indirizzo IP o URL
@@ -29,6 +34,7 @@ public class ClientData
     {
         this.host = host;
         this.stub = stub;
+        this.version = 0;
     }
 
     /**
@@ -62,6 +68,17 @@ public class ClientData
     }
 
     /**
+     * Ritorna la versione della lista dei file condivisi.
+     *
+     * @return Versione
+     */
+    public int getVersion()
+    {
+        return this.version;
+    }
+
+
+    /**
      * Assegna lo Stub.
      *
      * @param stub Stub del ParcmanClient
@@ -69,6 +86,16 @@ public class ClientData
     public void setStub(RemoteParcmanClient stub)
     {
         this.stub = stub;
+    }
+
+    /**
+     * Assegna la versione della lista dei file condivisi.
+     *
+     * @param version Versione
+     */
+    public void setVersion(int version)
+    {
+        this.version = version;
     }
 }
 

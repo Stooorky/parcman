@@ -259,6 +259,49 @@ public class ParcmanServer
 	}
 
 	/**
+	* Restituisce il numero di versione dei file condivisi dell'utente.
+	* E' necessario possedere lo stub dell'utente per poter fare questa richiesta.
+	*
+	* @param parcmanClientStub Stub del MobileServer
+	* @param userName Nome utente proprietario della sessione
+	* @throws ParcmanServerRequestErrorRemoteException Impossibile esaudire la richiesta
+	* @throws RemoteException Eccezione Remota
+	*/
+	public int getSharingsVersion(RemoteParcmanClient parcmanClientStub, String userName) throws
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException
+	{
+		try
+		{
+			PLog.debug("ParcmanServer.getSharings", "Rishiesta codice di versione della lista dei file condivisi dell'utente " + userName + ".");
+			// Controllo che l'utente sia connesso
+			if (connectUsers.containsKey(userName))
+			{
+				ClientData user = connectUsers.get(userName);
+
+				if (!this.getClientHost().equals(user.getHost()) || !user.getStub().equals(parcmanClientStub))
+				{
+					PLog.debug("ParcmanServer.getSharings", "Richiesta non valida, host " + this.getClientHost());
+					throw new ParcmanServerHackWarningRemoteException
+							("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+				}
+
+			    return user.getVersion();
+			}
+			else
+			{
+				PLog.debug("ParcmanServer.getSharings", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+			}
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanServer.getSharings", "Errore di rete, ClientHost irraggiungibile.");
+			throw new RemoteException();
+		}
+	}
+
+	/**
 	* Restituisce il risultato di una ricerca sul database.
 	* E' necessario possedere lo stub dell'utente per poter fare questa richiesta.
 	*

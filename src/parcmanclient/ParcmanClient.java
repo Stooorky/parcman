@@ -11,6 +11,7 @@ import parcmanserver.RemoteParcmanServerUser;
 import pshell.*;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
+import parcmanagent.SharingList;
 
 /**
  * Mobile server in esecuzione presso il Client.
@@ -22,28 +23,43 @@ public class ParcmanClient
 	implements RemoteParcmanClient, Serializable
 {
 	/**
-	* Stub del ParcmanServer.
-	*/
+	 * Stub del ParcmanServer.
+	 */
 	private RemoteParcmanServerUser parcmanServerStub;
 
 	/**
-	* Nome utente.
-	*/
+	 * Nome utente.
+	 */
 	private String userName;
 
 	/**
-	* SerialVersionUID.
-	*/
+	 * SerialVersionUID.
+	 */
 	private static final long serialVersionUID = 4242L;
 
     /**
-    * Vettore dei file condivisi. 
-    */
+     * Vettore dei file condivisi sul server. 
+     */
     private Vector<ShareBean> shares;
 
+    /**
+     * Versione dei file condivisi sul server. 
+     */
+    private int versionServer;
+
+    /**
+     * Vettore dei file condivisi sull'agente.
+     */
+    private Vector<ShareBean> sharesAgent;
+
+    /**
+     * Versione dei file condivisi sull'agente. 
+     */
+    private int versionAgent;
+
 	/**
-	* Directory di condivisione.
-	*/
+	 * Directory di condivisione.
+	 */
 	private static final String SHARE_DIRECTORY = "/ParcmanShare";
 
 	/**
@@ -90,6 +106,9 @@ public class ParcmanClient
 		try
 		{
 			this.shares = parcmanServerStub.getSharings(this, this.userName);
+            this.versionServer = parcmanServerStub.getSharingsVersion(this, this.userName);
+            this.sharesAgent = null;
+            this.versionAgent = -1;
         }
 		catch(ParcmanServerRequestErrorRemoteException e)
 		{

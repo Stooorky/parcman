@@ -54,6 +54,19 @@ public interface RemoteParcmanServerUser
 		RemoteException;
 
 	/**
+	* Restituisce il numero di versione dei file condivisi dell'utente.
+	* E' necessario possedere lo stub dell'utente per poter fare questa richiesta.
+	*
+	* @param parcmanClientStub Stub del MobileServer
+	* @param userName Nome utente proprietario della sessione
+	* @throws ParcmanServerRequestErrorRemoteException Impossibile esaudire la richiesta
+	* @throws RemoteException Eccezione Remota
+	*/
+	public int getSharingsVersion(RemoteParcmanClient parcmanClientStub, String userName) throws
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException;
+
+	/**
 	* Restituisce il risultato di una ricerca sul database.
 	* E' necessario possedere lo stub dell'utente per poter fare questa richiesta.
 	*
