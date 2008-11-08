@@ -22,7 +22,7 @@ public class ShareBean
 	/**
 	 * Id file condiviso.
 	 */
-	private String id;
+	private int id;
 
 	/**
 	 * url del file condiviso.
@@ -55,10 +55,10 @@ public class ShareBean
 	/**
 	 * Assegna l'id del file.
 	 *
-	 * @param id La stringa che rappresenta l'id del file che lo identifica
+	 * @param id L'intero che rappresenta l'id del file che lo identifica
 	 * sul client del proprietario.
 	 */
-	public void setId(String id)
+	public void setId(int id)
 	{
 		this.id = id;
 	}
@@ -66,10 +66,9 @@ public class ShareBean
 	/**
 	 * Restituisce l'id del file.
 	 *
-	 * @return Una stringa contenente l'id del file che lo indentifica
-	 * sul client del proprietario.
+	 * @return L'id del file che lo indentifica sul client del proprietario.
 	 */
-	public String getId()
+	public int getId()
 	{
 		return this.id;
 	}
