@@ -1,8 +1,8 @@
 #!/bin/bash
 
-rm -Rf doc 2> /dev/null
+rm -Rf ../doc/api 2> /dev/null
 
-javadoc -d doc clientbootstrap/*.java \
+javadoc -d ../doc/api clientbootstrap/*.java \
 plog/*.java \
 remoteclient/*.java \
 database/*.java \
