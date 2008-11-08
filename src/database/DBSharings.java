@@ -167,18 +167,18 @@ public class DBSharings
 	 * In caso contrario viene sollevata l'eccezione
 	 * ParcmanDBShareNotExistException
 	 *
-	 * @param id Stringa che rappresenta un id
+	 * @param id int che rappresenta un id
 	 * @return ShareBean che contiene i dati del file
 	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
-	public ShareBean getShareById(String id)
+	public ShareBean getShareById(int id)
 		throws ParcmanDBShareNotExistException
 	{
 		Iterator i = this.sharings.iterator();
 		while (i.hasNext())
 		{
 			ShareBean s = (ShareBean) i.next();
-			if (s.getId().equals(id))
+			if (s.getId() == id)
 			{
 				return s;
 			}
@@ -300,14 +300,14 @@ public class DBSharings
 	 * @param id id del file condiviso
 	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
-	public void removeShare(String id)
+	public void removeShare(int id)
 		throws ParcmanDBShareNotExistException
 	{
 		Iterator i = this.sharings.iterator();
 		while (i.hasNext())
 		{
 			ShareBean s = (ShareBean) i.next();
-			if (s.getId().equals(id)) 
+			if (s.getId() == id) 
 			{
 				this.sharings.remove(s);
 				return;

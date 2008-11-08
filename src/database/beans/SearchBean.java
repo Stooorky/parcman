@@ -21,7 +21,7 @@ public class SearchBean
 	/**
 	 * Id file condiviso.
 	 */
-	private String id;
+	private int id;
 
 	/**
 	 * Owner del file condiviso.
@@ -57,7 +57,7 @@ public class SearchBean
 	 * @return Una stringa contenente l'id del file che lo indentifica
 	 * sul client del proprietario.
 	 */
-	public String getId()
+	public int getId()
 	{
 		return this.id;
 	}

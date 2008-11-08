@@ -99,10 +99,10 @@ public class TestDBSharings
 		throws Exception
 	{
 		System.out.println("\tgetShareById: ");
-		String id = "id2";
+		int id = 2;
 		ShareBean bean = db.getShareById(id);
 		assertNotNull(bean);
-		assertEquals(bean.getId(), id);
+		assertEquals(2, bean.getId());
 	}
 
 	@Test

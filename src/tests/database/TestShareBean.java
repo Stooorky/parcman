@@ -54,9 +54,9 @@ public class TestShareBean
 		throws Exception
 	{
 		System.out.println("\tid: ");
-		assertNull(bean0.getId());
-		bean0.setId("id");
-		assertEquals(bean0.getId(), "id");
+		assertEquals(0, bean0.getId());
+		bean0.setId(1);
+		assertEquals(1, bean0.getId());
 	}
 
 	@Test 
