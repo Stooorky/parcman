@@ -242,9 +242,7 @@ public class ShareBean
 
 	private boolean equalsId(ShareBean bean)
 	{
-		if (this.id == null && bean.getId() == null)
-			return true;
-		if (this.id.equals(bean.getId()))
+		if (this.id == bean.getId())
 			return true;
 		return false;
 	}
@@ -295,8 +293,6 @@ public class ShareBean
 	 */
 	public boolean validate()
 	{
-		if (this.id == null || this.id.equals(""))
-			return false;
 		if (this.url == null)
 			return false;
 		if (this.hash == null || this.hash.equals(""))

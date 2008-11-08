@@ -131,8 +131,6 @@ public class SearchBean
 	 */
 	public boolean validate()
 	{
-		if (this.id == null || this.id.equals(""))
-			return false;
 		if (this.name == null || this.name.equals(""))
 			return false;
 		if (this.owner == null || this.owner.equals(""))

@@ -11,7 +11,7 @@ import parcmanserver.RemoteParcmanServerUser;
 import pshell.*;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
-import parcmanagent.SharingList;
+import parcmanagent.UpdateList;
 
 /**
  * Mobile server in esecuzione presso il Client.

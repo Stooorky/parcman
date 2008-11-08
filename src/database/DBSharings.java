@@ -279,18 +279,18 @@ public class DBSharings
 	 * @param index indice dello share
 	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
-	public void removeShare(int index)
-		throws ParcmanDBShareNotExistException
-	{
-		try 
-		{
-			this.sharings.removeElementAt(index);
-		}
-		catch (ArrayIndexOutOfBoundsException e)
-		{
-			throw new ParcmanDBShareNotExistException(e);
-		}
-	}
+	//public void removeShare(int index)
+	//	throws ParcmanDBShareNotExistException
+	//{
+	//	try 
+	//	{
+	//		this.sharings.removeElementAt(index);
+	//	}
+	//	catch (ArrayIndexOutOfBoundsException e)
+	//	{
+	//		throw new ParcmanDBShareNotExistException(e);
+	//	}
+	//}
 
 	/**
 	 * Rimuove un file condiviso attraverso il suo id.

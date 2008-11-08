@@ -14,7 +14,7 @@ import database.beans.ShareBean;
  *
  * @author Parcman Tm
  */
-public class SharingList
+public class UpdateList
 	implements Serializable
 {
 	/**
@@ -35,7 +35,7 @@ public class SharingList
     /**
      * Costruttore.
      */
-    public SharingList()
+    public UpdateList()
     {
         shareList = new Vector<ShareElement>();
     }

@@ -2,7 +2,7 @@
 
 sourcefile=(RemoteParcmanAgent.java \
         ParcmanAgent.java \
-        SharingList.java)
+        UpdateList.java)
 clpath=`pwd`"/../"
 dom="[PARCMANAGENT]"
 
