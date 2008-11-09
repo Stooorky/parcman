@@ -29,7 +29,7 @@ extends RemoteParcmanServerUser, Remote, Serializable
 	 * Restituisce la lista degli utenti connessi al sistema
 	 * E' necessario possedere lo stub del server di indicizzazione per poter fare questa richiesta.
 	 *
-	 * @param RemoteIndexingServer Stub del server di indicizzazione
+	 * @param ris Stub del server di indicizzazione
 	 * @throws remoteexception eccezione remota
 	 */
 	public Map<String, ClientData>  getConnectedUsers(RemoteIndexingServer ris) throws 

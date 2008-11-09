@@ -195,7 +195,7 @@ public class ShellData extends PShellData
 	/**
 	* Stampa i dati di un SearchBean.
 	*
-	* @param share SearchBean del file
+	* @param search SearchBean del file
 	*/
 	private void writeSearch(SearchBean search)
 	{

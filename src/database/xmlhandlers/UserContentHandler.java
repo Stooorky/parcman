@@ -42,8 +42,7 @@ public class UserContentHandler
 	/**
 	 * Costruttore.
 	 * 
-	 * @param Lista degli utenti registrati.
-	 * @return Istanza dell'oggetto UserContentHandler.
+	 * @param users Lista degli utenti registrati.
 	 */
 	public UserContentHandler(Vector<UserBean> users)
 	{

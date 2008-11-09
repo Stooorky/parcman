@@ -61,7 +61,7 @@ public class IndexingServer
 	/**
 	* Costruttore.
 	*
-	* @param dbServer Stub del DBServer
+	* @param dBServer Stub del DBServer
 	* @param parcmanServer Stub del server centrale
 	* @throws RemoteException Eccezione remota
 	*/

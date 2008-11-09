@@ -83,7 +83,7 @@ implements Serializable
 	/**
 	 * Assegna lo Stub del ParcmanServer.
 	 *
-	 * @param parcmanServer Stub del ParcmanServer
+	 * @param parcmanServerStub Stub del ParcmanServer
 	 */
 	public void setParcmanServerStub(RemoteParcmanServer parcmanServerStub)
 	{

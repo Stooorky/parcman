@@ -59,7 +59,7 @@ public class UpdateList
     /**
      * Setta la lista dei nuovi file condivisi.
      *
-     * @param shareList Lista dei nuovi file condivisi
+     * @param addList Lista dei nuovi file condivisi
      */
     public void setAddList(Vector<ShareBean> addList)
     {

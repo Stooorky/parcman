@@ -47,7 +47,7 @@ public class ParcmanServer
 	/**
 	* Costruttore.
 	*
-	* @param dbServer Stub del DBServer
+	* @param dBServer Stub del DBServer
 	* @throws RemoteException Eccezione remota
 	*/
 	public ParcmanServer(RemoteDBServer dBServer) throws
@@ -309,7 +309,7 @@ public class ParcmanServer
 	* Restituisce la lista degli utenti connessi al sistema
 	* E' necessario possedere lo stub del server di indicizzazione per poter fare questa richiesta.
 	*
-	* @param RemoteIndexingServer Stub del server di indicizzazione
+	* @param ris Stub del server di indicizzazione
 	*/
 	public Map<String, ClientData> getConnectedUsers(RemoteIndexingServer ris)
 		throws RemoteException
