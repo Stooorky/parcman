@@ -120,5 +120,21 @@ public class UpdateList
     {
         this.version = version;
     }
+
+    public String toString()
+    {
+        String str;
+        
+        str = "AddList:";
+        for (int i=0; i<addList.size(); i++)
+            str += "\n " + addList.get(i).getName() + " Id: " + addList.get(i).getId();
+
+        str += "\nRemoveList:";
+
+        for (int i=0; i<removeList.size(); i++)
+            str += " " + removeList.get(i).intValue();
+
+        return str;
+    }
 }
 

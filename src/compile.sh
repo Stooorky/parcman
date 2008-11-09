@@ -20,7 +20,7 @@ privilege=("privilege")
 pshell=("pshell")
 parcmanagent=("parcmanagent")
 
-all=("parcmanclient clientbootstrap plog remoteclient tests database remoteexceptions databaseserver loginserver parcmanserver pshell parcmanclient privilege setup indexingserver parcmanagent")
+all=("parcmanclient clientbootstrap plog remoteclient tests database remoteexceptions databaseserver loginserver parcmanserver pshell privilege setup indexingserver parcmanagent")
 
 
 

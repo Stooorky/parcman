@@ -119,9 +119,10 @@ public class ParcmanClient
 		{
 			this.sharesServer = parcmanServerStub.getSharings(this, this.userName);
             this.versionServer = parcmanServerStub.getSharingsVersion(this, this.userName);
+            this.sharesAgentUpdateList = null;
+            this.sharesServerUpdateList = null;
             this.sharesAgent = null;
             this.versionAgent = -1;
-
         }
 		catch(ParcmanServerRequestErrorRemoteException e)
 		{
@@ -227,16 +228,67 @@ public class ParcmanClient
 		this.scanSharingDirectory(mainDir, newList);
 
         // Costruisco le UpdateList
-        for (int i = 0; i < newList.size(); i++)
+        boolean find;
+        UpdateList updateServer = new UpdateList();
+        UpdateList updateAgent = new UpdateList();
+
+        for (int i=0; i<newList.size(); i++)
         {
-            
+            find = false;
+            for (int x=0; x<sharesServer.size(); x++)
+                if (newList.get(i).getUrl().equals(sharesServer.get(x).getUrl()))
+                    find = true;
+
+            if (!find)
+                updateServer.addShareBean(newList.get(i));
+
+            if (sharesAgent != null)
+            {
+                find = false;
+                for (int x=0; x<sharesAgent.size(); x++)
+                    if (newList.get(i).getUrl().equals(sharesAgent.get(x).getUrl()))
+                        find = true;
+
+                if (!find)
+                    updateAgent.addShareBean(newList.get(i));
+            }
+        }
+
+        for (int i=0; i<sharesServer.size(); i++)
+        {
+            find = false;
+            for (int x=0; x<newList.size(); x++)
+                if (newList.get(x).getUrl().equals(sharesServer.get(i).getUrl()))
+                    find = true;
+
+            if (!find)
+                updateServer.addRemovableId(sharesServer.get(i).getId());
         }
 
         if (sharesAgent != null)
         {
-            
+            for (int i=0; i<sharesAgent.size(); i++)
+            {
+                find = false;
+                for (int x=0; x<newList.size(); x++)
+                    if (newList.get(x).getUrl().equals(sharesAgent.get(i).getUrl()))
+                        find = true;
+
+                if (!find)
+                    updateAgent.addRemovableId(sharesAgent.get(i).getId());
+            }
         }
-	}
+
+        if (sharesAgent  != null)
+            this.sharesAgentUpdateList = updateAgent;
+        this.sharesServerUpdateList = updateServer;
+
+/*
+        if (sharesAgentUpdateList != null)
+            System.out.println(this.sharesAgentUpdateList.toString());
+        System.out.println(this.sharesServerUpdateList.toString());
+        sharesServer = newList; */
+    }
 
 	/**
 	* Restituisce la lista dei file condivisi.
@@ -311,7 +363,6 @@ public class ParcmanClient
 				this.scanSharingDirectory(content[i], newList);
 			else if (content[i].isFile())
             {
-				System.out.println(content[i].getPath());
                 ShareBean newFile = new ShareBean();
                 newFile.setId(this.getNewId(newList));
                 
@@ -328,7 +379,7 @@ public class ParcmanClient
                 newFile.setOwner(this.userName);
                 newFile.addKeyword(content[i].getName());
                 newList.add(newFile);
-                System.out.println(newList.toString());
+                // System.out.println(newList.toString());
             }
 		}
 	}
