@@ -11,6 +11,7 @@ databaseserver/*.java \
 indexingserver/*.java \
 loginserver/*.java \
 parcmanagent/*.java \
+parcmanagent/exceptions/*.java \
 parcmanclient/*.java \
 parcmanserver/*.java \
 plog/*.java \
