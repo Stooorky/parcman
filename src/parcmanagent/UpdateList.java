@@ -7,6 +7,7 @@ import java.util.*;
 import java.io.*;
 
 import database.beans.ShareBean;
+import parcmanagent.exceptions.*;
 
 /**
  * Contenitore dati per il trasporto dei nuovi file condivisi
@@ -124,6 +125,47 @@ public class UpdateList
     public void setVersion(int version)
     {
         this.version = version;
+    }
+
+    /**
+     * Restituisce l'update della lista passata come argomento.
+     *
+     * @param list Vector di ShareBean da aggiornare
+     * @return Vector di ShareBean aggiornato
+     * @throws UpdateSharesListErrorException Impossibile eseguire
+     * l'update
+     */
+    public Vector<ShareBean> getUpdatedSharesList(Vector<ShareBean> list)
+        throws UpdateSharesListErrorException 
+    {
+        Vector<ShareBean> newList = new Vector<ShareBean>(list);
+
+        boolean found;
+        for (int i=0; i < removeList.size(); i++)
+        {
+            found = false;
+
+            for (int x=0; x < newList.size(); x++)
+            {
+                if (newList.get(x).getId() == removeList.get(i).intValue())
+                {
+                    found = true;
+                    newList.remove(x);
+                }
+            }
+
+            if (!found)
+                throw new UpdateSharesListErrorException();
+        }
+
+        newList.addAll(addList);
+
+        for (int i=0; i < newList.size()-1; i++)
+            for (int x=i+1; x < newList.size(); x++)
+                if (newList.get(i).getId() == newList.get(x).getId())
+                    throw new UpdateSharesListErrorException();
+
+        return newList;
     }
 
     /**
