@@ -11,6 +11,11 @@ public class ParcmanDBShareNotExistException
 	/**
 	 * Serial Version UID per il check di compatibilita'.
 	 */
+	private static final long serialVersionUID = 42L;
+
+	/**
+	 * Serial Version UID per il check di compatibilita'.
+	 */
 
 	/** 
 	 * Costruttore.

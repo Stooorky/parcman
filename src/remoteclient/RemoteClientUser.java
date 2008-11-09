@@ -110,7 +110,7 @@ public class RemoteClientUser
 		{
 			// Faccio la lookup al server remoto di login
 			RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(loginServerAdress);
-			RemoteParcmanClient parcmanClient = (RemoteParcmanClient)loginServer.login(userName, password);
+			RemoteParcmanClient parcmanClient = loginServer.login(userName, password);
 
 			if (parcmanClient == null)
 			{

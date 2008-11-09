@@ -3,6 +3,7 @@ package database.xmlhandlers;
 import java.util.*;
 import java.net.MalformedURLException;
 import org.xml.sax.*;
+import java.lang.NumberFormatException;
 
 import database.beans.*;
 import plog.*;
@@ -44,7 +45,17 @@ public class ShareContentHandler
 		String data = new String(ch, start, length);
 		if (this.inId)
 		{
-			this.bean.setId(data);
+			int id = 0;
+			try
+			{
+				id = new Integer(new String(ch, start, length)).intValue();
+			} 
+			catch (NumberFormatException e) 
+			{
+				throw new SAXException(e);
+			}
+
+			this.bean.setId(id);
 			this.inId = false;
 		}
 		else if (this.inUrl)

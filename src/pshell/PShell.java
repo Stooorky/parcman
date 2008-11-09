@@ -207,7 +207,7 @@ public class PShell
 
 			Object[] args = {arg};
 			// TODO Warning in fase di compilazione. Controllare se e' evitabile.
-			Method m = shellClass.getMethod(getMethodCommand(c), argsTypes);
+			Method m = shellClass.getMethod(method, argsTypes);
 			m.invoke(shell, args);
 			return;
 

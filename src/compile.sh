@@ -28,7 +28,7 @@ all=("parcmanclient clientbootstrap plog remoteclient tests database remoteexcep
 # PRIVATE
 #################
 # Funzione di compilazione package
-compile()
+main_compile()
 {
 	for var in $@
 	do
@@ -39,7 +39,7 @@ compile()
 }
 
 # Funzione di clean package
-clean()
+main_clean()
 {
 	for var in $@
 	do
@@ -49,14 +49,35 @@ clean()
 	done
 }
 
+# Funzione di compiazione con Xlint per i warning
+main_xlint()
+{
+	for var in $@
+	do
+		cd $var 
+		bash compile.sh xlint
+		cd ..
+	done
+}
 
-if [ "$1" = "clean" ]; then
+if [ "$1" == "clean" ]; then
 	# Clean
 	for pkg in $pkglist
 	do
 		if [ "$2" = "$pkg" ]; then
 			echo -e "\033[31;1mClean $pkg...\033[0m"
-			clean ${!pkg}
+			main_clean ${!pkg}
+			echo -e "\033[31;1mDone.\033[0m"
+			exit
+		fi
+	done
+elif [ "$1" == "xlint" ]; then
+	# Xlint 
+	for pkg in $pkglist
+	do
+		if [ "$2" = "$pkg" ]; then
+			echo -e "\033[31;1mCompile $pkg with -Xlint flag...\033[0m"
+			main_xlint ${!pkg}
 			echo -e "\033[31;1mDone.\033[0m"
 			exit
 		fi
@@ -67,7 +88,7 @@ else
 	do
 		if [ "$1" = "$pkg" ]; then
 			echo -e "\033[31;1mCompile $pkg...\033[0m"
-			compile ${!pkg}
+			main_compile ${!pkg}
 			echo -e "\033[31;1mDone.\033[0m"
 			exit
 		fi
@@ -81,4 +102,5 @@ echo "      For Clean:"
 echo "       $0 clean <${pkglist}>"
 echo "      For Compile:"
 echo "       $0 <${pkglist}>"
-
+echo "      For Compile with -Xlint flag:"
+echo "       $0 <${pkglist}>"
