@@ -4,11 +4,15 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
 import java.rmi.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import plog.*;
 import remoteexceptions.*;
 import databaseserver.RemoteDBServer;
 import parcmanserver.RemoteParcmanServer;
+import parcmanagent.ParcmanAgent;
+import parcmanserver.ClientData;
 
 /**
  * Server di indicizzazione.
@@ -33,6 +37,26 @@ public class IndexingServer
 	* Stub del ParcmanServer.
 	*/
 	private RemoteParcmanServer parcmanServer;
+
+	/**
+	 * Periodo che indica ogni quanti millisecondi il server invia una
+	 * nuova squadra di agenti <tt>ParcmanAgent</tt>.
+	 */
+	private int agentTeamLaunchPeriod = 1000 * 60; // imposto il periodo a 1 minuto.
+
+	/**
+	 * Intero che indica con quanto ritardo (espresso in
+	 * millisecondi) il server invia una nuova squadra di agenti 
+	 * <tt>ParcmanAgent</tt> ad ogni periodo <tt>agentTeamLaunchPeriod</tt>
+	 */
+	private int agentTeamLaunchDelay = 1000 * 60; // imposto il ritardo a 1 minuto.
+
+	/**
+	 * Double che rappresenta la percentuale di <tt>agentTeamLaunchPeriod</tt> con
+	 * cui si calcola il tempo di validita` di ogni
+	 * <tt>ParcmanAgent</tt>.
+	 */
+	private double agentPeriodLaunchPercent = 0.9;
 
 	/**
 	* Costruttore.
@@ -63,6 +87,110 @@ public class IndexingServer
 		catch(ServerNotActiveException e)
 		{
 			PLog.err(e, "IndexingServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+		}
+	}
+
+	/**
+	 * Metodo che implementa l'algoritmo per scegliere quanti gruppi
+	 * di indirizzi ip generare.
+	 *
+	 * @param numConnectedClient Numero dei client connessi.
+	 * @return restituisce un int che rappresenta il numero di
+	 * ParcmanAgent da creare.
+	 */
+	protected int ipSplitRate(int numConnectedClient)
+	{
+		// so stupid
+		return numConnectedClient / 10;
+	}
+	
+	/**
+	 * Inizia l'indicizzazione dei client. L'indicizzazione e`
+	 * gestita attraverso un <tt>Timer</tt>. I parametri di
+	 * gestione del Timer sono:
+	 * <ul>
+	 * 	<li><tt>agentTeamLaunchPeriod</tt>: il server invia una
+	 * 	squadra di agent ogni <tt>agentTeamLaunchPeriod</tt>
+	 * 	millisecondi.</li>
+	 * 	<li><tt>agentTeamLaunchDelay</tt>: il server aspetta
+	 * 	<tt>agentTeamLaunchDelay</tt> millisecondi prima di
+	 * 	lanciare una nuova squadra di agent.</li>
+	 * 	<li><tt>agentPeriodLaunchPercent</tt>: il server imposta
+	 * 	la validita` di ogni agent lanciato al
+	 * 	<tt>agentPeriodLaunchPercent</tt> per cento.</li>
+	 * </ul>
+	 *
+	 */
+	public void run()
+		throws RemoteException
+	{
+		Map<String, ClientData> connectedClients = new HashMap<String, ClientData>(this.parcmanServer.getConnectedUsers(this));
+		int numberOfAgent = ipSplitRate(connectedClients.size());
+
+		Timer timer = new Timer();
+		timer.schedule(new SendAgentTimerTask(this, numberOfAgent, agentTeamLaunchPeriod, agentPeriodLaunchPercent, connectedClients), agentTeamLaunchDelay, agentTeamLaunchPeriod);
+	}
+}
+
+
+class SendAgentTimerTask 
+extends TimerTask
+{
+	private RemoteIndexingServer indexingServer;
+	private int numberOfAgent;
+	private int agentTeamLaunchPeriod;
+	private double agentPeriodLaunchPercent;
+	private Map<String, ClientData> connectedClients;
+
+	public SendAgentTimerTask(RemoteIndexingServer is, int numberOfAgenti, int agentTeamLaunchPeriod, double agentPeriodLaunchPercent, Map<String, ClientData> connectedClients)
+	{
+		this.indexingServer = is;
+		this.numberOfAgent = numberOfAgent;	
+		this.agentTeamLaunchPeriod = agentTeamLaunchPeriod;
+		this.agentPeriodLaunchPercent = agentPeriodLaunchPercent;
+		this.connectedClients = connectedClients;
+	}
+
+	public void run() 
+	{
+		int interval = this.numberOfAgent;
+		int last = 0;
+		while (this.numberOfAgent != 0)
+		{
+			long validity = (long) (System.currentTimeMillis() + this.agentTeamLaunchPeriod * this.agentPeriodLaunchPercent);
+			Vector<ClientData> clients = new Vector<ClientData>(
+				Arrays.asList(
+					(ClientData[]) (Arrays.copyOfRange(
+							this.connectedClients.values().toArray(), 
+							last, 
+							interval)
+						)
+					)
+				);
+
+			ParcmanAgent rpa = null;
+			try 
+			{
+				rpa = new ParcmanAgent(this.indexingServer, validity, clients); 
+			} 
+			catch (RemoteException e)
+			{
+				PLog.err(e, "SendAgentTimerTask.run", "Non e` possibile creare il ParcmanAgent.");
+				continue;
+			}
+			try
+			{
+				rpa.unexportObject(rpa, true);
+			}
+			catch (NoSuchObjectException e)
+			{
+				PLog.err(e, "SendAgentTimerTask.run", "Non e` possibile de-esportare il ParcmanAgent.");
+			}
+
+			// RemoteParcmanAgentClient rpac = ... lookup ...
+			// rpac.go();
+
+			this.numberOfAgent--;
 		}
 	}
 }

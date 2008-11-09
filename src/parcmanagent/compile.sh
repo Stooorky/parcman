@@ -1,6 +1,7 @@
 #!/bin/bash
 
-sourcefile=(RemoteParcmanAgent.java \
+sourcefile=(RemoteParcmanAgentServer.java \
+	RemoteParcmanAgentClient.java \
         ParcmanAgent.java \
         UpdateList.java)
 clpath=`pwd`"/../"

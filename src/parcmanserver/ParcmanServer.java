@@ -10,6 +10,7 @@ import remoteexceptions.*;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
 import databaseserver.RemoteDBServer;
+import indexingserver.RemoteIndexingServer;
 import parcmanclient.RemoteParcmanClient;
 
 /**
@@ -104,6 +105,7 @@ public class ParcmanServer
 		attempUsers.put(username, host);
 		PLog.debug("ParcmanServer.connectAttemp", "Aggiunto l'utente " + username + " (" + host + ") nella lista di attemp.");
 	}
+
 
 	/**
 	* Esegue la connessione di un nuovo RemoteParcmanClient alla rete Parcman.
@@ -264,6 +266,8 @@ public class ParcmanServer
 	*
 	* @param parcmanClientStub Stub del MobileServer
 	* @param userName Nome utente proprietario della sessione
+	* @return intero che rappresenta il numero di versione della
+	* lista dei file condivisi.
 	* @throws ParcmanServerRequestErrorRemoteException Impossibile esaudire la richiesta
 	* @throws RemoteException Eccezione Remota
 	*/
@@ -299,6 +303,18 @@ public class ParcmanServer
 			PLog.err(e, "ParcmanServer.getSharings", "Errore di rete, ClientHost irraggiungibile.");
 			throw new RemoteException();
 		}
+	}
+
+	/**
+	* Restituisce la lista degli utenti connessi al sistema
+	* E' necessario possedere lo stub del server di indicizzazione per poter fare questa richiesta.
+	*
+	* @param RemoteIndexingServer Stub del server di indicizzazione
+	*/
+	public Map<String, ClientData> getConnectedUsers(RemoteIndexingServer ris)
+		throws RemoteException
+	{
+		return this.connectUsers;
 	}
 
 	/**
