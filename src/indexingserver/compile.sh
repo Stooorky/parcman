@@ -1,7 +1,8 @@
 #!/bin/bash
 
 sourcefile=(RemoteIndexingServer.java \
-	IndexingServer.java)
+	IndexingServer.java \
+    RemoteIndexingServerAgent.java)
 
 clpath=`pwd`"/../"
 dom="[INDEXINGSERVER]"
