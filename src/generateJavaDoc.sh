@@ -2,7 +2,7 @@
 
 rm -Rf ../doc/api 2> /dev/null
 
-javadoc -d ../doc/api clientbootstrap/*.java \
+javadoc -private -d ../doc/api clientbootstrap/*.java \
 plog/*.java \
 remoteclient/*.java \
 database/*.java \
