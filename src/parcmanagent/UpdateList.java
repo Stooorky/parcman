@@ -76,6 +76,11 @@ public class UpdateList
         this.addList.add(bean);
     }
 
+    /**
+     * Aggiunge un nuovo ID alla lista degli ID dei file da rimuovere.
+     *
+     * @param id Id di un file condiviso
+     */
     public void addRemovableId(int id)
     {
         this.removeList.add(new Integer(id));
@@ -121,6 +126,11 @@ public class UpdateList
         this.version = version;
     }
 
+    /**
+     * Restituisce una stringa rappresentante l'oggetto.
+     *
+     * @return String rappresentante l'oggetto
+     */
     public String toString()
     {
         String str;

@@ -283,7 +283,7 @@ public class ParcmanClient
             this.sharesAgentUpdateList = updateAgent;
         this.sharesServerUpdateList = updateServer;
 
-/*
+        /*
         if (sharesAgentUpdateList != null)
             System.out.println(this.sharesAgentUpdateList.toString());
         System.out.println(this.sharesServerUpdateList.toString());
