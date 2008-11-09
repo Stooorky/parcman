@@ -3,16 +3,18 @@
 rm -Rf ../doc/api 2> /dev/null
 
 javadoc -private -d ../doc/api clientbootstrap/*.java \
-plog/*.java \
-remoteclient/*.java \
 database/*.java \
 database/beans/*.java \
 database/exceptions/*.java \
 database/xmlhandlers/*.java \
 databaseserver/*.java \
-remoteexceptions/*.java \
+indexingserver/*.java \
 loginserver/*.java \
+parcmanagent/*.java \
 parcmanclient/*.java \
 parcmanserver/*.java \
-indexingserver/*.java \
-pshell/*.java
+plog/*.java \
+privilege/*.java \
+pshell/*.java \
+remoteclient/*.java \
+remoteexceptions/*.java
