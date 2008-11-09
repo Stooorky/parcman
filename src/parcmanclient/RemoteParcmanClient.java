@@ -13,7 +13,7 @@ import remoteexceptions.*;
  * @author Parcman Tm
  */
 public interface RemoteParcmanClient
-	extends RemoteParcmanClientUser
+	extends RemoteParcmanClientUser, RemoteParcmanClientAgent, Remote, Serializable
 {
 	/**
 	 * Lancia la connessione alla rete Parcman.

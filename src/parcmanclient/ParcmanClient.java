@@ -280,7 +280,11 @@ public class ParcmanClient
         }
 
         if (sharesAgent  != null)
+        {
+            updateAgent.setVersion(this.versionAgent+1);
             this.sharesAgentUpdateList = updateAgent;
+        }
+        updateAgent.setVersion(this.versionAgent);
         this.sharesServerUpdateList = updateServer;
 
         /*
@@ -318,6 +322,36 @@ public class ParcmanClient
     public RemoteParcmanClient getStub()
     {
         return (RemoteParcmanClient)this;
+    }
+
+    /**
+     * Restituisce la lista di Update a partire dalla versione.
+     *
+     * @param version Versione della SharingList
+     * @return UpdateList per la versione data
+     * @throws RemoteException Eccezione remota
+     */
+    public UpdateList getUpdateList(int version) throws
+        RemoteException
+    {
+        if (version != versionServer && version != versionAgent)
+        {
+            PLog.debug("ParcmanClient.getUpdateList", "Codice di versione errato (" + version + ")");
+            this.exit();
+            return null;
+        }
+
+        if (version == versionServer)
+        {
+            return this.sharesServerUpdateList;
+        }
+
+        if (version == versionAgent)
+        {
+            return this.sharesAgentUpdateList;
+        }
+
+        return null;
     }
 
     private int getNewId(Vector<ShareBean> newList)
@@ -434,4 +468,4 @@ class ScanDirectoryTimerTask extends TimerTask
         this.parcmanClient.scanSharingDirectory();
 	}
 }
-/* LOL */
+
