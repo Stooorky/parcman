@@ -85,6 +85,17 @@ public class ShareBean
 	}
 
 	/**
+	 * Assegna la URL del file.
+	 *
+	 * @param url URL del file.
+	 */
+	public void setUrl(URL url)
+		throws MalformedURLException
+	{
+		this.url = url;
+	}
+
+	/**
 	 * Restituisce la URL del file.
 	 *
 	 * @return Una stringa rappresentante su URL del file sul client.

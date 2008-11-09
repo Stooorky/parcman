@@ -4,6 +4,7 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
 import java.io.*;
+import java.net.*;
 
 import plog.*;
 import remoteexceptions.*;
@@ -40,7 +41,7 @@ public class ParcmanClient
     /**
      * Vettore dei file condivisi sul server. 
      */
-    private Vector<ShareBean> shares;
+    private Vector<ShareBean> sharesServer;
 
     /**
      * Versione dei file condivisi sul server. 
@@ -56,6 +57,16 @@ public class ParcmanClient
      * Versione dei file condivisi sull'agente. 
      */
     private int versionAgent;
+
+    /**
+     * UpdateList per sharesServer.
+     */
+    private UpdateList sharesServerUpdateList;
+
+    /**
+     * UpdateList per sharesAgent.
+     */
+    private UpdateList sharesAgentUpdateList;
 
 	/**
 	 * Directory di condivisione.
@@ -77,7 +88,8 @@ public class ParcmanClient
 	{
 		this.parcmanServerStub = parcmanServerStub;
 		this.userName = userName;
-        this.shares = new Vector<ShareBean>();
+        this.sharesServer = new Vector<ShareBean>();
+        this.sharesAgent = new Vector<ShareBean>();
 	}
 
 	/**
@@ -105,10 +117,11 @@ public class ParcmanClient
 
 		try
 		{
-			this.shares = parcmanServerStub.getSharings(this, this.userName);
+			this.sharesServer = parcmanServerStub.getSharings(this, this.userName);
             this.versionServer = parcmanServerStub.getSharingsVersion(this, this.userName);
             this.sharesAgent = null;
             this.versionAgent = -1;
+
         }
 		catch(ParcmanServerRequestErrorRemoteException e)
 		{
@@ -191,7 +204,7 @@ public class ParcmanClient
 	{
 		File mainDir = new File(this.getSharingDirectory());
 
-		PLog.debug("fixSharingDirectory", "Fix della directory dei file condivisi " + this.getSharingDirectory());
+		PLog.debug("ParcmanClient.fixSharingDirectory", "Fix della directory dei file condivisi " + this.getSharingDirectory());
 
 		mainDir.mkdirs();
 	
@@ -209,8 +222,20 @@ public class ParcmanClient
 	public void scanSharingDirectory()
 	{
 		File mainDir = new File(this.getSharingDirectory());
+        Vector<ShareBean> newList = new Vector<ShareBean>();
 
-		this.scanSharingDirectory(mainDir);
+		this.scanSharingDirectory(mainDir, newList);
+
+        // Costruisco le UpdateList
+        for (int i = 0; i < newList.size(); i++)
+        {
+            
+        }
+
+        if (sharesAgent != null)
+        {
+            
+        }
 	}
 
 	/**
@@ -220,7 +245,7 @@ public class ParcmanClient
 	*/
     public Vector<ShareBean> getShares()
     {
-        return this.shares;
+        return this.sharesServer;
     }
 
 	/**
@@ -243,21 +268,68 @@ public class ParcmanClient
         return (RemoteParcmanClient)this;
     }
 
+    private int getNewId(Vector<ShareBean> newList)
+    {
+        Vector<Integer> ids = new Vector<Integer>();
+        
+        for (int i=0; i<newList.size(); i++)
+            ids.add(new Integer(newList.get(i).getId()));
+        
+        for (int i=0; i<sharesServer.size(); i++)
+            ids.add(new Integer(sharesServer.get(i).getId()));
+
+        if (sharesAgent != null)
+            for (int i=0; i<sharesAgent.size(); i++)
+                ids.add(new Integer(sharesAgent.get(i).getId()));
+
+        Collections.sort(ids);
+
+        if (ids.size() == 0 || ids.get(0).intValue() != 0)
+            return 0;
+
+        for (int i=1; i<ids.size(); i++)
+            if (ids.get(i).intValue() != ids.get(i-1).intValue() &&
+                ids.get(i).intValue() != ids.get(i-1).intValue()+1)
+                return ids.get(i-1).intValue()+1;
+
+        return ids.get(ids.size()-1).intValue()+1;
+    }
+
 	/**
 	* Esegue la scansione ricorsiva della directory dei file condivisi.
 	*
 	* @param dir File directory condivisa
+    * @param newList Lista dei nuovi file aggiunti
 	*/
-	private void scanSharingDirectory(File dir)
+	private void scanSharingDirectory(File dir, Vector<ShareBean> newList)
 	{
 		File[] content = dir.listFiles();
 
 		for (int i=0; i<content.length; i++)
 		{
 			if (content[i].isDirectory())
-				this.scanSharingDirectory(content[i]);
+				this.scanSharingDirectory(content[i], newList);
 			else if (content[i].isFile())
+            {
 				System.out.println(content[i].getPath());
+                ShareBean newFile = new ShareBean();
+                newFile.setId(this.getNewId(newList));
+                
+                try
+                {
+                    newFile.setUrl(content[i].toURI().toURL());
+                }
+                catch (MalformedURLException e)
+                {
+                    PLog.debug("ParcmanClient.scanSharingDirectory", "URL del file " + content[i].getPath() + " errata");
+                    continue;
+                }
+
+                newFile.setOwner(this.userName);
+                newFile.addKeyword(content[i].getName());
+                newList.add(newFile);
+                System.out.println(newList.toString());
+            }
 		}
 	}
 

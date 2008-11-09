@@ -23,21 +23,27 @@ public class UpdateList
 	private static final long serialVersionUID = 42L;
 
     /**
-     * Lista nuovi file condivisi.
+     * Lista dei file da aggiungere alla condivisione.
      */
-    private Vector<ShareElement> shareList;
+    private Vector<ShareBean> addList;
 
     /**
-     * Stringa di versione.
+     * Lista dei file da eliminare dalla condivisione.
      */
-    private String version;
+    private Vector<Integer> removeList;
+
+    /**
+     * Versione della lista.
+     */
+    private int version;
 
     /**
      * Costruttore.
      */
     public UpdateList()
     {
-        shareList = new Vector<ShareElement>();
+        addList = new Vector<ShareBean>();
+        removeList = new Vector<Integer>();
     }
 
     /**
@@ -45,9 +51,9 @@ public class UpdateList
      *
      * @return Lista dei nuovi file condivisi
      */
-    public Vector<ShareElement> getShareList()
+    public Vector<ShareBean> getAddList()
     {
-        return this.shareList;
+        return this.addList;
     }
 
     /**
@@ -55,69 +61,64 @@ public class UpdateList
      *
      * @param shareList Lista dei nuovi file condivisi
      */
-    public void setShareList(Vector<ShareElement> shareList)
+    public void setAddList(Vector<ShareBean> addList)
     {
-        this.shareList = shareList;
+        this.addList = addList;
     }
 
     /**
-     * Ritorna la stringa di versione.
+     * Aggiunge un nuovo ShareBean
      *
-     * @return stringa di versione
+     * @param bean ShareBean
      */
-    public String getVersion()
+    public void addShareBean(ShareBean bean)
+    {
+        this.addList.add(bean);
+    }
+
+    public void addRemovableId(int id)
+    {
+        this.removeList.add(new Integer(id));
+    }
+
+    /**
+     * Ritorna la lista dei file da eliminare dalla condivisione.
+     *
+     * @return Lista dei file da eliminare
+     */
+    public Vector<Integer> getRemoveList()
+    {
+        return this.removeList;
+    }
+
+    /**
+     * Setta la lista dei file da eliminare dalla condivisione.
+     *
+     * @param removeList Vector dei file da eliminare
+     */
+    public void setRemoveList(Vector<Integer> removeList)
+    {
+        this.removeList = removeList;
+    }
+
+    /**
+     * Ritorna la versione.
+     *
+     * @return versione
+     */
+    public int getVersion()
     {
         return this.version;
     }
 
     /**
-     * Setta la stringa di versione.
+     * Setta la versione.
      *
-     * @param version Stringa di versione
+     * @param version versione
      */
-    public void setVersion(String version)
+    public void setVersion(int version)
     {
         this.version = version;
-    }
-}
-
-/**
- * Contenitore dati per un nuovo file condiviso.
- *
- * @author Parcman Tm
- */
-class ShareElement
-	implements Serializable
-{
-	/**
-	 * Serial Version UID per il check di compatibilita`.
-	 */
-	private static final long serialVersionUID = 42L;
-
-
-    /**
-     * ShareBean del nuovo file condiviso.
-     */
-    private ShareBean shareBean;
-
-    /**
-     * Ritorna i dati del nuovo file condiviso.
-     *
-     * @return ShareBean del nuovo file condiviso
-     */
-    public ShareBean getShareBean()
-    {
-        return this.shareBean;
-    }
-
-    /**
-     * Setta i dati del nuovo file condiviso.
-     *
-     * @param shareBean ShareBean del file condiviso
-     */
-    public void setShareBean(ShareBean shareBean)
-    {
-        this.shareBean = shareBean;
     }
 }
 
