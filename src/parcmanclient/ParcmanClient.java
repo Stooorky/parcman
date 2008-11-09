@@ -13,6 +13,7 @@ import pshell.*;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
 import parcmanagent.UpdateList;
+import parcmanagent.exceptions.*;
 
 /**
  * Mobile server in esecuzione presso il Client.
@@ -284,7 +285,7 @@ public class ParcmanClient
             updateAgent.setVersion(this.versionAgent+1);
             this.sharesAgentUpdateList = updateAgent;
         }
-        updateAgent.setVersion(this.versionAgent);
+        updateServer.setVersion(this.versionServer+1);
         this.sharesServerUpdateList = updateServer;
 
         /*
@@ -341,14 +342,28 @@ public class ParcmanClient
             return null;
         }
 
-        if (version == versionServer)
+        try
         {
-            return this.sharesServerUpdateList;
+            if (version == versionServer)
+            {
+                this.sharesAgent = this.sharesServerUpdateList.getUpdatedSharesList(this.sharesServer);
+                this.versionAgent = this.sharesServerUpdateList.getVersion();
+                return this.sharesServerUpdateList;
+            }
+            else if (version == versionAgent)
+            {
+                this.sharesAgent = this.sharesAgentUpdateList.getUpdatedSharesList(this.sharesAgent);
+                this.sharesServer = this.sharesAgent;
+                this.versionServer = this.versionAgent;
+                this.versionAgent = this.sharesAgentUpdateList.getVersion();
+                return this.sharesAgentUpdateList;
+            }
         }
-
-        if (version == versionAgent)
+        catch (UpdateSharesListErrorException e)
         {
-            return this.sharesAgentUpdateList;
+            PLog.err(e, "ParcmanClient.getUpdateList", "Errore durante l'avanzamento di versione");
+            this.exit();
+            return null;
         }
 
         return null;
