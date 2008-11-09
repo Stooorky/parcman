@@ -70,6 +70,31 @@ public class IndexingServer
 	{
 		this.dBServer = dBServer;
 		this.parcmanServer = parcmanServer;
+		this.run();
+	}
+
+	/**
+	 * Getter per <tt>agentTeamLaunchPeriod</tt>
+	 */
+	public int getAgentTeamLaunchPeriod()
+	{
+		return this.agentTeamLaunchPeriod;
+	}
+
+	/**
+	 * Getter per <tt>agentTeamLaunchDelay</tt>
+	 */
+	public int getAgentTeamLaunchDelay()
+	{
+		return this.agentTeamLaunchDelay;
+	}
+
+	/**
+	 * Getter per <tt>agentPeriodLaunchPercent</tt>
+	 */
+	public double getAgentPeriodLaunchPercent()
+	{
+		return this.agentPeriodLaunchPercent;
 	}
 
 	/**
@@ -121,14 +146,14 @@ public class IndexingServer
 	 * </ul>
 	 *
 	 */
-	public void run()
-		throws RemoteException
+	private void run() throws 
+		RemoteException
 	{
 		Map<String, ClientData> connectedClients = new HashMap<String, ClientData>(this.parcmanServer.getConnectedUsers(this));
 		int numberOfAgent = ipSplitRate(connectedClients.size());
 
 		Timer timer = new Timer();
-		timer.schedule(new SendAgentTimerTask(this, numberOfAgent, agentTeamLaunchPeriod, agentPeriodLaunchPercent, connectedClients), agentTeamLaunchDelay, agentTeamLaunchPeriod);
+		timer.schedule(new SendAgentTimerTask(this, numberOfAgent, connectedClients), agentTeamLaunchDelay, agentTeamLaunchPeriod);
 	}
 }
 
@@ -136,18 +161,14 @@ public class IndexingServer
 class SendAgentTimerTask 
 extends TimerTask
 {
-	private RemoteIndexingServer indexingServer;
+	private IndexingServer is;
 	private int numberOfAgent;
-	private int agentTeamLaunchPeriod;
-	private double agentPeriodLaunchPercent;
 	private Map<String, ClientData> connectedClients;
 
-	public SendAgentTimerTask(RemoteIndexingServer is, int numberOfAgenti, int agentTeamLaunchPeriod, double agentPeriodLaunchPercent, Map<String, ClientData> connectedClients)
+	public SendAgentTimerTask(IndexingServer is, int numberOfAgenti, Map<String, ClientData> connectedClients)
 	{
-		this.indexingServer = is;
+		this.is = is;
 		this.numberOfAgent = numberOfAgent;	
-		this.agentTeamLaunchPeriod = agentTeamLaunchPeriod;
-		this.agentPeriodLaunchPercent = agentPeriodLaunchPercent;
 		this.connectedClients = connectedClients;
 	}
 
@@ -157,7 +178,7 @@ extends TimerTask
 		int last = 0;
 		while (this.numberOfAgent != 0)
 		{
-			long validity = (long) (System.currentTimeMillis() + this.agentTeamLaunchPeriod * this.agentPeriodLaunchPercent);
+			long validity = (long) (System.currentTimeMillis() + this.is.getAgentTeamLaunchPeriod() * this.is.getAgentPeriodLaunchPercent());
 			Vector<ClientData> clients = new Vector<ClientData>(
 				Arrays.asList(
 					(ClientData[]) (Arrays.copyOfRange(
@@ -171,7 +192,7 @@ extends TimerTask
 			ParcmanAgent rpa = null;
 			try 
 			{
-				rpa = new ParcmanAgent(this.indexingServer, validity, clients); 
+				rpa = new ParcmanAgent(this.is, validity, clients); 
 			} 
 			catch (RemoteException e)
 			{
