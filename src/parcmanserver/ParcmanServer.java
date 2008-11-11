@@ -270,7 +270,7 @@ public class ParcmanServer
 	{
 		try
 		{
-			PLog.debug("ParcmanServer.getSharings", "Rishiesta lista dei file condivisi dell'utente " + userName + ".");
+			PLog.debug("ParcmanServer.getSharings", "Richiesta la lista dei file condivisi dell'utente " + userName + ".");
 			// Controllo che l'utente sia connesso
 			if (connectUsers.containsKey(userName))
 			{
