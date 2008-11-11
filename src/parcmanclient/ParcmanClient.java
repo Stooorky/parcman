@@ -94,6 +94,32 @@ public class ParcmanClient
 	}
 
     /**
+     * Restituisce true se il ParcmanClient ha bisogno di eseguire un
+     * update, cioè l'UpdateList per la versione fornita non e' vuota.
+     *
+     * @param versione Versione della SharingList
+     * @return true se il ParcmanClient ha bisogno di eseguire un update
+     * della lista dei file condivisi
+     * @throws RemoteException Eccezione remota
+     */
+    public boolean haveAnUpdate(int version) throws
+        RemoteException
+    {
+        if (version != versionServer && version != versionAgent)
+        {
+            PLog.debug("ParcmanClient.haveAnUpdate", "Codice di versione errato (" + version + ")");
+            this.exit();
+            return false;
+        }
+
+        if ((version == versionServer && sharesServerUpdateList != null) ||
+            (version == versionAgent && sharesAgentUpdateList != null))
+            return true;            
+        else
+            return false;
+    }
+
+    /**
      * Forza la riconnessione del client.
      *
      * @throws RemoteException Eccezione Remota
@@ -275,9 +301,13 @@ public class ParcmanClient
 
         // Costruisco le UpdateList
         boolean find;
+        boolean modifyServer = false;
+        boolean modifyAgent = false;
         UpdateList updateServer = new UpdateList();
         UpdateList updateAgent = new UpdateList();
 
+        // Aggiungo alle liste di update i file non presenti nelle
+        // sharesList corrispondenti
         for (int i=0; i<newList.size(); i++)
         {
             find = false;
@@ -286,7 +316,10 @@ public class ParcmanClient
                     find = true;
 
             if (!find)
+            {
+                modifyServer = true;
                 updateServer.addShareBean(newList.get(i));
+            }
 
             if (sharesAgent != null)
             {
@@ -296,10 +329,15 @@ public class ParcmanClient
                         find = true;
 
                 if (!find)
+                {
+                    modifyAgent = true;
                     updateAgent.addShareBean(newList.get(i));
+                }
             }
         }
 
+        // Aggiungo alle liste di update i file da eliminare, cioe' non
+        // piu' presenti della cartella ParcmanShare
         for (int i=0; i<sharesServer.size(); i++)
         {
             find = false;
@@ -308,7 +346,10 @@ public class ParcmanClient
                     find = true;
 
             if (!find)
+            {
+                modifyServer = true;
                 updateServer.addRemovableId(sharesServer.get(i).getId());
+            }
         }
 
         if (sharesAgent != null)
@@ -321,17 +362,28 @@ public class ParcmanClient
                         find = true;
 
                 if (!find)
+                {
+                    modifyAgent = true;
                     updateAgent.addRemovableId(sharesAgent.get(i).getId());
+                }
             }
         }
 
-        if (sharesAgent  != null)
+        if (sharesAgent  != null && modifyAgent)
         {
             updateAgent.setVersion(this.versionAgent+1);
             this.sharesAgentUpdateList = updateAgent;
         }
-        updateServer.setVersion(this.versionServer+1);
-        this.sharesServerUpdateList = updateServer;
+        else
+            this.sharesAgentUpdateList = null;
+
+        if (modifyServer)
+        {
+            updateServer.setVersion(this.versionServer+1);
+            this.sharesServerUpdateList = updateServer;
+        }
+        else
+            this.sharesServerUpdateList = null;
 
         /*
         if (sharesAgentUpdateList != null)

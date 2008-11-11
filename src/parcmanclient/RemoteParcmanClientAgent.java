@@ -17,6 +17,18 @@ public interface RemoteParcmanClientAgent
 	extends Remote, Serializable
 {
     /**
+     * Restituisce true se il ParcmanClient ha bisogno di eseguire un
+     * update, cioè l'UpdateList per la versione fornita non e' vuota.
+     *
+     * @param versione Versione della SharingList
+     * @return true se il ParcmanClient ha bisogno di eseguire un update
+     * della lista dei file condivisi
+     * @throws RemoteException Eccezione remota
+     */
+    public boolean haveAnUpdate(int version) throws
+        RemoteException;
+
+    /**
      * Restituisce la lista di Update a partire dalla versione.
      *
      * @param version Versione della SharingList

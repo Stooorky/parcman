@@ -99,7 +99,11 @@ public class IndexingServer
 		return this.agentPeriodLaunchPercent;
 	}
 
-
+    /**
+     * Forza la disconnessione di un utente.
+     *
+     * @param userName Nome utente
+     */
     private void forceUserToReconnect(String userName)
     {
         try
@@ -153,7 +157,7 @@ public class IndexingServer
                     PLog.debug("IndexingServer.sendUpdateLists", "Lista Shares non coerente con i dati utente "
                             + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
                     this.forceUserToReconnect(key.getName());
-                    return;
+                    break;
                 }
 
                 try
@@ -164,25 +168,25 @@ public class IndexingServer
                 {
                     PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile aggiungere il file " + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
                     this.forceUserToReconnect(addShares.get(i).getOwner());
-                    return;
+                    break;
                 }
                 catch (ParcmanDBServerShareExistRemoteException e)
                 {
                     PLog.err(e, "IndexingServer.sendUpdateLists", "File gia' presente nel database " + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
                     this.forceUserToReconnect(addShares.get(i).getOwner());
-                    return;
+                    break;
                 }
                 catch (ParcmanDBServerShareNotValidRemoteException e)
                 {
                     PLog.err(e, "IndexingServer.sendUpdateLists", "ShareBean non valido " + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
                     this.forceUserToReconnect(addShares.get(i).getOwner());
-                    return;
+                    break;
                 }
                 catch (RemoteException e)
                 {
                     PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile aggiungere il file " + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
                     this.forceUserToReconnect(addShares.get(i).getOwner());
-                    return;
+                    break;
                 }
             }
 
@@ -196,19 +200,19 @@ public class IndexingServer
                 {
                     PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile rimuovere il file " + removeShares.get(i).intValue() + "@" + key.getName());
                     this.forceUserToReconnect(key.getName());
-                    return;
+                    break;
                 }
                 catch (ParcmanDBServerShareNotExistRemoteException e)
                 {
                     PLog.err(e, "IndexingServer.sendUpdateLists", "File non presente nel database " + removeShares.get(i).intValue() + "@" + key.getName());
                     this.forceUserToReconnect(key.getName());
-                    return;
+                    break;
                 }
                 catch (RemoteException e)
                 {
                     PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile rimuovere il file " + removeShares.get(i).intValue() + "@" + key.getName());
                     this.forceUserToReconnect(key.getName());
-                    return;
+                    break;
                 }
             }
  
@@ -220,7 +224,7 @@ public class IndexingServer
             {
                 PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile settare la versione della lista di file condivisi " + data.getVersion() + "@" + key.getName());
                 this.forceUserToReconnect(key.getName());
-                return;
+                continue;
             }
         }
     }
