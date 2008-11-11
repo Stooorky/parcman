@@ -74,6 +74,10 @@ Interface RemoteParcmanClient
 Interfaccia remota del ParcmanClient, il ParcmanClient è il vero e proprio client che viene caricato solo quando la verifica delle credenziali è andata a buon fine.
 
 Metodi
+	void reconnect()
+		throws RemoteException
+Forza la riconnessione del client. 
+
 	void startConnection()
 		throws RemoteException
 Metodo che consente di avviare la connessione alla rete Parcman dopo la avvenuta verifica delle credenziali; a questo punto il RemoteClient viene dismesso e 
@@ -99,6 +103,19 @@ Metodi
 	void connectAttemp(String username, String host)
 		throws RemoteException
 Inserisco un nuovo client alla lista dei client in attesa di stabilire una connessione con il server.
+setShareListVersionOfUser
+
+	void setShareListVersionOfUser(java.lang.String username, int version)
+		throws java.rmi.RemoteException
+Setta la versione dei file condivisi di un utente.
+
+	void forceUserToReconnect(java.lang.String username)
+		throws java.rmi.RemoteException
+Forza la riconnessione di un utente.
+
+	Map<java.lang.String,ClientData> getConnectedUsers(RemoteIndexingServer ris)
+		throws java.rmi.RemoteException
+Restituisce la lista degli utenti connessi al sistema E' necessario possedere lo stub del server di indicizzazione per poter fare questa richiesta. 
 -------------------
 Interface RemoteParcmanServerUser
 	public interface RemoteParcmanServerUser extends java.rmi.Remote, java.io.Serializable
@@ -281,6 +298,10 @@ Class ParcmanClient
 Costruttori
 
 Metodi
+	public void reconnect()
+    	throws RemoteException
+Forza la riconnessione del client. 
+
 	public void startConnection()
     	throws RemoteException
 Lancia la connessione alla rete Parcman.
@@ -331,7 +352,13 @@ Costruttore
 		throws RemoteException
 
 Metodi
-connectAttemp
+	public void setShareListVersionOfUser(java.lang.String username, int version)
+		throws RemoteException
+Setta la versione dei file condivisi di un utente.
+
+	public void forceUserToReconnect(java.lang.String userName)
+		throws java.rmi.RemoteException
+Forza la riconnessione di un utente. 
 
 	public void connectAttemp(String username, String host)
 		throws ParcmanServerUserIsConnectRemoteException,
@@ -437,6 +464,10 @@ I dati dell'utente non sono validi.
 Package remoteexceptions
 
 Queste sono le eccezioni remote che gestiscono alcuni problemi che possono insorgere durante il funzionamento di parcman.
+
+IndexingServerRequestAfterTimeOutRemoteException
+	public class IndexingServerRequestAfterTimeOutRemoteException extends java.rmi.RemoteException
+Richiesta inviata oltre il TimeOut. 
 
 ParcmanDBServerErrorRemoteException
 	public class ParcmanDBServerErrorRemoteException extends RemoteException
