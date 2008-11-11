@@ -82,7 +82,7 @@ public class ParcmanServer
     /**
      * Forza la riconnessione di un utente.
      *
-     * @param username Nome utente
+     * @param userName Nome utente
      * @throws RemoteException Eccezione remota
      */
     public void forceUserToReconnect(String userName) throws

@@ -142,7 +142,8 @@ public class DBSharings
 	 * Se il file non e' presente solleva l'eccezione 
 	 * ParcmanDBSharedNotExistException.
 	 *
-	 * @param share Bean Share
+     * @param id Id del file condiviso da eliminare
+	 * @param owner Proprietario del file
 	 * @throws ParcmanDBShareNotExistException Il file specificato non e' presente all'interno del database
 	 */
 	public void removeShare(int id, String owner) throws
