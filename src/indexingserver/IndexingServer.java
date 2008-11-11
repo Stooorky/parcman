@@ -198,6 +198,17 @@ public class IndexingServer
                     return;
                 }
             }
+ 
+            try
+            {
+                parcmanServer.setShareListVersionOfUser(key.getName(), data.getVersion());
+            }
+            catch (RemoteException e)
+            {
+                PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile settare la versione della lista di file condivisi " + data.getVersion() + "@" + key.getName());
+                /* TODO Rinegoziare la connessione con il Client */
+                return;
+            }
         }
     }
 

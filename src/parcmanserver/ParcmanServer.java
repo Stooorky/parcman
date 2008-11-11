@@ -58,6 +58,27 @@ public class ParcmanServer
 		this.attempUsers = new HashMap<String, String>();
 	}
 
+    /**
+     * Setta la versione dei file condivisi di un utente.
+     *
+     * @param username Nome utente
+     * @param version Versione
+     * @throws RemoteException Eccezione remota
+     */
+    public void setShareListVersionOfUser(String username, int version) throws
+        RemoteException
+    {
+		if (this.connectUsers.containsKey(username))
+		{
+			this.connectUsers.get(username).setVersion(version);
+		    PLog.debug("ParcmanServer.setShareListVersionOfUser", "Modificata la versione dei file condivisi dell'utente " + username + " (Versione: " + version + ")");
+            return;
+        }
+
+		PLog.err("ParcmanServer.setShareListVersionOfUser", "Impossibile modificare la versione dei file condivisi dell'utente " + username + " (Versione: " + version + ")");
+    }
+
+
 	/**
 	* Esegue l'aggiunta di un nuovo client alla lista dei tentativi di connessione.
 	*
@@ -78,7 +99,7 @@ public class ParcmanServer
 
 		if (this.connectUsers.containsKey(username))
 		{
-			RemoteParcmanClient parcmanClient = (RemoteParcmanClient) this.connectUsers.get(username).getStub();
+			RemoteParcmanClient parcmanClient = this.connectUsers.get(username).getStub();
 
 			boolean pingOk = true;
 			try
