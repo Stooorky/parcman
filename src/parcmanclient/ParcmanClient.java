@@ -93,6 +93,51 @@ public class ParcmanClient
         this.sharesAgent = new Vector<ShareBean>();
 	}
 
+    /**
+     * Forza la riconnessione del client.
+     *
+     * @throws RemoteException Eccezione Remota
+     */
+    public void reconnect() throws
+        RemoteException
+    {
+		System.out.println("\n\n----- Ricconnessione forzata in corso... -----");
+
+        try
+		{
+			// Spedisco lo stub del ParcmanClient al ParcmanServer
+			parcmanServerStub.connect(this, this.userName);
+		}
+		catch(RemoteException e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println("Autenticazione fallita.");
+			System.exit(0);
+		}
+
+		System.out.println("Invio richiesta file condivisi.\n\n");
+
+		try
+		{
+			this.sharesServer = parcmanServerStub.getSharings(this, this.userName);
+            this.versionServer = parcmanServerStub.getSharingsVersion(this, this.userName);
+            this.sharesAgentUpdateList = null;
+            this.sharesServerUpdateList = null;
+            this.sharesAgent = null;
+            this.versionAgent = -1;
+        }
+		catch(ParcmanServerRequestErrorRemoteException e)
+		{
+			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			System.exit(0);
+		}
+		catch(RemoteException e)
+		{
+			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			System.exit(0);
+		}
+    }
+
 	/**
 	* Lancia la connessione alla rete Parcman.
 	*

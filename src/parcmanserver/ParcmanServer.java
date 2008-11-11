@@ -79,6 +79,43 @@ public class ParcmanServer
     }
 
 
+    /**
+     * Forza la riconnessione di un utente.
+     *
+     * @param username Nome utente
+     * @throws RemoteException Eccezione remota
+     */
+    public void forceUserToReconnect(String userName) throws
+        RemoteException
+    {
+        if (connectUsers.containsKey(userName))
+		{
+            try
+            {
+			    ClientData user = connectUsers.get(userName);
+
+                RemoteParcmanClient client = user.getStub();
+                String host = user.getHost();
+			    connectUsers.remove(userName);
+                this.connectAttemp(userName, host);
+                client.reconnect();
+
+			    PLog.debug("ParcmanServer.forceUserToReconnect", "Riconnessione forzata di " + userName);
+            }
+            catch (RemoteException e)
+            {
+    			PLog.err(e, "ParcmanServer.forceUserToReconnect", "Impossibile forzare la riconnessione di " + userName);
+                return;
+            }
+		}
+		else
+	    {
+			PLog.debug("ParcmanServer.forceUserToReconnect", "Impossibile forzare la riconnessione di " + userName + ", utente non connesso");
+            return;
+		}
+
+    }
+
 	/**
 	* Esegue l'aggiunta di un nuovo client alla lista dei tentativi di connessione.
 	*
@@ -157,6 +194,7 @@ public class ParcmanServer
 
 				// Aggiungo l'utente alla lista connectUsers
 				ClientData user = new ClientData(host, userName, parcmanClientStub);
+                user.setVersion(0);
 				connectUsers.put(userName, user);
 				PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + host + ") alla lista dei client connessi.");
 			}

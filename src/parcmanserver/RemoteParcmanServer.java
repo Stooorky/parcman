@@ -35,6 +35,15 @@ extends RemoteParcmanServerUser, Remote, Serializable
     public void setShareListVersionOfUser(String username, int version) throws
         RemoteException;
 
+    /**
+     * Forza la riconnessione di un utente.
+     *
+     * @param username Nome utente
+     * @throws RemoteException Eccezione remota
+     */
+    public void forceUserToReconnect(String username) throws
+        RemoteException;
+
 	/**
 	 * Restituisce la lista degli utenti connessi al sistema
 	 * E' necessario possedere lo stub del server di indicizzazione per poter fare questa richiesta.

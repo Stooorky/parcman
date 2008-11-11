@@ -7,7 +7,8 @@ sourcefile=(ParcmanDBServerErrorRemoteException.java \
 	ParcmanServerHackWarningRemoteException.java \
 	ParcmanDBServerShareExistRemoteException.java \
 	ParcmanDBServerShareNotValidRemoteException.java \
-	ParcmanServerUserIsConnectRemoteException.java )
+	ParcmanServerUserIsConnectRemoteException.java \
+    IndexingServerRequestAfterTimeOutRemoteException.java )
 
 clpath=`pwd`"/../"
 dom="[REMOTEEXCEPTIONS]"
