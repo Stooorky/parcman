@@ -98,9 +98,8 @@ public class ParcmanServer
                 String host = user.getHost();
 			    connectUsers.remove(userName);
                 this.connectAttemp(userName, host);
-                client.reconnect();
-
 			    PLog.debug("ParcmanServer.forceUserToReconnect", "Riconnessione forzata di " + userName);
+                client.reconnect();
             }
             catch (RemoteException e)
             {
@@ -336,7 +335,7 @@ public class ParcmanServer
 	{
 		try
 		{
-			PLog.debug("ParcmanServer.getSharings", "Rishiesta codice di versione della lista dei file condivisi dell'utente " + userName + ".");
+			PLog.debug("ParcmanServer.getSharings", "Richiesto codice di versione della lista dei file condivisi dell'utente " + userName + ".");
 			// Controllo che l'utente sia connesso
 			if (connectUsers.containsKey(userName))
 			{

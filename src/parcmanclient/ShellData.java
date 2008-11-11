@@ -140,7 +140,7 @@ public class ShellData extends PShellData
 			Vector<SearchBean> result = parcmanServerStub.search(this.parcmanClient.getStub(), this.userName, param);
 			out.println("done.");
 
-			if (result.size() == 0)
+			if (result == null || result.size() == 0)
 			{
 				out.println("La ricerca non ha prodotto risultati.");
 				return;
