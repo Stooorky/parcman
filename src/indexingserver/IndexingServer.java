@@ -76,7 +76,7 @@ public class IndexingServer
 	}
 
 	/**
-	 L* Getter per <tt>agentTeamLaunchPeriod</tt>
+	 * Getter per <tt>agentTeamLaunchPeriod</tt>
 	 */
 	public int getAgentTeamLaunchPeriod()
 	{

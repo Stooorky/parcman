@@ -2,10 +2,17 @@ PARCMAN PROJECT
 
 
 INTRODUZIONE A PARCMAN PROJECT
-PARCMAN Project, si propone come un software per realizzare una rete “peer-to-peer” per la condivisione di file tra utenti.
 
+L'idea alla base di Parcman è di realizzare un software di file-sharing sfruttando le tecnologie messe a disposizione da Java e la sua estensione Java RMI.
+Il progetto si divide essenzialmente in 3 componenti principali:
+	*	il client, il software che l'utente deve avere per accedere alla rete di Parcman e condividere files 
+	*	i server, si occupando di gestire il login dei client, gestire la lista di files condivisi e la comunicazione tra client per il file-sharing
+	* 	il ParcmanAgent, elemento caratterizzante del progetto.
+Il cuore del progetto è il ParcmanAgent; si tratta di un server di tipo UnicastRemoteObject che viene utilizzato come un messaggero per raccoglie informazioni presso i clients connessi alla rete Parcman. Il ParcmanAgent si sposta da un client all'altro grazie a una lista, definita a priopri, di clients; una volta che ha visitato tutti i client assegnatili riversa il frutto della sua ricerca presso lo IndexingServer, il quale si occuperà di smaltire le informazioni in modo opportuno per aggiornare la lista globale dei files condivisi.
+La particolarità del ParcmanAgent è che viene creato allo unico scopo di raccogliere informazioni sulle condivisioni e sullo stato dei clients; una volta che il ParcmanAgent ha visitato tutti i clients che doveva visitare cessa ogni funzione e viene quindi eliminato.
 
 UTILIZZO DEL SOFTWARE
+
 L'uso di PARCMAN è possibile tramite una shell creata ad-hoc che permettere all'utente di condividere una lista di files ed effettuare ricerche nella lista globale consultabile tramite interrogazioni al server di lista.
 Una volta che l'utente ha ottenuto una copia del client, per accedere alla rete e creare una lista di files da condividere, deve registrarsi; una volta registrato è in grado di accedere alla rete con il proprio username e password.
 Ottenute le credenziali di accesso è possibile condividere una cartella chiamata ParcmanShare, dove vanno inseriti files e directory che saranno elencati in una lista che sarà a sua volta inviata, tramite il ParcmanAgent, al server di lista che si occuperà di inserire nel database delle condivisioni i riferimenti ai dati condivisi.
@@ -19,16 +26,28 @@ scancollection: forza la scansione della cartella dei files condivisi;
 scaninfo: riporta informazioni sull'ultima scansione automatica dei file condivisi.
 
 
-INTERFACCE DEL SERVER
+INTERFACCE DEI SERVER
 
 Interface RemoteIndexingServer
 	public interface RemoteIndexingServer extends java.rmi.Remote
 Questa interfaccia è riferita al server di indicizzazione dei file che il ParcmanAgent porta dopo la visita ai ParcmanClient.
 
 Metodi
-	void ping() throws java.rmi.RemoteException
-Questo metodo altro non fa che segnalare una richiesta di ping da parte di un ParcmanClient.
-In caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+	void ping() throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+-----------------
+Interface RemoteIndexingServerAgent
+	public interface RemoteIndexingServerAgent extends java.rmi.Remote
+Interfaccia remota del ParcmanServer per il ParcmanAgent.
+
+Metodi
+	sendUpdateLists(java.util.Map<ClientData,UpdateList> updateLists, long validity)
+		throws java.rmi.RemoteException
+Esegue l'update della lista di file condivisi a partire dalla mappa updateLists.
+
+	void ping()
+		throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
 -----------------
 Interface RemoteLoginServer
 	public interface RemoteLoginServer extends java.rmi.Remote
@@ -36,19 +55,19 @@ Interfaccia remota del loginServer, permettere ai ParcmanClient di accedere al s
 
 Metodi
 	void createAccount(String name, String password)
-		throws java.rmi.RemoteException,
+		throws RemoteException,
 			ParcmanDBServerUserExistRemoteException,
 			ParcmanDBServerUserNotValidRemoteException
 Consente la creazione di un nuovo account di registrazione di un user alla rete Parcman.
 In caso che l'utente esista già o che il nome utente non sia valido il metodo ritornerà un'eccezione.
 
 	RemoteParcmanClient login(String name, String password)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Esegue il login con i dati utente passati dall'user, in caso di successo viene ritorna un MobileServer esportato. 
 
-	void ping() throws java.rmi.RemoteException
-Questo metodo altro non fa che segnalare una richiesta di ping da parte di un ParcmanClient.
-In caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+	void ping()
+		throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
 -------------------
 Interface RemoteParcmanClient
 	public interface RemoteParcmanClient extends RemoteParcmanClientUser
@@ -56,13 +75,12 @@ Interfaccia remota del ParcmanClient, il ParcmanClient è il vero e proprio clie
 
 Metodi
 	void startConnection()
-		throws java.rmi.RemoteException
+		throws RemoteException
 Metodo che consente di avviare la connessione alla rete Parcman dopo la avvenuta verifica delle credenziali; a questo punto il RemoteClient viene dismesso e 
 Se ci sono problemi alla connessione viene ritornata una eccezione remota.
 
-	void ping() throws java.rmi.RemoteException
-Questo metodo altro non fa che segnalare una richiesta di ping da parte di un ParcmanClient.
-In caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+	void ping() throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
 -----------------
 Interface RemoteParcmanClientUser
 	public interface RemoteParcmanClientUser extends java.rmi.Remote, java.io.Serializable
@@ -70,7 +88,7 @@ Interfaccia del ParcmanClient a livello utente, si tratta dell'interfaccia del P
 
 Metodi
 	String getUserName()
-		throws java.rmi.RemoteException
+		throws RemoteException
 Consete semplicemnte di ottenere, sotto forma di stringa, l'username dell'utente connesso.
 ------------------
 Interface RemoteParcmanServer
@@ -79,7 +97,7 @@ Interfaccia remota per il ParcmanServer, server centrale del progetto.
 
 Metodi
 	void connectAttemp(String username, String host)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Inserisco un nuovo client alla lista dei client in attesa di stabilire una connessione con il server.
 -------------------
 Interface RemoteParcmanServerUser
@@ -88,31 +106,30 @@ Interfaccia remota del ParcmanServer specializzata per la connessione degli uten
 
 Metodi
 	void connect(RemoteParcmanClient parcmanClientStub, String userName)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Il metodo connect permette al nuovo ParcmanClient appena caricato di connettersi al ParcmanServer, passargli il proprio Stub e passare dalla lista degli utenti in coda di attesa per confermare la connessione alla rete nella lista dei client correttamente connessi a Parcman.
 
 	void disconnect(RemoteParcmanClient parcmanClientStub, String userName)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Permette la disconnessione di un ParcmanClient partendo dal suo Stub ed username.
 
 	Vector<ShareBean> getSharings(RemoteParcmanClient parcmanClientStub, String userName)
-		throws ParcmanServerRequestErrorRemoteException, java.rmi.RemoteException
+		throws ParcmanServerRequestErrorRemoteException, RemoteException
 Restituisce una lista sotto forma di vettore dei files condivisi dall'utente identificato tramite il suo Stub e il suo username.
 In caso di impossibilità di portare a compimento la richiesta il metodo ritorna una ParcmanServerRequestErrorRemoteException.
 
 	int getSharingsVersion(RemoteParcmanClient parcmanClientStub, String userName)
-		throws ParcmanServerRequestErrorRemoteException, java.rmi.RemoteException
+		throws ParcmanServerRequestErrorRemoteException, RemoteException
 Ritorna la versione della lista dei files condivisi dall'utente sul client da cui è connesso.
 In caso di impossibilità di portare a compimento la richiesta il metodo ritorna una ParcmanServerRequestErrorRemoteException.
 
 	Vector<SearchBean> search(RemoteParcmanClient parcmanClientStub, String userName, String keywords)
-		throws ParcmanServerRequestErrorRemoteException, java.rmi.RemoteException
+		throws ParcmanServerRequestErrorRemoteException, RemoteException
 Consente di effettuare una interrogazione sul database di lista alla ricerca di un determinato tag o filename, ritorna un vettore di risultati.
 In caso di impossibilità di portare a compimento la richiesta il metodo ritorna una ParcmanServerRequestErrorRemoteException.
 
-	void ping() throws java.rmi.RemoteException
-Questo metodo altro non fa che segnalare una richiesta di ping da parte di un ParcmanClient.
-In caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+	void ping() throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
 
 CLASSI RILEVANTI DEL PROGETTO
 
@@ -125,67 +142,73 @@ Metodi
 		throws java.lang.Exception
 ----------------------
 Class DBServer
-	public class DBServer extends java.rmi.server.UnicastRemoteObject implements RemoteDBServer
+	public class DBServer extends UnicastRemoteObject implements RemoteDBServer
 	
 Costruttore
 	public DBServer(String dbDirectory)
-		throws ParcmanDBServerErrorRemoteException, java.rmi.RemoteException
+		throws ParcmanDBServerErrorRemoteException, RemoteException
 Il costruttore della classe a cui deve essere passato il path della directory a cui accedere per ottenenere i database.
 
 Metodi
 	public UserBean getUser(String name)
 			throws ParcmanDBServerErrorRemoteException,
 				   ParcmanDBServerUserNotExistRemoteException,
-				   java.rmi.RemoteException
+				   RemoteException
 Ritorna le informazioni su un user sottoforma di beans; in caso l'utente non venga trovato viene lanciata una ParcmanDBServerUserNotExistRemoteException, altrimenti se la richiesta non può essere soddisfatta viene catturara una ParcmanDBServerErrorRemoteException o una più generica RemoteExeption.
 
 	public void addUser(UserBean user)
 		throws ParcmanDBServerErrorRemoteException,
                ParcmanDBServerUserExistRemoteException,
                ParcmanDBServerUserNotValidRemoteException,
-               java.rmi.RemoteException
+               RemoteException
 Aggiunge un utente al database prendendo come parametro un bean del nuovo utente. Se l'utente già esiste nel database viene sollevata l'eccezione ParcmanDBServerUserExistRemoteException. Se i dati forniti non sono coerenti, cioe' non superano il test UserBean.validate(), solleva l'eccezione ParcmanDBUserNotValidException, altrimenti una RemoteException.
 
 	public void addShare(ShareBean share)
 		throws ParcmanDBServerErrorRemoteException,
                ParcmanDBServerShareExistRemoteException,
                ParcmanDBServerShareNotValidRemoteException,
-               java.rmi.RemoteException
+               RemoteException
 Inserisce all'interno del database dei files condivisi una entità. Se il file è già presente viene sollevata l'eccezione remota ParcmanDBShareExistException, se i dati forniti non sono coerenti solleva l'eccezione ParcmanDBShareNotValidException.
+
+	public void removeShare(int id, java.lang.String owner)
+		throws ParcmanDBServerErrorRemoteException,
+               ParcmanDBServerShareNotExistRemoteException,
+               RemoteException
+Rimuove un file condiviso dal database. Se il file non e` presente all'interno del database solleva l'eccezione remota ParcmanDBShareNotExistException. 
 
 	public ShareBean getShareById(String id)
 		throws ParcmanDBServerErrorRemoteException,
                ParcmanDBServerShareNotExistRemoteException,
-               java.rmi.RemoteException
+               RemoteException
 Utilizzato per ritornare un bean con le informazioni sull'entità con l'ID passato come parametro; se l'ID non corrisponde a nulla viene catturata l'eccezione ParcmanDBServerShareNotExistException.
 
 	public ShareBean getShareByName(String name)
 		throws ParcmanDBServerErrorRemoteException,
                ParcmanDBServerShareNotExistRemoteException,
-               java.rmi.RemoteException
+               RemoteException
 Funziona come getShareById, ma il parametro per la ricerca è questa volta il nome dell'entità. Anche in questo caso viene catturata una eccezione ParcmanDBServerShareNotExistRemoteException se l'entità non viene trovata.
 
 	public Vector<ShareBean> getSharings(String userName)
 		throws ParcmanDBServerErrorRemoteException,
                ParcmanDBServerUserNotExistRemoteException,
-               java.rmi.RemoteException
+               RemoteException
 Restituisce una lista di elementi che sono stati condivisi da un utente, l'username viene passato al metodo per effettuare la selezione degli elementi corretti. Se l'username non esiste viene catturata una ParcmanDBServerUserNotExistRemoteException.
 
 	public Vector<SearchBean> searchFiles(String keywords)
 		throws ParcmanDBServerErrorRemoteException,
-        	   java.rmi.RemoteException
+        	   RemoteException
 Esegue una ricerca di file sul database usando una stringa di keywords, se il server del database da un errore viene lanciata una ParcmanDBServerErrorRemoteException.
 
-	void ping() throws java.rmi.RemoteException
-Questo metodo altro non fa che segnalare una richiesta di ping da parte di un ParcmanClient.
-In caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+	void ping()
+		throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
 -----------------
 Class IndexingServer
-	public class IndexingServer extends java.rmi.server.UnicastRemoteObject	implements RemoteIndexingServer
+	public class IndexingServer extends UnicastRemoteObject	implements RemoteIndexingServer
 
 Costruttore
 	public IndexingServer(RemoteDBServer dBServer, RemoteParcmanServer parcmanServer)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Il costruttore di questo server prende come parametri lo Stub del DBServer e del ParcmanServer con cui comunicherà per, rispettivamente, aggiornare la lista dei files condivisi e raccoglie le informazioni necessarie a inviare il ParcmanAgent per effettuare le raccolte di informazioni presso i client.
 
 Metodi
@@ -199,15 +222,19 @@ Getter per agentTeamLaunchDelay
 	public double getAgentPeriodLaunchPercent()
 Getter per agentPeriodLaunchPercent
 
-	void ping() throws java.rmi.RemoteException
-Questo metodo altro non fa che segnalare una richiesta di ping da parte di un ParcmanClient.
-In caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+	public void sendUpdateLists(Map<ClientData,UpdateList> updateLists, long validity)
+                     throws IndexingServerRequestAfterTimeOutRemoteException,
+                            RemoteException
+Lancia l'aggiornamento della lista dei files condivisi partendo da una map updateLists; nel caso si stia tentando di aggiornare la lista dopo il tempo limite viene lanciata l'eccezione IndexingServerRequestAfterTimeOutRemoteException.
+
+	void ping() throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
 
 	protected int ipSplitRate(int numConnectedClient)
 Metodo che implementa l'algoritmo per scegliere quanti gruppi di indirizzi ip generare.
 
 	private void run()
-    	throws java.rmi.RemoteException
+    	throws RemoteException
 Inizia l'indicizzazione dei client. L'indicizzazione e` gestita attraverso un Timer. I parametri di gestione del Timer sono:
 
         * agentTeamLaunchPeriod: il server invia una squadra di agent ogni agentTeamLaunchPeriod millisecondi.
@@ -226,44 +253,43 @@ Costruttore
 Metodi
 
 	public RemoteParcmanClient login(String name, String password)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Esegue il login di un utente nella rete Parcman ritornando un oggetto MobileServer esportato nel caso in cui il login abbia successo, altrimenti ritorna un'eccezione remota.
 
 	public void createAccount(String name, String password)
-		throws java.rmi.RemoteException,
+		throws RemoteException,
                ParcmanDBServerUserExistRemoteException,
                ParcmanDBServerUserNotValidRemoteException
 Esegue la registrazione di un nuovo account.
 
-	void ping() throws java.rmi.RemoteException
-Questo metodo altro non fa che segnalare una richiesta di ping da parte di un ParcmanClient.
-In caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+	void ping() throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
 
 	public void unreferenced()
 Dereferenziazione del Server. Chiamato dal sistema Rmid.
 ------------------
 Class ParcmanAgent
-	public class ParcmanAgent extends java.rmi.server.UnicastRemoteObject implements RemoteParcmanAgentServer, java.io.Serializable
+	public class ParcmanAgent extends UnicastRemoteObject implements RemoteParcmanAgentServer, java.io.Serializable
 
 Costruttore
 	public ParcmanAgent(RemoteIndexingServer iserver, long validity, Vector<ClientData> clients)
-		throws java.rmi.RemoteException
+		throws RemoteException
 -----------------
 Class ParcmanClient
-	public class ParcmanClient extends java.rmi.server.UnicastRemoteObject implements RemoteParcmanClient, java.io.Serializable
+	public class ParcmanClient extends UnicastRemoteObject implements RemoteParcmanClient, java.io.Serializable
 
 Costruttori
 
 Metodi
 	public void startConnection()
-    	throws java.rmi.RemoteException
+    	throws RemoteException
 Lancia la connessione alla rete Parcman.
 
 	public void exit()
 Esegue la disconnessione dalla rete.
 
 	public String getUserName()
-		throws java.rmi.RemoteException
+		throws RemoteException
 Ritorna il nome utente del proprietario della sessione.
 
 	private String getSharingDirectory()
@@ -285,7 +311,7 @@ Restituisce il TimerTask dello scan della directory condivisa.
 Restituisce lo stub del ParcmanClient.
 
 	public UpdateList getUpdateList(int version)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Restituisce la lista di Update a partire dalla versione.
 
 	private int getNewId(Vector<ShareBean> newList)
@@ -294,48 +320,160 @@ scanSharingDirectory
 	private void scanSharingDirectory(java.io.File dir, Vector<ShareBean> newList)
 Esegue la scansione ricorsiva della directory dei file condivisi.
 
-	public void ping() throws java.rmi.RemoteException
-Questo metodo altro non fa che segnalare una richiesta di ping da parte di un ParcmanClient.
-In caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
+	public void ping() throws RemoteException
+Questo metodo altro non fa che segnalare una richiesta di ping; in caso di successo il metodo ritorna un avviso della richiesta da un host remoto altrimenti ritorna una eccezione remota che segnala l'impossibilità di contattare il server remoto.
 ------------------------------
 Class ParcmanServer
-	public class ParcmanServer extends java.rmi.server.UnicastRemoteObject implements RemoteParcmanServer
+	public class ParcmanServer extends UnicastRemoteObject implements RemoteParcmanServer
 
 Costruttore
 	public ParcmanServer(RemoteDBServer dBServer)
-		throws java.rmi.RemoteException
+		throws RemoteException
 
 Metodi
 connectAttemp
 
 	public void connectAttemp(String username, String host)
 		throws ParcmanServerUserIsConnectRemoteException,
-               java.rmi.RemoteException
-Esegue l'aggiunta di un nuovo client alla lista dei tentativi di connessione.
+               RemoteException
+Inserisce un utente nella lista di attesa per conferma della connessione alla rete Parcman; se l'utente risulta già connesso viene lanciata una eccezione ParcmanServerUserIsConnectRemoteException, altrimenti si procede all'attivazione della connessione.
 
 	public void connect(RemoteParcmanClient parcmanClientStub, String userName)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Esegue la connessione di un nuovo RemoteParcmanClient alla rete Parcman.
 
 	public void disconnect(RemoteParcmanClient parcmanClientStub, String userName)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Permette la disconnessione del client (individuato tramite lo stub) e del corrispettivo utente. 
 
 	public Vector<ShareBean> getSharings(RemoteParcmanClient parcmanClientStub, String userName)
 		throws ParcmanServerRequestErrorRemoteException,
-               java.rmi.RemoteException
+               RemoteException
 Ritorna la lista sotto forma di vettore dei files condivisi dall'utente passato come parametro. In caso la richiesta non possa essere soddisfatta viene lanciata una ParcmanServerRequestErrorRemoteException.
 
 public int getSharingsVersion(RemoteParcmanClient parcmanClientStub, String userName)
 		throws ParcmanServerRequestErrorRemoteException,
-               java.rmi.RemoteException
+               RemoteException
 Ritorna il numero di versione della lista di file condivisi di un dato utente; in caso vi sia un errore il metodo cattura una eccezione di tipo ParcmanServerRequestErrorRemoteException.
 
 	public Map<String,ClientData> getConnectedUsers(RemoteIndexingServer ris)
-		throws java.rmi.RemoteException
+		throws RemoteException
 Restituisce la lista degli utenti connessi al sistema; è necessario possedere lo stub del server di indicizzazione per poter fare questa richiesta.
 
 	public Vector<SearchBean> search(RemoteParcmanClient parcmanClientStub, String userName, String keywords)
 		throws ParcmanServerRequestErrorRemoteException,
-               java.rmi.RemoteException
+               RemoteException
 Ritorna un vettore in cui sono archiviati i risultati della ricerca sul database; in caso la richiesta non possa esser soddisfatta il metodo cattura l'eccezione ParcmanServerRequestErrorRemoteException.
+----------------------
+Class RemoteClientAdmin
+	public class RemoteClientAdmin extends java.lang.Object implements RemoteClient
+	
+Costruttore
+	public RemoteClientAdmin()
+
+Metodi
+
+	public void run()
+Avvia il Client remoto.
+----------------------
+Class RemoteClientUser
+	public class RemoteClientUser extends java.lang.Object implements RemoteClient
+	
+Costruttore
+
+Metodi
+	public void run()
+Avvia il Client remoto.
+
+	public void echo(boolean on)
+Accende o spegne l'echo sul terminale.
+
+GESTIONE DELLE ECCEZIONI
+
+Questo è un elenco con una breve spiegazione di tutte le eccezioni, remote e non remote, che sono state catturare e gestite in modo opportuno in Parcman.
+
+Package database.exceptions
+
+Queste sono le eccezioni che possono essere chiamate nell'utilizzo/interazione con il database.
+
+ParcmanDBDirectoryMalformedException
+	public class ParcmanDBDirectoryMalformedException extends java.lang.Exception
+Il path della directory radice non e' valido.
+
+ParcmanDBErrorException
+	public class ParcmanDBErrorException extends java.lang.Exception
+Errore interno al database.
+
+ParcmanDBNotCreateException 
+	public class ParcmanDBNotCreateException extends java.lang.Exception
+Il database o alcune sue parti non possono essere create.
+
+ParcmanDBShareExistException
+	public class ParcmanDBShareExistException extends java.lang.Exception
+Il file condviso e' gia' esistente.
+
+ParcmanDBShareNotExistException
+	public class ParcmanDBShareNotExistException extends java.lang.Exception
+Il file condiviso non esiste all'interno del database.
+
+ParcmanDBShareNotValidException
+	public class ParcmanDBShareNotValidException extends java.lang.Exception
+I dati del file condiviso non sono validi.
+
+ParcmanDBUserExistException
+	public class ParcmanDBUserExistException extends java.lang.Exception
+L'utente e' gia' presente all'interno del database.
+
+ParcmanDBUserNotExistException
+	public class ParcmanDBUserNotExistException extends java.lang.Exception
+Utente non presente all'interno del database utenti.
+
+ParcmanDBUserNotValidException
+	public class ParcmanDBUserNotValidException extends java.lang.Exception
+I dati dell'utente non sono validi.
+
+--------------------------
+
+Package remoteexceptions
+
+Queste sono le eccezioni remote che gestiscono alcuni problemi che possono insorgere durante il funzionamento di parcman.
+
+ParcmanDBServerErrorRemoteException
+	public class ParcmanDBServerErrorRemoteException extends RemoteException
+Errore interno del database.
+
+ParcmanDBServerShareExistRemoteException
+	public class ParcmanDBServerShareExistRemoteException extends RemoteException
+File presente all'interno del database.
+
+ParcmanDBServerShareNotExistRemoteException
+	public class ParcmanDBServerShareNotExistRemoteException extends RemoteException
+File non presente all'interno del database.
+
+ParcmanDBServerShareNotValidRemoteException
+	public class ParcmanDBServerShareNotValidRemoteException extends RemoteException
+I dati del file non sono validi.
+
+ParcmanDBServerUserExistRemoteException
+	public class ParcmanDBServerUserExistRemoteException extends RemoteException
+Utente presente all'interno del database.
+
+ParcmanDBServerUserNotExistRemoteException
+	public class ParcmanDBServerUserNotExistRemoteException extends RemoteException
+Utente non presente all'interno del database.
+
+ParcmanDBServerUserNotValidRemoteException
+	public class ParcmanDBServerUserNotValidRemoteException extends RemoteException
+I dati dell'utente non sono validi.
+
+ParcmanServerHackWarningRemoteException
+	public class ParcmanServerHackWarningRemoteException extends RemoteException
+Tentativo di Hacking.
+
+ParcmanServerRequestErrorRemoteException 	
+	public class ParcmanServerRequestErrorRemoteException extends RemoteException
+Richiesta non esaudita.
+
+ParcmanServerUserIsConnectRemoteException
+	public class ParcmanServerUserIsConnectRemoteException extends RemoteException
+Utente gia' connesso alla rete.
