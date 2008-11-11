@@ -138,6 +138,30 @@ public class DBSharings
 	}
 
 	/**
+	 * Rimuove un file dal database dei file condivisi.
+	 * Se il file non e' presente solleva l'eccezione 
+	 * ParcmanDBSharedNotExistException.
+	 *
+	 * @param share Bean Share
+	 * @throws ParcmanDBShareNotExistException Il file specificato non e' presente all'interno del database
+	 */
+	public void removeShare(int id, String owner) throws
+		ParcmanDBShareNotExistException
+	{
+        for (int i = 0; i < this.sharings.size(); i++)
+        {
+            ShareBean share = this.sharings.get(i);
+	        if (share.getId() == id && share.getOwner().equals(owner))
+			{
+                this.sharings.remove(i);
+                return;
+			}
+        }
+
+        throw new ParcmanDBShareNotExistException();
+	}
+
+	/**
 	 * Restituisce i dati di un file condiviso a partire dal nome del file.
 	 * Se il file non e` presente viene sollevata l'eccezione
 	 * ParcmanDBShareNotExistException

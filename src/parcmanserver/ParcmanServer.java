@@ -135,7 +135,7 @@ public class ParcmanServer
 				PLog.debug("ParcmanServer.connect", "Rimosso " + userName + " (" + host + ") dalla lista di attemp.");
 
 				// Aggiungo l'utente alla lista connectUsers
-				ClientData user = new ClientData(host, parcmanClientStub);
+				ClientData user = new ClientData(host, userName, parcmanClientStub);
 				connectUsers.put(userName, user);
 				PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + host + ") alla lista dei client connessi.");
 			}

@@ -292,7 +292,7 @@ public class ShareBean
 		if (this.keywords.size() != bean.getNumberOfKeywords())
 			return false;
 		for (int i=0; i<this.keywords.size(); i++)
-			if (!(bean.hasKeyword((String) this.keywords.get(i))))
+			if (!(bean.hasKeyword(this.keywords.get(i))))
 				return false;
 		return true;
 	}

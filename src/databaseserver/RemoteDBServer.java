@@ -63,6 +63,40 @@ public interface RemoteDBServer
 		RemoteException;
 
 	/**
+	* Aggiunge un file condiviso al database.
+	* Se il file e` gia` presente all'interno del database solleva l'eccezione
+	* remota ParcmanDBShareExistException. Se i dati forniti non sono coerenti
+	* solleva l'eccezione ParcmanDBShareNotValidException. 
+	*
+	* @param share ShareBean contenente i dai del file condiviso.
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws ParcmanDBServerShareExistRemoteException L'utente e` gia` presente all'interno del database.
+	* @throws ParcmanDBServerShareNotValidException I dati forniti per il file da aggiundere non sono validi.
+	* @throws RemoteException Eccezione remota.
+	*/
+	public void addShare(ShareBean share) throws
+		ParcmanDBServerErrorRemoteException,
+		ParcmanDBServerShareExistRemoteException,
+		ParcmanDBServerShareNotValidRemoteException,
+		RemoteException;
+
+	/**
+	* Rimuove un file condiviso dal database.
+	* Se il file non e` presente all'interno del database solleva l'eccezione
+	* remota ParcmanDBShareNotExistException.
+	*
+	* @param id Id del file condiviso
+    * @param owner Proprietario del file
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws ParcmanDBServerShareNotExistRemoteException File non presente all'interno del database
+	* @throws RemoteException Eccezione remota
+	*/
+	public void removeShare(int id, String owner) throws
+		ParcmanDBServerErrorRemoteException,
+		ParcmanDBServerShareNotExistRemoteException,
+		RemoteException;
+
+	/**
 	* Esegue una ricerca di file sul database.
 	*
 	* @param keywords Keywords per la ricerca

@@ -14,6 +14,7 @@ import parcmanserver.RemoteParcmanServer;
 import parcmanagent.ParcmanAgent;
 import parcmanserver.ClientData;
 import parcmanagent.UpdateList;
+import database.beans.ShareBean;
 
 /**
  * Server di indicizzazione.
@@ -118,6 +119,85 @@ public class IndexingServer
         {
             PLog.debug("IndexingServer.sendUpdateLists", "Richiesta da parte di un ParcmanAgent arrivata oltre il TimeOut. Nessun aggiornamento eseguito");
             throw new IndexingServerRequestAfterTimeOutRemoteException(); 
+        }
+
+        ClientData key;
+        UpdateList data;
+
+        for (Iterator iter = updateLists.keySet().iterator(); iter.hasNext(); )
+        {
+            key = (ClientData) (iter.next());
+            data = updateLists.get(key);
+
+            Vector<ShareBean> addShares = data.getAddList();
+            Vector<Integer> removeShares = data.getRemoveList();
+
+            PLog.log("IndexingServer.sendUpdateLists", "Aggiorno la lista share dell'utente " + key.getName());
+            for (int i = 0; i < addShares.size(); i++)
+            {
+                if (!addShares.get(i).getOwner().equals(key.getName()))
+                {
+                    PLog.debug("IndexingServer.sendUpdateLists", "Lista Shares non coerente con i dati utente "
+                            + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
+                    /* TODO Rinegoziare la connessione con il Client */
+                    return;
+                }
+
+                try
+                {
+                    dBServer.addShare(addShares.get(i));
+                }
+                catch (ParcmanDBServerErrorRemoteException e)
+                {
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile aggiungere il file " + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
+                    /* TODO Rinegoziare la connessione con il Client */
+                    return;
+                }
+                catch (ParcmanDBServerShareExistRemoteException e)
+                {
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "File gia' presente nel database " + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
+                    /* TODO Rinegoziare la connessione con il Client */
+                    return;
+                }
+                catch (ParcmanDBServerShareNotValidRemoteException e)
+                {
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "ShareBean non valido " + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
+                    /* TODO Rinegoziare la connessione con il Client */
+                    return;
+                }
+                catch (RemoteException e)
+                {
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile aggiungere il file " + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
+                    /* TODO Rinegoziare la connessione con il Client */
+                    return;
+                }
+            }
+
+            for (int i = 0; i < removeShares.size(); i++)
+            {
+                try
+                {
+                    dBServer.removeShare(removeShares.get(i).intValue(), key.getName());
+                }
+                catch (ParcmanDBServerErrorRemoteException e)
+                {
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile rimuovere il file " + removeShares.get(i).intValue() + "@" + key.getName());
+                    /* TODO Rinegoziare la connessione con il Client */
+                    return;
+                }
+                catch (ParcmanDBServerShareNotExistRemoteException e)
+                {
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "File non presente nel database " + removeShares.get(i).intValue() + "@" + key.getName());
+                    /* TODO Rinegoziare la connessione con il Client */
+                    return;
+                }
+                catch (RemoteException e)
+                {
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile rimuovere il file " + removeShares.get(i).intValue() + "@" + key.getName());
+                    /* TODO Rinegoziare la connessione con il Client */
+                    return;
+                }
+            }
         }
     }
 

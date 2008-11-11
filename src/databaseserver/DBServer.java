@@ -126,7 +126,7 @@ public class DBServer
 	*
 	* @param share ShareBean contenente i dai del file condiviso.
 	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
-	* @throws ParcmanDBServerShareExistRemoteException L'utente e` gia` presente all'interno del database.
+	* @throws ParcmanDBServerShareExistRemoteException Il file e` gia` presente all'interno del database.
 	* @throws ParcmanDBServerShareNotValidException I dati forniti per il file da aggiundere non sono validi.
 	* @throws RemoteException Eccezione remota.
 	*/
@@ -151,6 +151,36 @@ public class DBServer
 		catch (ParcmanDBShareNotValidException e)
 		{
 			throw new ParcmanDBServerShareNotValidRemoteException();
+		}
+	}
+
+	/**
+	* Rimuove un file condiviso dal database.
+	* Se il file non e` presente all'interno del database solleva l'eccezione
+	* remota ParcmanDBShareNotExistException.
+	*
+	* @param id Id del file condiviso
+    * @param owner Proprietario del file
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws ParcmanDBServerShareNotExistRemoteException File non presente all'interno del database
+	* @throws RemoteException Eccezione remota
+	*/
+	public void removeShare(int id, String owner) throws
+		ParcmanDBServerErrorRemoteException,
+		ParcmanDBServerShareNotExistRemoteException,
+		RemoteException
+	{
+		try
+		{
+			db.removeShare(id, owner);
+		}
+		catch (ParcmanDBErrorException e)
+		{
+			throw new ParcmanDBServerErrorRemoteException();
+		}
+		catch (ParcmanDBShareNotExistException e)
+		{
+			throw new ParcmanDBServerShareNotExistRemoteException();
 		}
 	}
 

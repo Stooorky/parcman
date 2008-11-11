@@ -3,13 +3,13 @@ package remoteexceptions;
 import java.rmi.*;
 
 /**
- * File non presente all'interno del database.
+ * Richiesta inviata oltre il TimeOut.
  *
  * @author Parcman Tm
  */
-public class ParcmanDBServerShareNotExistRemoteException 
+public class IndexingServerRequestAfterTimeOutRemoteException
 	extends RemoteException
-{ 
+{
 	private static final long serialVersionUID = 42L;
 
 	/**
@@ -17,15 +17,15 @@ public class ParcmanDBServerShareNotExistRemoteException
 	 *
 	 * @param message Messaggio di errore
 	 */
-	public ParcmanDBServerShareNotExistRemoteException(String message)
+	public IndexingServerRequestAfterTimeOutRemoteException(String message)
 	{
-		super(message);	
+		super(message);
 	}
 
 	/**
 	 * Costruttore.
 	 */
-	public ParcmanDBServerShareNotExistRemoteException()
+	public IndexingServerRequestAfterTimeOutRemoteException()
 	{
 
 	}

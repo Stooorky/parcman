@@ -15,6 +15,11 @@ public class ClientData
     private String host;
 
     /**
+     * Nome utente.
+     */
+    private String name;
+
+    /**
      * Stub del ParcmanClient.
      */
     private RemoteParcmanClient stub;
@@ -28,11 +33,13 @@ public class ClientData
      * Costruttore.
      *
      * @param host Indirizzo IP o URL
+     * @param name Nome utente
      * @param stub Stub del ParcmanClient
      */
-    public ClientData(String host, RemoteParcmanClient stub)
+    public ClientData(String host, String name, RemoteParcmanClient stub)
     {
         this.host = host;
+        this.name = name;
         this.stub = stub;
         this.version = 0;
     }
@@ -77,6 +84,25 @@ public class ClientData
         return this.version;
     }
 
+    /**
+     * Assegna il nome utente.
+     *
+     * @param name Nome utente
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /**
+     * Ritorna il nome utente.
+     *
+     * @return Nome utente
+     */
+    public String getName()
+    {
+        return this.name;
+    }
 
     /**
      * Assegna lo Stub.
