@@ -13,6 +13,7 @@ import databaseserver.RemoteDBServer;
 import parcmanserver.RemoteParcmanServer;
 import parcmanagent.ParcmanAgent;
 import parcmanserver.ClientData;
+import parcmanagent.UpdateList;
 
 /**
  * Server di indicizzazione.
@@ -74,7 +75,7 @@ public class IndexingServer
 	}
 
 	/**
-	 * Getter per <tt>agentTeamLaunchPeriod</tt>
+	 L* Getter per <tt>agentTeamLaunchPeriod</tt>
 	 */
 	public int getAgentTeamLaunchPeriod()
 	{
@@ -96,6 +97,29 @@ public class IndexingServer
 	{
 		return this.agentPeriodLaunchPercent;
 	}
+
+    /**
+     * Esegue l'update della lista di file condivisi a partire dalla
+     * mappa updateLists.
+     *
+     * @param updateLists contiene i dati per l'aggiornamento delle
+     * liste di file condivisi dagli utenti
+     * @param validity Periodo di validità del ParcmanAgent chiamante
+     * @throws IndexingServerRequestAfterTimeOutRemoteException
+     * Richiesta inviata dopo il TimeOut
+     * @throws RemoteException Eccezione Remota
+     */
+    public void sendUpdateLists(Map<ClientData, UpdateList> updateLists, long validity) throws
+        IndexingServerRequestAfterTimeOutRemoteException,
+        RemoteException
+    {
+        // Controllo che l'agente sia arrivato prima del timeOut
+        if (validity > System.currentTimeMillis())
+        {
+            PLog.debug("IndexingServer.sendUpdateLists", "Richiesta da parte di un ParcmanAgent arrivata oltre il TimeOut. Nessun aggiornamento eseguito");
+            throw new IndexingServerRequestAfterTimeOutRemoteException(); 
+        }
+    }
 
 	/**
 	* Metodo ping.
