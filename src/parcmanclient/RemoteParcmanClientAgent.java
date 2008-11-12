@@ -18,7 +18,7 @@ public interface RemoteParcmanClientAgent
 {
     /**
      * Restituisce true se il ParcmanClient ha bisogno di eseguire un
-     * update, cioè l'UpdateList per la versione fornita non e' vuota.
+     * update, cioe' l'UpdateList per la versione fornita non e' vuota.
      *
      * @param versione Versione della SharingList
      * @return true se il ParcmanClient ha bisogno di eseguire un update

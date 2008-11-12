@@ -22,7 +22,7 @@ parcmanagent=("parcmanagent")
 
 all=("parcmanclient clientbootstrap plog remoteclient tests database remoteexceptions databaseserver loginserver parcmanserver pshell privilege setup indexingserver parcmanagent")
 
-
+JAVAC_XLINT_FLAG="-Xlint"
 
 #################
 # PRIVATE
@@ -55,7 +55,7 @@ main_xlint()
 	for var in $@
 	do
 		cd $var 
-		bash compile.sh xlint
+		bash compile.sh xlint "$JAVAC_XLINT_FLAG"
 		cd ..
 	done
 }

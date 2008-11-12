@@ -5,6 +5,7 @@ sourcefile=(RemoteDBServer.java \
 
 clpath=`pwd`"/../"
 dom="[DATABASESERVER]"
+FLAGS="-Xlint"
 
 # Clean
 echo "$dom Remove .class files"

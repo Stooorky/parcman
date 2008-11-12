@@ -22,7 +22,7 @@ extends Remote
      *
      * @param updateLists contiene i dati per l'aggiornamento delle
      * liste di file condivisi dagli utenti
-     * @param validity Periodo di validità del ParcmanAgent chiamante
+     * @param validity Periodo di validita' del ParcmanAgent chiamante
      * @throws RemoteException Eccezione Remota
      */
     public void sendUpdateLists(Map<ClientData, UpdateList> updateLists, long validity) throws

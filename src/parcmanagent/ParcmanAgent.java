@@ -7,7 +7,6 @@ import java.io.*;
 
 import plog.*;
 import remoteexceptions.*;
-import parcmanserver.ClientData;
 import indexingserver.RemoteIndexingServer;
 
 /**
@@ -19,7 +18,7 @@ public class ParcmanAgent
 	extends UnicastRemoteObject
 	implements RemoteParcmanAgentServer, Serializable
 {
-	public ParcmanAgent(RemoteIndexingServer iserver, long validity, Vector<ClientData> clients)
+	public ParcmanAgent(RemoteIndexingServer iserver, long validity, Vector<ClientDataForAgent> clients)
 		throws RemoteException
 	{
 		// empty for now

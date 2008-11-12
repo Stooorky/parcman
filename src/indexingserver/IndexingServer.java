@@ -12,6 +12,7 @@ import remoteexceptions.*;
 import databaseserver.RemoteDBServer;
 import parcmanserver.RemoteParcmanServer;
 import parcmanagent.ParcmanAgent;
+import parcmanagent.ClientDataForAgent;
 import parcmanserver.ClientData;
 import parcmanagent.UpdateList;
 import database.beans.ShareBean;
@@ -122,7 +123,7 @@ public class IndexingServer
      *
      * @param updateLists contiene i dati per l'aggiornamento delle
      * liste di file condivisi dagli utenti
-     * @param validity Periodo di validità del ParcmanAgent chiamante
+     * @param validity Periodo di validita' del ParcmanAgent chiamante
      * @throws IndexingServerRequestAfterTimeOutRemoteException
      * Richiesta inviata dopo il TimeOut
      * @throws RemoteException Eccezione Remota
@@ -324,7 +325,7 @@ extends TimerTask
 			ParcmanAgent rpa = null;
 			try 
 			{
-				rpa = new ParcmanAgent(this.is, validity, clients); 
+				rpa = new ParcmanAgent(this.is, validity, null /*clients*/); // Qui bisogna passargli i nuovi ClientDataForAgent
 			} 
 			catch (RemoteException e)
 			{
