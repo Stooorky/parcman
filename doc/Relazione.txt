@@ -298,6 +298,10 @@ Class ParcmanClient
 Costruttori
 
 Metodi
+public boolean haveAnUpdate(int version)
+		throws java.rmi.RemoteException
+Restituisce true se il ParcmanClient ha bisogno di eseguire un update, cioè l'UpdateList per la versione fornita non e' vuota.
+
 	public void reconnect()
     	throws RemoteException
 Forza la riconnessione del client. 
