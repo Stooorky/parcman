@@ -7,6 +7,7 @@ import java.io.*;
 
 import remoteexceptions.*;
 import parcmanagent.UpdateList;
+import parcmanagent.RemoteParcmanAgentClient;
 
 /**
  * Interfaccia remota del ParcmanClient per l'agente remoto.
@@ -26,6 +27,17 @@ public interface RemoteParcmanClientAgent
      * @throws RemoteException Eccezione remota
      */
     public boolean haveAnUpdate(int version) throws
+        RemoteException;
+
+    /**
+     * Permette il trasferimento di un agente remoto.
+     * Questa funzione lancia il metodo run dell'agente ricevuto come
+     * parametro.
+     *
+     * @param parcmanAgent Stub dell'agente remoto
+     * @throws RemoteException Eccezione remota
+     */
+    public void transferAgent(RemoteParcmanAgentClient parcmanAgent) throws
         RemoteException;
 
     /**

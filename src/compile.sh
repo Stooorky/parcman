@@ -49,7 +49,7 @@ main_clean()
 	done
 }
 
-# Funzione di compiazione con Xlint per i warning
+# Funzione di compilazione con Xlint per i warning
 main_xlint()
 {
 	for var in $@
@@ -103,4 +103,5 @@ echo "       $0 clean <${pkglist}>"
 echo "      For Compile:"
 echo "       $0 <${pkglist}>"
 echo "      For Compile with -Xlint flag:"
-echo "       $0 <${pkglist}>"
+echo "       $0 xlint <${pkglist}>"
+

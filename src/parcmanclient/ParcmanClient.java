@@ -14,6 +14,7 @@ import database.beans.ShareBean;
 import database.beans.SearchBean;
 import parcmanagent.UpdateList;
 import parcmanagent.exceptions.*;
+import parcmanagent.RemoteParcmanAgentClient;
 
 /**
  * Mobile server in esecuzione presso il Client.
@@ -117,6 +118,28 @@ public class ParcmanClient
             return true;            
         else
             return false;
+    }
+
+    /**
+     * Permette il trasferimento di un agente remoto.
+     * Questa funzione lancia il metodo run dell'agente ricevuto come
+     * parametro.
+     *
+     * @param parcmanAgent Stub dell'agente remoto
+     * @throws RemoteException Eccezione remota
+     */
+    public void transferAgent(RemoteParcmanAgentClient parcmanAgent) throws
+        RemoteException
+    {
+        try
+        {
+            parcmanAgent.run();
+        }
+        catch (RemoteException e)
+        {
+            PLog.debug("ParcmanClient.transferAgent", "Eccezione remota nella chiamta al metodo run() del ParcmanAgent");
+            return;
+        }
     }
 
     /**

@@ -15,6 +15,9 @@ import remoteexceptions.*;
 public interface RemoteParcmanAgentClient
 	extends Remote
 {
-	public void run(ParcmanAgent agent) 
-		throws RemoteException;
+    /**
+     * Avvia l'esecuzione del ParcmanAgent.
+     */
+	public void run() throws
+        RemoteException;
 }
