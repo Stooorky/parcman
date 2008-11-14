@@ -16,7 +16,7 @@ import indexingserver.RemoteIndexingServer;
  */
 public class ParcmanAgent
 	extends UnicastRemoteObject
-	implements RemoteParcmanAgentServer, Serializable
+	implements RemoteParcmanAgent, Serializable
 {
 	public ParcmanAgent(RemoteIndexingServer iserver, long validity, Vector<ClientDataForAgent> clients)
 		throws RemoteException
@@ -24,5 +24,13 @@ public class ParcmanAgent
 		// empty for now
 	}
 
+    /**
+     * Avvia l'esecuzione del ParcmanAgent.
+     */
+	public void run() throws
+        RemoteException
+    {
+
+    }
 }
 

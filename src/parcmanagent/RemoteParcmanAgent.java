@@ -12,8 +12,8 @@ import remoteexceptions.*;
  *
  * @author Parcman Tm
  */
-public interface RemoteParcmanAgentServer
-	extends Remote
+public interface RemoteParcmanAgent
+	extends RemoteParcmanAgentClient, Remote
 {
 	// remote methods
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sourcefile=(ClientDataForAgent.java \
-	RemoteParcmanAgentServer.java \
+	RemoteParcmanAgent.java \
 	RemoteParcmanAgentClient.java \
         ParcmanAgent.java \
         UpdateList.java \
