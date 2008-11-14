@@ -16,6 +16,7 @@ import parcmanagent.ClientDataForAgent;
 import parcmanserver.ClientData;
 import parcmanagent.UpdateList;
 import database.beans.ShareBean;
+import parcmanclient.RemoteParcmanClientAgent;
 
 /**
  * Server di indicizzazione.
@@ -298,7 +299,7 @@ extends TimerTask
 	private int numberOfAgent;
 	private Map<String, ClientData> connectedClients;
 
-	public SendAgentTimerTask(IndexingServer is, int numberOfAgenti, Map<String, ClientData> connectedClients)
+	public SendAgentTimerTask(IndexingServer is, int numberOfAgent, Map<String, ClientData> connectedClients)
 	{
 		this.is = is;
 		this.numberOfAgent = numberOfAgent;	
@@ -312,7 +313,7 @@ extends TimerTask
 		while (this.numberOfAgent != 0)
 		{
 			long validity = (long) (System.currentTimeMillis() + this.is.getAgentTeamLaunchPeriod() * this.is.getAgentPeriodLaunchPercent());
-			Vector<ClientData> clients = new Vector<ClientData>(
+			Vector<ClientData> _clients = new Vector<ClientData>(
 				Arrays.asList(
 					(ClientData[]) (Arrays.copyOfRange(
 							this.connectedClients.values().toArray(), 
@@ -322,10 +323,14 @@ extends TimerTask
 					)
 				);
 
+            Vector<ClientDataForAgent> clients = new Vector<ClientDataForAgent>();
+            for (int i=0; i < _clients.size(); i++)
+                clients.add(new ClientDataForAgent(_clients.get(i).getName(), (RemoteParcmanClientAgent) _clients.get(i).getStub(), _clients.get(i).getVersion())); 
+
 			ParcmanAgent rpa = null;
 			try 
 			{
-				rpa = new ParcmanAgent(this.is, validity, null /*clients*/); // Qui bisogna passargli i nuovi ClientDataForAgent
+				rpa = new ParcmanAgent(this.is, validity, clients);
 			} 
 			catch (RemoteException e)
 			{
