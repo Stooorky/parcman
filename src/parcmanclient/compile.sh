@@ -30,8 +30,8 @@ local_clean()
 if [ "$1" == "clean" ]; then
 	local_clean 
 elif [ "$1" == "xlint" ]; then
-	echo "FLAGS: $2"
-	local_compile "$2"
+	echo "FLAGS: $1"
+	local_compile $FLAGS
 else
 	local_compile
 fi

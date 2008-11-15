@@ -282,6 +282,52 @@ public class ParcmanClient
 		return this.userName;
 	}
 
+    /**
+     * Trasmette il file richiesto come stream di byte.
+     *
+     * @param id Id del file da trasmettere
+     * @return Stream di byte
+     * @throws ParcmanClientFileNotExistsRemoteException File non
+     * presente tra i file condivisi
+     * @throws ParcmanClientFileErrorRemoteException Errore nella creazione
+     * del buffer
+     * @throws RemoteException Eccezione remota
+     */
+    public byte[] getFile(int id) throws
+        ParcmanClientFileNotExistsRemoteException,
+        ParcmanClientFileErrorRemoteException,
+        RemoteException
+    {
+        ShareBean shareBean = null;
+
+        for (int i=0; i < sharesServer.size(); i++)
+            if (sharesServer.get(i).getId() == id)
+                shareBean = sharesServer.get(i);
+
+        if (shareBean == null)
+            throw new ParcmanClientFileNotExistsRemoteException();
+
+        try
+        {
+            File file = new File(shareBean.getUrl().toURI());
+
+            if (!file.exists() || !file.canRead())
+                throw new ParcmanClientFileNotExistsRemoteException();
+
+            byte buffer[] = new byte[(int)file.length()];
+            BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
+            input.read(buffer, 0, buffer.length);
+            input.close();
+            return buffer;
+        }
+        catch (Exception e)
+        {
+            PLog.debug("ParcmanClient.getFile", "Impossibile trasmettere il file con id" + id);
+            throw new ParcmanClientFileErrorRemoteException();
+        }
+
+    }
+
 	/**
 	* Restituisce il PATH assoluto della directory condivisa.
 	*
