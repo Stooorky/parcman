@@ -5,8 +5,8 @@ import java.rmi.server.*;
 import java.util.*;
 
 import remoteexceptions.*;
-import parcmanserver.ClientData;
 import parcmanagent.UpdateList;
+import parcmanagent.ClientDataForAgent;
 
 /**
  * Interfaccia remota del ParcmanServer per il ParcmanAgent.
@@ -25,7 +25,7 @@ extends Remote
      * @param validity Periodo di validita' del ParcmanAgent chiamante
      * @throws RemoteException Eccezione Remota
      */
-    public void sendUpdateLists(Map<ClientData, UpdateList> updateLists, long validity) throws
+    public void sendUpdateLists(Map<ClientDataForAgent, UpdateList> updateLists, long validity) throws
         RemoteException;
 
 	/**

@@ -304,6 +304,7 @@ public class ShareBean
 	 */
 	public boolean validate()
 	{
+        /*
 		if (this.url == null)
 			return false;
 		if (this.hash == null || this.hash.equals(""))
@@ -312,7 +313,7 @@ public class ShareBean
 			return false;
 		if (this.keywords == null || this.keywords.size() == 0)
 			return false;
-
+        */
 		return true;
 	}
 
@@ -333,6 +334,7 @@ public class ShareBean
 
 		if (!this.validate())
 			throw new IllegalArgumentException("I dati relativi al file non sono validi.");
+            
 	}
 
 	/**

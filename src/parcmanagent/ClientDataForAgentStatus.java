@@ -1,6 +1,8 @@
 package parcmanagent;
 
-public class ClientDataForAgentStatus
+import java.io.Serializable;
+
+public class ClientDataForAgentStatus implements Serializable
 {
 	public static final int READY = 0;
 	public static final int IN_UPDATE = 1;

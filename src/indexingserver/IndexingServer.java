@@ -46,14 +46,14 @@ public class IndexingServer
 	 * Periodo che indica ogni quanti millisecondi il server invia una
 	 * nuova squadra di agenti <tt>ParcmanAgent</tt>.
 	 */
-	private int agentTeamLaunchPeriod = 1000 * 60; // imposto il periodo a 1 minuto.
+	private int agentTeamLaunchPeriod = 1000 * 10; // imposto il periodo a 1 minuto.
 
 	/**
 	 * Intero che indica con quanto ritardo (espresso in
 	 * millisecondi) il server invia una nuova squadra di agenti 
 	 * <tt>ParcmanAgent</tt> ad ogni periodo <tt>agentTeamLaunchPeriod</tt>
 	 */
-	private int agentTeamLaunchDelay = 1000 * 60; // imposto il ritardo a 1 minuto.
+	private int agentTeamLaunchDelay = 1000 * 10; // imposto il ritardo a 1 minuto.
 
 	/**
 	 * Double che rappresenta la percentuale di <tt>agentTeamLaunchPeriod</tt> con
@@ -129,24 +129,26 @@ public class IndexingServer
      * Richiesta inviata dopo il TimeOut
      * @throws RemoteException Eccezione Remota
      */
-    public void sendUpdateLists(Map<ClientData, UpdateList> updateLists, long validity) throws
+    public void sendUpdateLists(Map<ClientDataForAgent, UpdateList> updateLists, long validity) throws
         IndexingServerRequestAfterTimeOutRemoteException,
         RemoteException
     {
         // Controllo che l'agente sia arrivato prima del timeOut
-        if (validity > System.currentTimeMillis())
+        if (validity < System.currentTimeMillis())
         {
             PLog.debug("IndexingServer.sendUpdateLists", "Richiesta da parte di un ParcmanAgent arrivata oltre il TimeOut. Nessun aggiornamento eseguito");
             throw new IndexingServerRequestAfterTimeOutRemoteException(); 
         }
 
-        ClientData key;
+        ClientDataForAgent key;
         UpdateList data;
 
         for (Iterator iter = updateLists.keySet().iterator(); iter.hasNext(); )
         {
-            key = (ClientData) (iter.next());
+            key = (ClientDataForAgent) (iter.next());
             data = updateLists.get(key);
+            if (data == null)
+                continue;
 
             Vector<ShareBean> addShares = data.getAddList();
             Vector<Integer> removeShares = data.getRemoveList();
@@ -250,20 +252,6 @@ public class IndexingServer
 	}
 
 	/**
-	 * Metodo che implementa l'algoritmo per scegliere quanti gruppi
-	 * di indirizzi ip generare.
-	 *
-	 * @param numConnectedClient Numero dei client connessi.
-	 * @return restituisce un int che rappresenta il numero di
-	 * ParcmanAgent da creare.
-	 */
-	protected int ipSplitRate(int numConnectedClient)
-	{
-		// so stupid
-		return numConnectedClient / 10;
-	}
-	
-	/**
 	 * Inizia l'indicizzazione dei client. L'indicizzazione e`
 	 * gestita attraverso un <tt>Timer</tt>. I parametri di
 	 * gestione del Timer sono:
@@ -283,11 +271,9 @@ public class IndexingServer
 	private void run() throws 
 		RemoteException
 	{
-		Map<String, ClientData> connectedClients = new HashMap<String, ClientData>(this.parcmanServer.getConnectedUsers(this));
-		int numberOfAgent = ipSplitRate(connectedClients.size());
-
+        PLog.debug("IndexingServer.run", "Avvio SendAgentTimerTask");
 		Timer timer = new Timer();
-		timer.schedule(new SendAgentTimerTask(this, numberOfAgent, connectedClients), agentTeamLaunchDelay, agentTeamLaunchPeriod);
+		timer.schedule(new SendAgentTimerTask(this.parcmanServer, this), agentTeamLaunchDelay, agentTeamLaunchPeriod);
 	}
 }
 
@@ -295,27 +281,82 @@ public class IndexingServer
 class SendAgentTimerTask 
 extends TimerTask
 {
+    private RemoteParcmanServer parcmanServer;
 	private IndexingServer is;
-	private int numberOfAgent;
 	private Map<String, ClientData> connectedClients;
 
-	public SendAgentTimerTask(IndexingServer is, int numberOfAgent, Map<String, ClientData> connectedClients)
+	public SendAgentTimerTask(RemoteParcmanServer parcmanServer, IndexingServer is)
 	{
+        this.parcmanServer = parcmanServer;
 		this.is = is;
-		this.numberOfAgent = numberOfAgent;	
-		this.connectedClients = connectedClients;
 	}
 
+	/**
+	 * Metodo che implementa l'algoritmo per scegliere quanti gruppi
+	 * di indirizzi ip generare.
+	 *
+	 * @param numConnectedClient Numero dei client connessi.
+	 * @return restituisce un int che rappresenta il numero di
+	 * ParcmanAgent da creare.
+	 */
+	private int ipSplitRate(int numConnectedClient)
+	{
+		// so stupid
+		return 10;
+	}
+	
 	public void run() 
 	{
-		int interval = this.numberOfAgent;
-		int last = 0;
+        try
+        {
+		    connectedClients = new HashMap<String, ClientData>(this.parcmanServer.getConnectedUsers(is));
+        }
+        catch (RemoteException e)
+        {
+            PLog.err(e, "SendAgentTimerTask", "Impossibile ottenere la lista degli utenti connessi dal ParcmanServer");
+            return;
+        }
+        
+        PLog.debug("SendAgentTimerTask.run", "Invio degli agenti in corso");
+
+        int x=0;
+        Vector<ClientDataForAgent> clients = new Vector<ClientDataForAgent>();
+       	Iterator iter = connectedClients.keySet().iterator();
+
+        while (iter.hasNext())
+        {
+            String name = (String) iter.next();
+            clients.add(new ClientDataForAgent(connectedClients.get(name).getName(),
+                    (RemoteParcmanClientAgent) connectedClients.get(name).getStub(),
+                    connectedClients.get(name).getVersion()));
+
+            if (x>=this.ipSplitRate((int)this.connectedClients.size()) || !iter.hasNext())
+            {
+			    long validity = (long) (System.currentTimeMillis() + this.is.getAgentTeamLaunchPeriod() * this.is.getAgentPeriodLaunchPercent());
+			    ParcmanAgent rpa = null;
+			    try 
+			    {
+				    rpa = new ParcmanAgent(this.is, validity, clients);
+                    PLog.debug("SendAgentTimerTask.run", "Inviato un nuovo agente");
+			    } 
+			    catch (RemoteException e)
+			    {
+				    PLog.err(e, "SendAgentTimerTask.run", "Non e` possibile creare il ParcmanAgent.");
+			    }
+
+                clients = new Vector<ClientDataForAgent>();
+                x=0;
+            }
+
+            x++;
+        }
+        /*
 		while (this.numberOfAgent != 0)
 		{
 			long validity = (long) (System.currentTimeMillis() + this.is.getAgentTeamLaunchPeriod() * this.is.getAgentPeriodLaunchPercent());
 			Vector<ClientData> _clients = new Vector<ClientData>(
 				Arrays.asList(
-					(ClientData[]) (Arrays.copyOfRange(
+					(List<ClientData>) (Arrays.copyOfRange(
 							this.connectedClients.values().toArray(), 
 							last, 
 							interval)
@@ -330,6 +371,7 @@ extends TimerTask
 			ParcmanAgent rpa = null;
 			try 
 			{
+                PLog.debug("SendAgentTimerTask.run", "Inviato un nuovo agente");
 				rpa = new ParcmanAgent(this.is, validity, clients);
 			} 
 			catch (RemoteException e)
@@ -343,5 +385,7 @@ extends TimerTask
 
 			this.numberOfAgent--;
 		}
+        */
 	}
 }
+

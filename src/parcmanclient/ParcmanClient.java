@@ -87,12 +87,12 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public ParcmanClient(RemoteParcmanServerUser parcmanServerStub, String userName) throws
 		RemoteException
-		{
-			this.parcmanServerStub = parcmanServerStub;
-			this.userName = userName;
-			this.sharesServer = new Vector<ShareBean>();
-			this.sharesAgent = new Vector<ShareBean>();
-		}
+	{
+		this.parcmanServerStub = parcmanServerStub;
+		this.userName = userName;
+		this.sharesServer = new Vector<ShareBean>();
+		this.sharesAgent = new Vector<ShareBean>();
+	}
 
 	/**
 	 * Restituisce true se il ParcmanClient ha bisogno di eseguire un
@@ -105,20 +105,20 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public boolean haveAnUpdate(int version) throws
 		RemoteException
+	{
+		if (version != this.versionServer && version != this.versionAgent)
 		{
-			if (version != versionServer && version != versionAgent)
-			{
-				PLog.debug("ParcmanClient.haveAnUpdate", "Codice di versione errato (" + version + ")");
-				this.exit();
-				return false;
-			}
-
-			if ((version == versionServer && sharesServerUpdateList != null) ||
-					(version == versionAgent && sharesAgentUpdateList != null))
-				return true;            
-			else
-				return false;
+			PLog.debug("ParcmanClient.haveAnUpdate", "Codice di versione errato (" + version + ")");
+			this.exit();
+			return false;
 		}
+
+		if ((version == versionServer && sharesServerUpdateList != null) ||
+				(version == versionAgent && sharesAgentUpdateList != null))
+			return true;            
+		else
+			return false;
+	}
 
 	/**
 	 * Permette il trasferimento di un agente remoto.
@@ -130,17 +130,17 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public void transferAgent(RemoteParcmanAgentClient parcmanAgent) throws
 		RemoteException
+	{
+		try
 		{
-			try
-			{
-				parcmanAgent.run();
-			}
-			catch (RemoteException e)
-			{
-				PLog.debug("ParcmanClient.transferAgent", "Eccezione remota nella chiamta al metodo run() del ParcmanAgent");
-				return;
-			}
+			parcmanAgent.run();
 		}
+		catch (RemoteException e)
+		{
+			PLog.debug("ParcmanClient.transferAgent", "Eccezione remota nella chiamta al metodo run() del ParcmanAgent");
+			return;
+		}
+	}
 
 	/**
 	 * Forza la riconnessione del client.
@@ -149,43 +149,43 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public void reconnect() throws
 		RemoteException
+	{
+		System.out.println("\n\n----- Ricconnessione forzata in corso... -----");
+
+		try
 		{
-			System.out.println("\n\n----- Ricconnessione forzata in corso... -----");
-
-			try
-			{
-				// Spedisco lo stub del ParcmanClient al ParcmanServer
-				parcmanServerStub.connect(this, this.userName);
-			}
-			catch(RemoteException e)
-			{
-				System.out.println(e.getMessage());
-				System.out.println("Autenticazione fallita.");
-				System.exit(0);
-			}
-
-			System.out.println("Invio richiesta file condivisi.\n\n");
-
-			try
-			{
-				this.sharesServer = parcmanServerStub.getSharings(this, this.userName);
-				this.versionServer = parcmanServerStub.getSharingsVersion(this, this.userName);
-				this.sharesAgentUpdateList = null;
-				this.sharesServerUpdateList = null;
-				this.sharesAgent = null;
-				this.versionAgent = -1;
-			}
-			catch(ParcmanServerRequestErrorRemoteException e)
-			{
-				System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
-				System.exit(0);
-			}
-			catch(RemoteException e)
-			{
-				System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
-				System.exit(0);
-			}
+			// Spedisco lo stub del ParcmanClient al ParcmanServer
+			parcmanServerStub.connect(this, this.userName);
 		}
+		catch(RemoteException e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println("Autenticazione fallita.");
+			System.exit(0);
+		}
+
+		System.out.println("Invio richiesta file condivisi.\n\n");
+
+		try
+		{
+			this.sharesServer = parcmanServerStub.getSharings(this, this.userName);
+			this.versionServer = parcmanServerStub.getSharingsVersion(this, this.userName);
+			this.sharesAgentUpdateList = null;
+			this.sharesServerUpdateList = null;
+			this.sharesAgent = null;
+			this.versionAgent = -1;
+		}
+		catch(ParcmanServerRequestErrorRemoteException e)
+		{
+			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			System.exit(0);
+		}
+		catch(RemoteException e)
+		{
+			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			System.exit(0);
+		}
+	}
 
 	/**
 	 * Lancia la connessione alla rete Parcman.
@@ -194,57 +194,57 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public void startConnection() throws
 		RemoteException
+	{
+		try
 		{
-			try
-			{
-				// Spedisco lo stub del ParcmanClient al ParcmanServer
-				parcmanServerStub.connect(this, this.userName);
-			}
-			catch(RemoteException e)
-			{
-				System.out.println(e.getMessage());
-				System.out.println("Autenticazione fallita.");
-				System.exit(0);
-			}
-
-			System.out.println("Autenticazione in corso...");
-			System.out.println("Invio richiesta file condivisi.");
-
-			try
-			{
-				this.sharesServer = parcmanServerStub.getSharings(this, this.userName);
-				this.versionServer = parcmanServerStub.getSharingsVersion(this, this.userName);
-				this.sharesAgentUpdateList = null;
-				this.sharesServerUpdateList = null;
-				this.sharesAgent = null;
-				this.versionAgent = -1;
-			}
-			catch(ParcmanServerRequestErrorRemoteException e)
-			{
-				System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
-				System.exit(0);
-			}
-			catch(RemoteException e)
-			{
-				System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
-				System.exit(0);
-			}
-
-			System.out.println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
-
-			// Fixo e ricontrollo la directory di condivisione.
-			this.fixSharingDirectory();
-
-			Timer timer = new Timer();
-			this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
-			// La scansione della directory condivisa viene effettuata ogni 60 secondi
-			// con una attesa iniziale di 10 secondi.
-			timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
-
-			// Lancio la shell
-			PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
-			shell.run();
+			// Spedisco lo stub del ParcmanClient al ParcmanServer
+			parcmanServerStub.connect(this, this.userName);
 		}
+		catch(RemoteException e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println("Autenticazione fallita.");
+			System.exit(0);
+		}
+
+		System.out.println("Autenticazione in corso...");
+		System.out.println("Invio richiesta file condivisi.");
+
+		try
+		{
+			this.sharesServer = parcmanServerStub.getSharings(this, this.userName);
+			this.versionServer = parcmanServerStub.getSharingsVersion(this, this.userName);
+			this.sharesAgentUpdateList = null;
+			this.sharesServerUpdateList = null;
+			this.sharesAgent = null;
+			this.versionAgent = -1;
+		}
+		catch(ParcmanServerRequestErrorRemoteException e)
+		{
+			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			System.exit(0);
+		}
+		catch(RemoteException e)
+		{
+			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			System.exit(0);
+		}
+
+		System.out.println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
+
+		// Fixo e ricontrollo la directory di condivisione.
+		this.fixSharingDirectory();
+
+		Timer timer = new Timer();
+		this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
+		// La scansione della directory condivisa viene effettuata ogni 60 secondi
+		// con una attesa iniziale di 10 secondi.
+		timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
+
+		// Lancio la shell
+		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
+		shell.run();
+	}
 
 	/**
 	 * Esegue la disconnessione dalla rete.
@@ -278,9 +278,9 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public String getUserName() throws
 		RemoteException
-		{
-			return this.userName;
-		}
+	{
+		return this.userName;
+	}
 
 	/**
 	 * Trasmette il file richiesto come stream di byte.
@@ -297,36 +297,36 @@ implements RemoteParcmanClient, Serializable
 		ParcmanClientFileNotExistsRemoteException,
 		ParcmanClientFileErrorRemoteException,
 		RemoteException
+	{
+		ShareBean shareBean = null;
+
+		for (int i=0; i < sharesServer.size(); i++)
+			if (sharesServer.get(i).getId() == id)
+				shareBean = sharesServer.get(i);
+
+		if (shareBean == null)
+			throw new ParcmanClientFileNotExistsRemoteException();
+
+		try
 		{
-			ShareBean shareBean = null;
+			File file = new File(shareBean.getUrl().toURI());
 
-			for (int i=0; i < sharesServer.size(); i++)
-				if (sharesServer.get(i).getId() == id)
-					shareBean = sharesServer.get(i);
-
-			if (shareBean == null)
+			if (!file.exists() || !file.canRead())
 				throw new ParcmanClientFileNotExistsRemoteException();
 
-			try
-			{
-				File file = new File(shareBean.getUrl().toURI());
-
-				if (!file.exists() || !file.canRead())
-					throw new ParcmanClientFileNotExistsRemoteException();
-
-				byte buffer[] = new byte[(int)file.length()];
-				BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
-				input.read(buffer, 0, buffer.length);
-				input.close();
-				return buffer;
-			}
-			catch (Exception e)
-			{
-				PLog.debug("ParcmanClient.getFile", "Impossibile trasmettere il file con id" + id);
-				throw new ParcmanClientFileErrorRemoteException();
-			}
-
+			byte buffer[] = new byte[(int)file.length()];
+			BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
+			input.read(buffer, 0, buffer.length);
+			input.close();
+			return buffer;
 		}
+		catch (Exception e)
+		{
+			PLog.debug("ParcmanClient.getFile", "Impossibile trasmettere il file con id" + id);
+			throw new ParcmanClientFileErrorRemoteException();
+		}
+
+	}
 
 	/**
 	 * Restituisce il PATH assoluto della directory condivisa.
@@ -500,40 +500,40 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public UpdateList getUpdateList(int version) throws
 		RemoteException
+	{
+		if (version != versionServer && version != versionAgent)
 		{
-			if (version != versionServer && version != versionAgent)
-			{
-				PLog.debug("ParcmanClient.getUpdateList", "Codice di versione errato (" + version + ")");
-				this.exit();
-				return null;
-			}
-
-			try
-			{
-				if (version == versionServer)
-				{
-					this.sharesAgent = this.sharesServerUpdateList.getUpdatedSharesList(this.sharesServer);
-					this.versionAgent = this.sharesServerUpdateList.getVersion();
-					return this.sharesServerUpdateList;
-				}
-				else if (version == versionAgent)
-				{
-					this.sharesAgent = this.sharesAgentUpdateList.getUpdatedSharesList(this.sharesAgent);
-					this.sharesServer = this.sharesAgent;
-					this.versionServer = this.versionAgent;
-					this.versionAgent = this.sharesAgentUpdateList.getVersion();
-					return this.sharesAgentUpdateList;
-				}
-			}
-			catch (UpdateSharesListErrorException e)
-			{
-				PLog.err(e, "ParcmanClient.getUpdateList", "Errore durante l'avanzamento di versione");
-				this.exit();
-				return null;
-			}
-
+			PLog.debug("ParcmanClient.getUpdateList", "Codice di versione errato (" + version + ")");
+			this.exit();
 			return null;
 		}
+
+		try
+		{
+			if (version == versionServer)
+			{
+				this.sharesAgent = this.sharesServerUpdateList.getUpdatedSharesList(this.sharesServer);
+				this.versionAgent = this.sharesServerUpdateList.getVersion();
+				return this.sharesServerUpdateList;
+			}
+			else if (version == versionAgent)
+			{
+				this.sharesAgent = this.sharesAgentUpdateList.getUpdatedSharesList(this.sharesAgent);
+				this.sharesServer = this.sharesAgent;
+				this.versionServer = this.versionAgent;
+				this.versionAgent = this.sharesAgentUpdateList.getVersion();
+				return this.sharesAgentUpdateList;
+			}
+		}
+		catch (UpdateSharesListErrorException e)
+		{
+			PLog.err(e, "ParcmanClient.getUpdateList", "Errore durante l'avanzamento di versione");
+			this.exit();
+			return null;
+		}
+
+		return null;
+	}
 
 	private int getNewId(Vector<ShareBean> newList)
 	{
@@ -606,16 +606,16 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public void ping() throws
 		RemoteException
+	{
+		try
 		{
-			try
-			{
-				PLog.debug("ParcmanClient.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
-			}
-			catch(ServerNotActiveException e)
-			{
-				PLog.err(e, "ParcmanClient.ping", "Errore di rete, ClientHost irraggiungibile.");
-			}
+			PLog.debug("ParcmanClient.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
 		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanClient.ping", "Errore di rete, ClientHost irraggiungibile.");
+		}
+	}
 }
 
 
