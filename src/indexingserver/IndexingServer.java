@@ -337,14 +337,6 @@ extends TimerTask
 				PLog.err(e, "SendAgentTimerTask.run", "Non e` possibile creare il ParcmanAgent.");
 				continue;
 			}
-			try
-			{
-				rpa.unexportObject(rpa, true);
-			}
-			catch (NoSuchObjectException e)
-			{
-				PLog.err(e, "SendAgentTimerTask.run", "Non e` possibile de-esportare il ParcmanAgent.");
-			}
 
 			// RemoteParcmanAgentClient rpac = ... lookup ...
 			// rpac.go();

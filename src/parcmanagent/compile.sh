@@ -1,6 +1,7 @@
 #!/bin/bash
 
-sourcefile=(ClientDataForAgent.java \
+sourcefile=(ClientDataForAgentStatus.java \
+	ClientDataForAgent.java \
 	RemoteParcmanAgent.java \
 	RemoteParcmanAgentClient.java \
         ParcmanAgent.java \
