@@ -56,6 +56,10 @@ public class ParcmanServer
 		this.dBServer = dBServer;
 		this.connectUsers = new HashMap<String, ClientData>();
 		this.attempUsers = new HashMap<String, String>();
+
+        PLog.debug("ParcmanServer", "Avvio ControlUsersTimerTask");
+		Timer timer = new Timer();
+		timer.schedule(new ControlUsersTimerTask(this), 10000, 30000);
 	}
 
     /**
@@ -434,6 +438,31 @@ public class ParcmanServer
 		}
 	}
 
+    /**
+     * Controlla lo stato degli utenti connessi disconnettendo tutti
+     * quelli che risultano irraggiungibili.
+     */
+    public void checkUsers()
+    {
+        Iterator<String> iter = this.connectUsers.keySet().iterator();
+
+        while (iter.hasNext())
+        {
+            String name = "patata";
+
+		    try
+		    {
+                name = iter.next();
+			    this.connectUsers.get(name).getStub().ping();
+		    }
+		    catch (Exception e)
+		    {
+			    PLog.debug("ParcmanServer.checkUsers", "l'utente " + name + " non e' piu' raggiungibile... disconnessione effettuata.");
+			    this.connectUsers.remove(name);
+		    }
+        }
+    }
+
 	/**
 	* Metodo ping.
 	*
@@ -452,3 +481,32 @@ public class ParcmanServer
 		}
 	}
 }
+
+/**
+ * Task per il controllo degli utenti connessi.
+ *
+ * @author Parcman Tm
+ */
+class ControlUsersTimerTask extends TimerTask
+{
+    private ParcmanServer parcmanServer;
+
+    /**
+     * Costruttore.
+     *
+     * @param parcmanServer puntatore al parcmanServer
+     */
+	public ControlUsersTimerTask(ParcmanServer parcmanServer)
+	{
+        this.parcmanServer = parcmanServer;
+	}
+
+    /**
+     * Metodo run.
+     */
+	public void run() 
+	{
+        parcmanServer.checkUsers();
+	}
+}
+

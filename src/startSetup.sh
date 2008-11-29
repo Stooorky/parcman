@@ -1,5 +1,5 @@
 java -classpath :. \
--Djava.rmi.server.codebase=file://$HOME/PAR/parcman/src/ \
+-Djava.rmi.server.codebase=http://192.168.1.103:8003/~sarimisar/common/ \
 -Djava.security.policy=policy \
 -Dsetup.implCodebase=file://$HOME/PAR/parcman/src/ \
 -Dsetup.loginServerClass=loginserver.LoginServer \
