@@ -2,6 +2,7 @@
 
 sourcefile=(RemoteParcmanServer.java \
     RemoteParcmanServerUser.java \
+    RemoteParcmanServerAdmin.java \
 	ParcmanServer.java \
     ClientData.java)
 

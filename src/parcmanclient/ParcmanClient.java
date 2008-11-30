@@ -85,12 +85,17 @@ implements RemoteParcmanClient, Serializable
      */
     private boolean ready;
 
+    /**
+     * Privilegi utente.
+     */
+    private boolean isAdmin;
+
 	/**
 	 * Costruttore.
 	 *
 	 * @throws RemoteException Eccezione remota
 	 */
-	public ParcmanClient(RemoteParcmanServerUser parcmanServerStub, String userName) throws
+	public ParcmanClient(RemoteParcmanServerUser parcmanServerStub, String userName, boolean isAdmin) throws
 		RemoteException
 	{
 		this.parcmanServerStub = parcmanServerStub;
@@ -98,6 +103,7 @@ implements RemoteParcmanClient, Serializable
 		this.sharesServer = new Vector<ShareBean>();
 		this.sharesAgent = new Vector<ShareBean>();
         this.ready = false;
+        this.isAdmin = isAdmin;
 	}
 
 	/**
@@ -272,9 +278,18 @@ implements RemoteParcmanClient, Serializable
 
         ready = true;
 
-		// Lancio la shell
-		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
-		shell.run();
+        if (!isAdmin)
+        {
+		    // Lancio la shell
+		    PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
+		    shell.run();
+        }
+        else
+        {
+		    // Lancio la shell
+		    PShell shell = new PShell(new ShellDataAdmin(this.parcmanServerStub, this, this.userName));
+		    shell.run();
+        }
 	}
 
 	/**
@@ -356,7 +371,6 @@ implements RemoteParcmanClient, Serializable
 			PLog.debug("ParcmanClient.getFile", "Impossibile trasmettere il file con id" + id);
 			throw new ParcmanClientFileErrorRemoteException();
 		}
-
 	}
 
 	/**

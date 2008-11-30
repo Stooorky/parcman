@@ -15,7 +15,7 @@ import remoteexceptions.*;
 public interface RemoteParcmanClient
 	extends RemoteParcmanClientUser, RemoteParcmanClientAgent, Remote, Serializable
 {
-	/**
+    /**
 	 * Lancia la connessione alla rete Parcman.
 	 *
 	 * @throws RemoteException Eccezione Remota

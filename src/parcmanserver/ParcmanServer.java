@@ -463,6 +463,18 @@ public class ParcmanServer
         }
     }
 
+    /**
+     * Restituisce lla lista degli utenti connessi.
+     *
+     * @return Vettore contenente la lista dei nomi utente
+     * @throws RemoteException Eccezione remota
+     */
+    public Vector<String> getConnectUsersList() throws
+        RemoteException
+    {
+        return new Vector<String>(this.connectUsers.keySet());
+    }
+
 	/**
 	* Metodo ping.
 	*

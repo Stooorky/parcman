@@ -1,8 +1,7 @@
 #!/bin/bash
 
 sourcefile=(RemoteClient.java \
-	RemoteClientUser.java \
-	RemoteClientAdmin.java)
+	RemoteClientUser.java)
 
 clpath=`pwd`"/../"
 dom="[REMOTECLIENT]"

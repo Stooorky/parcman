@@ -2,6 +2,8 @@
 
 sourcefile=(RemoteParcmanClient.java \
 	RemoteParcmanClientUser.java \
+    ShellData.java \
+    ShellDataAdmin.java \
 	ParcmanClient.java)
 
 clpath=`pwd`"/../"
