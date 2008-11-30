@@ -14,7 +14,7 @@ import plog.*;
 import remoteexceptions.*;
 import loginserver.*;
 import indexingserver.*;
-import logserver.*;
+
 /**
  * Setup globale lato server.
  *
@@ -48,50 +48,50 @@ public final class Setup
 
 		try
 		{
-            RemoteLogServer logServer = new LogServer();
-
-			PLog.debug("Setup", "Creo un'istanza del DBServer.");
 			// Creo il DBServer
 			RemoteDBServer dBServer = new DBServer(dbDirectory);
+			PLog.debug("Setup", "Ho creato un'istanza del DBServer.");
 
-			PLog.debug("Setup", "Creo un'istanza del ParcmanServer.");
 			// Creo il ParcmanServer
 			RemoteParcmanServer parcmanServer = new ParcmanServer(dBServer);
+			PLog.debug("Setup", "Ho creato un'istanza del ParcmanServer.");
 
-			PLog.debug("Setup", "Creo un'istanza dell'IndexingServer.");
 			// Creo l'IndexingServer
-			RemoteIndexingServer indexingServer = new IndexingServer(dBServer, parcmanServer, logServer);
+			RemoteIndexingServer indexingServer = new IndexingServer(dBServer, parcmanServer);
+			PLog.debug("Setup", "Ho creato un'istanza dell'IndexingServer.");
 
-			PLog.debug("Setup", "Creo e registro il primo gruppo di attivazione.");
 			// Creo e registro il primo gruppo di attivazione
 			ActivationGroupDesc groupDesc = new ActivationGroupDesc(prop, null);
 			ActivationGroupID groupID = ActivationGroup.getSystem().registerGroup(groupDesc);
+			PLog.debug("Setup", "Ho creato e registrato il primo gruppo di attivazione.");
 			PLog.debug("Setup", "L'identificazione del primo gruppo di attivazione e': " + groupID);
 
 			// Creo il MashalledObject per il LoginServer
 			LoginServerAtDate loginServerAtDate = new LoginServerAtDate(0, parcmanServer, dBServer);
 			ActivationDesc actDesc = new ActivationDesc(groupID, loginServerClass, implCodebase, new MarshalledObject(loginServerAtDate));
 
-			PLog.debug("Setup", "Creo un'istanza del LoginServer e la registro al primo gruppo di attivazione.");
 			// Creo e registro il LoginServer
 			RemoteLoginServer loginServer = (RemoteLoginServer)Activatable.register(actDesc);
+			PLog.debug("Setup", "Ho creato un'istanza del LoginServer e l'ho registrata al primo gruppo di attivazione.");
 
 			// Registro il LoginServer sul registro RMI avviato dal servizio Rmid
 			Naming.rebind("//:1098/LoginServer", loginServer);
+			PLog.debug("Setup", "Ho registrato il LoginServer sul registro RMI");
+			
 		}
 		catch(ParcmanDBServerErrorRemoteException e)
 		{
-			PLog.err(e, "Setup", "Impossibile inizializzare il DBServer.");
+			PLog.err(e, "Setup", "Impossibile inizializzare il DBServer. (0)");
 			return;
 		}
 		catch(RemoteException e)
 		{
-			PLog.err(e, "Setup", "Impossibile eseguire il Setup del sistema.");
+			PLog.err(e, "Setup", "Impossibile eseguire il Setup del sistema. (1)");
 			return;
 		}
 		catch(Throwable t)
 		{
-			PLog.err(new Exception(t), "Setup", "Impossibile eseguire il Setup del sistema.");
+			PLog.err(new Exception(t), "Setup", "Impossibile eseguire il Setup del sistema. (2)");
 			return;
 		}
 	}
