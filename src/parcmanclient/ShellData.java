@@ -17,17 +17,17 @@ public class ShellData extends PShellData
 	/**
 	 * Stub del ParcmanServer.
 	 */
-	private RemoteParcmanServerUser parcmanServerStub;
+	protected RemoteParcmanServerUser parcmanServerStub;
 
 	/**
 	* Nome utente.
 	*/
-	private String userName;
+	protected String userName;
 
 	/**
 	* ParcmanClient.
 	*/
-	private ParcmanClient parcmanClient;
+	protected ParcmanClient parcmanClient;
 
 	/**
 	* Costruttore.

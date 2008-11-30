@@ -123,7 +123,7 @@ public class PShell
 						this.runCommand(inputsp[0], inputsp[1]);
 					else
 						this.runCommand(inputsp[0], "");
-				else
+				else if (!inputsp[0].equals(""))
 					out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + inputsp[0]);
 			}
 		}

@@ -30,17 +30,24 @@ public class ClientData
     private int version;
 
     /**
+     * Privilegi utente.
+     */
+    private boolean isAdmin;
+
+    /**
      * Costruttore.
      *
      * @param host Indirizzo IP o URL
      * @param name Nome utente
      * @param stub Stub del ParcmanClient
+     * @param isAdmin Privilegi utente
      */
-    public ClientData(String host, String name, RemoteParcmanClient stub)
+    public ClientData(String host, String name, RemoteParcmanClient stub, boolean isAdmin)
     {
         this.host = host;
         this.name = name;
         this.stub = stub;
+        this.isAdmin = isAdmin;
         this.version = 0;
     }
 
@@ -103,6 +110,27 @@ public class ClientData
     {
         return this.name;
     }
+
+    /**
+     * Assegna i privilegi utente.
+     *
+     * @param isAdmin privilegi utente
+     */
+    public void setIsAdmin(boolean isAdmin)
+    {
+        this.isAdmin = isAdmin;
+    }
+
+    /**
+     * Ritorna i privilegi utente.
+     *
+     * @return privilegi utente
+     */
+    public boolean getIsAdmin()
+    {
+        return this.isAdmin;
+    }
+
 
     /**
      * Assegna lo Stub.

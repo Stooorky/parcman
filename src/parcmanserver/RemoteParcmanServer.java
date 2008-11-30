@@ -13,7 +13,7 @@ import indexingserver.RemoteIndexingServer;
  * @author Parcman Tm
  */
 public interface RemoteParcmanServer
-extends RemoteParcmanServerAdmin, Remote, Serializable
+extends RemoteParcmanServerUser, Remote, Serializable
 {
 	/**
      * Esegue l'aggiunta di un nuovo client alla lista dei tentativi di connessione.

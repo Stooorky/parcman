@@ -80,6 +80,20 @@ public interface RemoteParcmanServerUser
 		ParcmanServerRequestErrorRemoteException,
 		RemoteException;
 
+    /**
+     * Restituisce lla lista degli utenti connessi.
+     *
+	 * @param parcmanClientStub Stub del MobileServer
+	 * @param userName Nome utente proprietario della sessione
+     * @return Vettore contenente la lista dei nomi utente
+     * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi
+     * errati
+     * @throws RemoteException Eccezione remota
+     */
+    public Vector<String> getConnectUsersList(RemoteParcmanClient parcmanClientStub, String userName)  throws
+        ParcmanServerWrongPrivilegesRemoteException,
+        RemoteException;
+
 	/**
 	* Ping.
 	*

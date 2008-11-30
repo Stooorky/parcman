@@ -5,6 +5,7 @@ sourcefile=(ParcmanDBServerErrorRemoteException.java \
 	ParcmanDBServerUserNotExistRemoteException.java \
 	ParcmanDBServerUserNotValidRemoteException.java \
 	ParcmanServerHackWarningRemoteException.java \
+	ParcmanServerWrongPrivilegesRemoteException.java \
 	ParcmanDBServerShareExistRemoteException.java \
 	ParcmanDBServerShareNotValidRemoteException.java \
 	ParcmanServerUserIsConnectRemoteException.java \

@@ -9,9 +9,11 @@ import plog.*;
 import remoteexceptions.*;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
+import database.beans.UserBean;
 import databaseserver.RemoteDBServer;
 import indexingserver.RemoteIndexingServer;
 import parcmanclient.RemoteParcmanClient;
+import privilege.*;
 
 /**
  * Server centrale per la gestione degli utenti.
@@ -195,8 +197,20 @@ public class ParcmanServer
 
 				PLog.debug("ParcmanServer.connect", "Rimosso " + userName + " (" + host + ") dalla lista di attemp.");
 
+        		UserBean userBean;
+
+	        	try
+        		{
+		        	userBean = this.dBServer.getUser(userName);
+	        	}
+	        	catch(ParcmanDBServerUserNotExistRemoteException e)
+	        	{
+		        	PLog.debug("LoginServer.login", "Richiesta rifiutata, nome utente errato.");
+		        	throw new RemoteException("Errore interno del database");
+	        	}
+
 				// Aggiungo l'utente alla lista connectUsers
-				ClientData user = new ClientData(host, userName, parcmanClientStub);
+				ClientData user = new ClientData(host, userName, parcmanClientStub, userBean.getPrivilege().equals(Privilege.getAdminPrivilege()));
                 user.setVersion(0);
 				connectUsers.put(userName, user);
 				PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + host + ") alla lista dei client connessi.");
@@ -311,7 +325,7 @@ public class ParcmanServer
 			}
 			else
 			{
-				PLog.debug("ParcmanServer.getSharings", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				PLog.debug("ParcmanServer.getSharings", "Richiesta non valida dall'host " + this.getClientHost());
 				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
 			}
 		}
@@ -356,7 +370,7 @@ public class ParcmanServer
 			}
 			else
 			{
-				PLog.debug("ParcmanServer.getSharings", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				PLog.debug("ParcmanServer.getSharings", "Richiesta non valida dall'host " + this.getClientHost());
 				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
 			}
 		}
@@ -427,7 +441,7 @@ public class ParcmanServer
 			}
 			else
 			{
-				PLog.debug("ParcmanServer.search", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				PLog.debug("ParcmanServer.search", "Richiesta non valida dall'host " + this.getClientHost());
 				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
 			}
 		}
@@ -466,13 +480,51 @@ public class ParcmanServer
     /**
      * Restituisce lla lista degli utenti connessi.
      *
+	 * @param parcmanClientStub Stub del MobileServer
+	 * @param userName Nome utente proprietario della sessione
      * @return Vettore contenente la lista dei nomi utente
+     * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi
+     * errati
      * @throws RemoteException Eccezione remota
      */
-    public Vector<String> getConnectUsersList() throws
+    public Vector<String> getConnectUsersList(RemoteParcmanClient parcmanClientStub, String userName)  throws
         RemoteException
     {
-        return new Vector<String>(this.connectUsers.keySet());
+        try
+		{
+			PLog.debug("ParcmanServer.getConnectUsersList", "Richiesta la lista degli utenti connessi da parte di " + userName);
+			// Controllo che l'utente sia connesso
+			if (connectUsers.containsKey(userName))
+			{
+				ClientData user = connectUsers.get(userName);
+
+				if (!this.getClientHost().equals(user.getHost()) || !user.getStub().equals(parcmanClientStub))
+				{
+					PLog.debug("ParcmanServer.getConnectUsersList", "Richiesta non valida, host " + this.getClientHost());
+					throw new ParcmanServerHackWarningRemoteException
+							("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+				}
+
+                if (!user.getIsAdmin())
+                {
+                    PLog.debug("ParcmanServer.getConnectUsersList", "Impossibile esaudire la richiesta, privilegi non sufficienti");
+                    throw new ParcmanServerWrongPrivilegesRemoteException();
+                }
+
+
+                return new Vector<String>(this.connectUsers.keySet());
+			}
+			else
+			{
+				PLog.debug("ParcmanServer.getSharings", "Richiesta non valida dall'host " + this.getClientHost());
+				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+			}
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanServer.getSharings", "Errore di rete, ClientHost irraggiungibile.");
+			throw new RemoteException();
+		}
     }
 
 	/**
