@@ -48,12 +48,14 @@ implements Serializable
 	 * @param stub Stub del ParcmanClient
 	 * @param version Versione della lista dei file condivisi
 	 */
-	public ClientDataForAgent(String name, RemoteParcmanClientAgent stub, int version)
+	public ClientDataForAgent(String name, RemoteParcmanClientAgent stub, int version, int status)
 	{
 		this.version = version;
 		this.name = name;
 		this.stub = stub;
-		this.status = ClientDataForAgentStatus.READY;
+        this.status = status;
+        this.updateList = null;
+        System.out.println("CACAAAAAAAAAAAA " + status);
 	}
 
 	/**
@@ -122,7 +124,7 @@ implements Serializable
 	 * @param status stato del contenitore. Lo stato e` di tipo <tt>ClientDataForAgentStatus</tt>.
 	 */
 	public void setStatus(int status)
-	{
+	{   
 		this.status = status;
 	}
 

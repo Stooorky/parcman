@@ -14,7 +14,7 @@ import plog.*;
 import remoteexceptions.*;
 import loginserver.*;
 import indexingserver.*;
-
+import logserver.*;
 /**
  * Setup globale lato server.
  *
@@ -48,6 +48,8 @@ public final class Setup
 
 		try
 		{
+            RemoteLogServer logServer = new LogServer();
+
 			PLog.debug("Setup", "Creo un'istanza del DBServer.");
 			// Creo il DBServer
 			RemoteDBServer dBServer = new DBServer(dbDirectory);
@@ -58,7 +60,7 @@ public final class Setup
 
 			PLog.debug("Setup", "Creo un'istanza dell'IndexingServer.");
 			// Creo l'IndexingServer
-			RemoteIndexingServer indexingServer = new IndexingServer(dBServer, parcmanServer);
+			RemoteIndexingServer indexingServer = new IndexingServer(dBServer, parcmanServer, logServer);
 
 			PLog.debug("Setup", "Creo e registro il primo gruppo di attivazione.");
 			// Creo e registro il primo gruppo di attivazione

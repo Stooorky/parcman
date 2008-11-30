@@ -458,7 +458,7 @@ public class ParcmanServer
 		    catch (Exception e)
 		    {
 			    PLog.debug("ParcmanServer.checkUsers", "l'utente " + name + " non e' piu' raggiungibile... disconnessione effettuata.");
-			    this.connectUsers.remove(name);
+			    iter.remove();
 		    }
         }
     }

@@ -35,7 +35,7 @@ public class RemoteClientUser
         String loginServerAdress = System.getProperty("remoteclient.loginserveradress");
 
 		System.out.println("Parcman, The Italian Arcade Network v1.0.");
-		System.out.println("Bootstrap del Client avvenuto correttamente.");
+		System.out.println("Bootstrap del Client avvenuto correttamente. LoginServerAdress: " + loginServerAdress);
 
 		try
 		{

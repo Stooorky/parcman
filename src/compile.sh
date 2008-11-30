@@ -2,7 +2,7 @@
 
 
 # Elenco dei pacchetti
-pkglist=("pkgserver client tests database remoteexceptions databaseserver parcmanserver parcmanclient loginserver privilege setup indexingserver pshell all parcmanagent")
+pkglist=("pkgserver client tests database remoteexceptions databaseserver parcmanserver parcmanclient loginserver privilege setup indexingserver pshell all parcmanagent logserver")
 
 # Pacchetti
 pkgserver=("remoteclient plog")
@@ -19,8 +19,9 @@ parcmanclient=("parcmanclient plog remoteexceptions")
 privilege=("privilege")
 pshell=("pshell")
 parcmanagent=("parcmanagent")
+logserver=("logserver")
 
-all=("parcmanclient clientbootstrap plog remoteclient tests database remoteexceptions databaseserver loginserver parcmanserver pshell privilege setup indexingserver parcmanagent")
+all=("parcmanclient logserver clientbootstrap plog remoteclient tests database remoteexceptions databaseserver loginserver parcmanserver pshell privilege setup indexingserver parcmanagent")
 
 JAVAC_XLINT_FLAG="-Xlint"
 

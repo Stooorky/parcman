@@ -1,13 +1,10 @@
 #!/bin/bash
 
-sourcefile=(ClientDataForAgent.java \
-	RemoteParcmanAgent.java \
-	RemoteParcmanAgentClient.java \
-        ParcmanAgent.java \
-        UpdateList.java \
-        exceptions/UpdateSharesListErrorException.java)
+sourcefile=(RemoteLogServer.java \
+	LogServer.java)
+
 clpath=`pwd`"/../"
-dom="[PARCMANAGENT]"
+dom="[LOGSERVER]"
 FLAGS="-Xlint"
 
 ### FUNZIONI
@@ -32,7 +29,9 @@ local_clean()
 if [ "$1" == "clean" ]; then
 	local_clean 
 elif [ "$1" == "xlint" ]; then
-	local_compile "$FLAGS"
+	echo "FLAGS: $1"
+	local_compile $FLAGS
 else
 	local_compile
 fi
+

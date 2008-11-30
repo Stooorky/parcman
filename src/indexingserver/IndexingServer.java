@@ -3,7 +3,8 @@ package indexingserver;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
-import java.rmi.*;
+import java.io.*;
+import java.lang.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -11,12 +12,13 @@ import plog.*;
 import remoteexceptions.*;
 import databaseserver.RemoteDBServer;
 import parcmanserver.RemoteParcmanServer;
-import parcmanagent.ParcmanAgent;
+import parcmanagent.*;
 import parcmanagent.ClientDataForAgent;
 import parcmanserver.ClientData;
 import parcmanagent.UpdateList;
 import database.beans.ShareBean;
 import parcmanclient.RemoteParcmanClientAgent;
+import logserver.RemoteLogServer;
 
 /**
  * Server di indicizzazione.
@@ -41,6 +43,8 @@ public class IndexingServer
 	* Stub del ParcmanServer.
 	*/
 	private RemoteParcmanServer parcmanServer;
+
+    private RemoteLogServer logServer;
 
 	/**
 	 * Periodo che indica ogni quanti millisecondi il server invia una
@@ -69,11 +73,12 @@ public class IndexingServer
 	* @param parcmanServer Stub del server centrale
 	* @throws RemoteException Eccezione remota
 	*/
-	public IndexingServer(RemoteDBServer dBServer, RemoteParcmanServer parcmanServer) throws
+	public IndexingServer(RemoteDBServer dBServer, RemoteParcmanServer parcmanServer, RemoteLogServer logServer) throws
 		RemoteException
 	{
 		this.dBServer = dBServer;
 		this.parcmanServer = parcmanServer;
+        this.logServer = logServer;
 		this.run();
 	}
 
@@ -129,7 +134,7 @@ public class IndexingServer
      * Richiesta inviata dopo il TimeOut
      * @throws RemoteException Eccezione Remota
      */
-    public void sendUpdateLists(Map<ClientDataForAgent, UpdateList> updateLists, long validity) throws
+    public void sendUpdateLists(Map<String, ClientDataForAgent> updateLists, long validity, int identify) throws
         IndexingServerRequestAfterTimeOutRemoteException,
         RemoteException
     {
@@ -140,27 +145,32 @@ public class IndexingServer
             throw new IndexingServerRequestAfterTimeOutRemoteException(); 
         }
 
-        ClientDataForAgent key;
-        UpdateList data;
+        String key;
+        ClientDataForAgent data;
 
-        for (Iterator iter = updateLists.keySet().iterator(); iter.hasNext(); )
+        PLog.log("IndexingServer.sendUpdateLists", "Nuova richiesta di aggiornamento da parte dell'agent " + identify);
+
+        for (Iterator<String> iter = updateLists.keySet().iterator(); iter.hasNext(); )
         {
-            key = (ClientDataForAgent) (iter.next());
+            key = iter.next();
             data = updateLists.get(key);
-            if (data == null)
+
+            if (data == null || data.getUpdateList() == null)
+            {
                 continue;
+            }
 
-            Vector<ShareBean> addShares = data.getAddList();
-            Vector<Integer> removeShares = data.getRemoveList();
+            Vector<ShareBean> addShares = data.getUpdateList().getAddList();
+            Vector<Integer> removeShares = data.getUpdateList().getRemoveList();
 
-            PLog.log("IndexingServer.sendUpdateLists", "Aggiorno la lista share dell'utente " + key.getName());
+            PLog.log("IndexingServer.sendUpdateLists", "Aggiorno la lista share dell'utente " + key);
             for (int i = 0; i < addShares.size(); i++)
             {
-                if (!addShares.get(i).getOwner().equals(key.getName()))
+                if (!addShares.get(i).getOwner().equals(key))
                 {
                     PLog.debug("IndexingServer.sendUpdateLists", "Lista Shares non coerente con i dati utente "
                             + addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
-                    this.forceUserToReconnect(key.getName());
+                    this.forceUserToReconnect(key);
                     break;
                 }
 
@@ -198,36 +208,36 @@ public class IndexingServer
             {
                 try
                 {
-                    dBServer.removeShare(removeShares.get(i).intValue(), key.getName());
+                    dBServer.removeShare(removeShares.get(i).intValue(), key);
                 }
                 catch (ParcmanDBServerErrorRemoteException e)
                 {
-                    PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile rimuovere il file " + removeShares.get(i).intValue() + "@" + key.getName());
-                    this.forceUserToReconnect(key.getName());
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile rimuovere il file " + removeShares.get(i).intValue() + "@" + key);
+                    this.forceUserToReconnect(key);
                     break;
                 }
                 catch (ParcmanDBServerShareNotExistRemoteException e)
                 {
-                    PLog.err(e, "IndexingServer.sendUpdateLists", "File non presente nel database " + removeShares.get(i).intValue() + "@" + key.getName());
-                    this.forceUserToReconnect(key.getName());
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "File non presente nel database " + removeShares.get(i).intValue() + "@" + key);
+                    this.forceUserToReconnect(key);
                     break;
                 }
                 catch (RemoteException e)
                 {
-                    PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile rimuovere il file " + removeShares.get(i).intValue() + "@" + key.getName());
-                    this.forceUserToReconnect(key.getName());
+                    PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile rimuovere il file " + removeShares.get(i).intValue() + "@" + key);
+                    this.forceUserToReconnect(key);
                     break;
                 }
             }
  
             try
             {
-                parcmanServer.setShareListVersionOfUser(key.getName(), data.getVersion());
+                parcmanServer.setShareListVersionOfUser(key, data.getUpdateList().getVersion());
             }
             catch (RemoteException e)
             {
-                PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile settare la versione della lista di file condivisi " + data.getVersion() + "@" + key.getName());
-                this.forceUserToReconnect(key.getName());
+                PLog.err(e, "IndexingServer.sendUpdateLists", "Impossibile settare la versione della lista di file condivisi " + data.getUpdateList().getVersion() + "@" + key);
+                this.forceUserToReconnect(key);
                 continue;
             }
         }
@@ -273,7 +283,7 @@ public class IndexingServer
 	{
         PLog.debug("IndexingServer.run", "Avvio SendAgentTimerTask");
 		Timer timer = new Timer();
-		timer.schedule(new SendAgentTimerTask(this.parcmanServer, this), agentTeamLaunchDelay, agentTeamLaunchPeriod);
+		timer.schedule(new SendAgentTimerTask(this.parcmanServer, this, this.logServer), agentTeamLaunchDelay, agentTeamLaunchPeriod);
 	}
 }
 
@@ -283,12 +293,16 @@ extends TimerTask
 {
     private RemoteParcmanServer parcmanServer;
 	private IndexingServer is;
+    private RemoteLogServer logServer;
 	private Map<String, ClientData> connectedClients;
+    private int identify;
 
-	public SendAgentTimerTask(RemoteParcmanServer parcmanServer, IndexingServer is)
+	public SendAgentTimerTask(RemoteParcmanServer parcmanServer, IndexingServer is, RemoteLogServer logServer)
 	{
         this.parcmanServer = parcmanServer;
 		this.is = is;
+        this.logServer = logServer;
+        this.identify = 0;
 	}
 
 	/**
@@ -328,16 +342,19 @@ extends TimerTask
             String name = (String) iter.next();
             clients.add(new ClientDataForAgent(connectedClients.get(name).getName(),
                     (RemoteParcmanClientAgent) connectedClients.get(name).getStub(),
-                    connectedClients.get(name).getVersion()));
+                    connectedClients.get(name).getVersion(), 6));
 
             if (x>=this.ipSplitRate((int)this.connectedClients.size()) || !iter.hasNext())
             {
 			    long validity = (long) (System.currentTimeMillis() + this.is.getAgentTeamLaunchPeriod() * this.is.getAgentPeriodLaunchPercent());
-			    ParcmanAgent rpa = null;
+			    RemoteParcmanAgent rpa;
 			    try 
 			    {
-				    rpa = new ParcmanAgent(this.is, validity, clients);
-                    PLog.debug("SendAgentTimerTask.run", "Inviato un nuovo agente");
+				    rpa = new ParcmanAgent(this.is, validity, clients, this.identify, this.logServer);
+                    PLog.debug("SendAgentTimerTask.run", "Inviato un nuovo agente Identify:" + this.identify);
+                    UnicastRemoteObject.unexportObject(rpa, true);
+                    rpa.start();
+                    this.identify++;
 			    } 
 			    catch (RemoteException e)
 			    {

@@ -25,7 +25,7 @@ extends Remote
      * @param validity Periodo di validita' del ParcmanAgent chiamante
      * @throws RemoteException Eccezione Remota
      */
-    public void sendUpdateLists(Map<ClientDataForAgent, UpdateList> updateLists, long validity) throws
+    public void sendUpdateLists(Map<String, ClientDataForAgent> updateLists, long validity, int identify) throws
         RemoteException;
 
 	/**

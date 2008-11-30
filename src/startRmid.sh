@@ -4,6 +4,7 @@ sleep 1
 
 rmid -log $HOME/PAR/log-rmid/ \
 -J-Djava.rmi.server.codebase=file://$HOME/PAR/parcman/src/ \
+-J-Djava.rmi.server.hostname=192.168.5.13 \
 -J-Djava.rmi.dgc.leaseValue=30000 \
 -J-Djava.security.policy=policy &
 #file://$HOME/Desktop/svnkit/parcman/src/ \

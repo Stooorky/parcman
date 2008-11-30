@@ -146,13 +146,13 @@ public class DBSharings
 	 * @param owner Proprietario del file
 	 * @throws ParcmanDBShareNotExistException Il file specificato non e' presente all'interno del database
 	 */
-	public void removeShare(int id, String owner) throws
+	public void removeShare(Integer id, String owner) throws
 		ParcmanDBShareNotExistException
 	{
         for (int i = 0; i < this.sharings.size(); i++)
         {
             ShareBean share = this.sharings.get(i);
-	        if (share.getId() == id && share.getOwner().equals(owner))
+	        if (share.getId() == id.intValue() && share.getOwner().equals(owner))
 			{
                 this.sharings.remove(i);
                 return;

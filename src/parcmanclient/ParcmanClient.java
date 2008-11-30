@@ -80,6 +80,11 @@ implements RemoteParcmanClient, Serializable
 	 */
 	private TimerTask scanDirectoryTimerTask;
 
+    /**
+     * Stato del client.
+     */
+    private boolean ready;
+
 	/**
 	 * Costruttore.
 	 *
@@ -92,6 +97,7 @@ implements RemoteParcmanClient, Serializable
 		this.userName = userName;
 		this.sharesServer = new Vector<ShareBean>();
 		this.sharesAgent = new Vector<ShareBean>();
+        this.ready = false;
 	}
 
 	/**
@@ -113,11 +119,33 @@ implements RemoteParcmanClient, Serializable
 			return false;
 		}
 
-		if ((version == versionServer && sharesServerUpdateList != null) ||
-				(version == versionAgent && sharesAgentUpdateList != null))
-			return true;            
-		else
+		if ((version == versionServer && sharesServerUpdateList != null && this.versionAgent == -1 && ready) ||
+				(version == versionAgent && sharesAgentUpdateList != null && this.versionAgent != -1 && ready))
+			return true;
+		else if (version == versionAgent && ready)
+        {
+            this.sharesServer = this.sharesAgent;
+			this.versionServer = this.versionAgent;
+            this.sharesAgent = null;
+            this.sharesAgentUpdateList = null;
+            this.versionAgent = -1;
+			PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 			return false;
+        }
+        else if (version == versionServer && ready)
+        {
+            this.sharesAgent = null;
+            this.sharesAgentUpdateList = null;
+			this.versionAgent = -1;
+			PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
+			return false;
+        }
+        else if (!ready)
+            return false;
+
+		PLog.debug("ParcmanClient.haveAnUpdate", "Codice di versione errato (" + version + ")");
+		this.exit();
+		return false;
 	}
 
 	/**
@@ -134,6 +162,7 @@ implements RemoteParcmanClient, Serializable
 		try
 		{
 			parcmanAgent.run();
+            parcmanAgent = null;
 		}
 		catch (RemoteException e)
 		{
@@ -235,11 +264,13 @@ implements RemoteParcmanClient, Serializable
 		// Fixo e ricontrollo la directory di condivisione.
 		this.fixSharingDirectory();
 
-		Timer timer = new Timer();
-		this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
+		//Timer timer = new Timer();
+		//this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
 		// La scansione della directory condivisa viene effettuata ogni 60 secondi
 		// con una attesa iniziale di 10 secondi.
-		timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
+        //timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
+
+        ready = true;
 
 		// Lancio la shell
 		PShell shell = new PShell(new ShellData(this.parcmanServerStub, this, this.userName));
@@ -363,6 +394,7 @@ implements RemoteParcmanClient, Serializable
 	 */
 	public void scanSharingDirectory()
 	{
+        ready = false;
 		File mainDir = new File(this.getSharingDirectory());
 		Vector<ShareBean> newList = new Vector<ShareBean>();
 
@@ -438,8 +470,9 @@ implements RemoteParcmanClient, Serializable
 			}
 		}
 
-		if (sharesAgent  != null && modifyAgent)
+		if (sharesAgent != null && modifyAgent)
 		{
+            PLog.debug("ParcmanClient.scanSharingDirectory", "Aggiornata la versione Agent");
 			updateAgent.setVersion(this.versionAgent+1);
 			this.sharesAgentUpdateList = updateAgent;
 		}
@@ -448,6 +481,7 @@ implements RemoteParcmanClient, Serializable
 
 		if (modifyServer)
 		{
+            PLog.debug("ParcmanClient.scanSharingDirectory", "Aggiornata la versione Server");
 			updateServer.setVersion(this.versionServer+1);
 			this.sharesServerUpdateList = updateServer;
 		}
@@ -459,6 +493,8 @@ implements RemoteParcmanClient, Serializable
 		   System.out.println(this.sharesAgentUpdateList.toString());
 		   System.out.println(this.sharesServerUpdateList.toString());
 		   sharesServer = newList; */
+
+        ready = true;
 	}
 
 	/**
@@ -508,22 +544,41 @@ implements RemoteParcmanClient, Serializable
 			return null;
 		}
 
+        if (!ready)
+		{
+			PLog.debug("ParcmanClient.getUpdateList", "ParcmanClient non pronto");
+			return null;
+		}
+
 		try
 		{
 			if (version == versionServer)
 			{
 				this.sharesAgent = this.sharesServerUpdateList.getUpdatedSharesList(this.sharesServer);
 				this.versionAgent = this.sharesServerUpdateList.getVersion();
-				return this.sharesServerUpdateList;
+                this.sharesAgentUpdateList = null;
+                UpdateList ret = this.sharesServerUpdateList;
+                this.sharesServerUpdateList = null;
+    			PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
+				return ret;
 			}
 			else if (version == versionAgent)
 			{
-				this.sharesAgent = this.sharesAgentUpdateList.getUpdatedSharesList(this.sharesAgent);
 				this.sharesServer = this.sharesAgent;
 				this.versionServer = this.versionAgent;
+				this.sharesAgent = this.sharesAgentUpdateList.getUpdatedSharesList(this.sharesAgent);
 				this.versionAgent = this.sharesAgentUpdateList.getVersion();
-				return this.sharesAgentUpdateList;
+                this.sharesServerUpdateList = null;
+    			PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
+                UpdateList ret = this.sharesAgentUpdateList;
+                this.sharesAgentUpdateList = null;
+				return ret;
 			}
+
+            this.sharesAgentUpdateList = null;
+            this.sharesServerUpdateList = null;
+
+			PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 		}
 		catch (UpdateSharesListErrorException e)
 		{
