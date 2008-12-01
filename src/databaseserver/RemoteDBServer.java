@@ -49,6 +49,20 @@ public interface RemoteDBServer
 		RemoteException;
 
 	/**
+	* Restituisce lo ShareBean di un utente.
+	*
+	* @param owner proprietario del file.
+	* @param id id associato al file.
+	* @return Lo ShareBean specificato.
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws ParcmanDBServerShareNotExistRemoteException Il file non e` presente all'interno del database.
+	* @throws RemoteException Eccezione remota
+	*/
+	public ShareBean getShare(String owner, String id) throws
+		ParcmanDBServerErrorRemoteException,
+		ParcmanDBServerShareNotExistRemoteException,
+		RemoteException;
+	/**
 	* Restituisce la lista Sharings di un utente.
 	*
 	* @param userName Nome utente

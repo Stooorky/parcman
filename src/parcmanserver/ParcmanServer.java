@@ -13,6 +13,8 @@ import database.beans.UserBean;
 import databaseserver.RemoteDBServer;
 import indexingserver.RemoteIndexingServer;
 import parcmanclient.RemoteParcmanClient;
+import parcmanclient.RemoteParcmanClientUser;
+import parcmanclient.DownloadData;
 import privilege.*;
 
 /**
@@ -528,7 +530,81 @@ public class ParcmanServer
     }
 
 	/**
-	* Metodo ping.
+	 * Inizializza il download di un file.
+	 * E` necessario possedere lo stub dell'utente per poter fare questa richiesta.
+	 *
+	 * @param parcmanClientStub Stub del MobileServer
+	 * @param userName Nome utente proprietario della sessione
+	 * @param data array di 2 elementi. Il primo e` il proprietario del file, il secondo e` l'ID del file.	
+	 * @return oggetto <tt>DownloadData</tt> che contiene informazioni sul file data scaricare e il proprietario del file.
+	 * @throws ParcmanServerRequestErrorRemoteException Impossibile esaudire la richiesta
+	 * @throws RemoteException Eccezione Remota
+	 */
+	public DownloadData startDownload(RemoteParcmanClient parcmanClientStub, String userName, String[] fileData) throws 
+		ParcmanServerRequestErrorRemoteException,
+		ParcmanServerHackWarningRemoteException,
+		RemoteException
+	{
+		String owner = fileData[0];
+		String id = fileData[1];
+		try
+		{
+			PLog.debug("ParcmanServer.startDownload", "Richiesto nuovo download" + userName + "@" + owner + "/" + id);
+			// Controllo che l'utente sia connesso
+			if (this.connectUsers.containsKey(userName))
+			{
+				ClientData user = this.connectUsers.get(userName);
+
+				if (!this.getClientHost().equals(user.getHost()) || !user.getStub().equals(parcmanClientStub))
+				{
+					PLog.debug("ParcmanServer.startDownload", "Richiesta non valida, host " + this.getClientHost());
+					throw new ParcmanServerHackWarningRemoteException
+							("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+				}
+				if (this.connectUsers.containsKey(owner))
+				{
+					RemoteParcmanClientUser rclient = this.connectUsers.get(owner).getStub();
+					ShareBean bean = null;
+					try 
+					{
+						bean = this.dBServer.getShare(owner, id);
+					} 
+					catch (ParcmanDBServerShareNotExistRemoteException e)
+					{
+						PLog.err(e, "ParcmanServer.startDownload", "Il file richiesto non e` esiste.");
+						throw new ParcmanServerRequestErrorRemoteException();
+					}
+					catch (ParcmanDBServerErrorRemoteException e)
+					{
+						PLog.err(e, "ParcmanServer.startDownload", "Si e` verificato un errore interno.");
+						throw new ParcmanServerRequestErrorRemoteException();
+					}
+					DownloadData downData = new DownloadData(rclient, bean);
+					return downData;
+				}
+				else
+				{
+					// TODO: Aggiungere eccezione dedicata.
+					PLog.err("ParcmanServer.startDownload", "Proprietario '" + owner + "' non connesso.");
+					throw new ParcmanServerRequestErrorRemoteException("Proprietario '" + owner + "' non connesso.");
+				}
+			}
+			else
+			{
+				PLog.debug("ParcmanServer.startDownload", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
+			}
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "ParcmanServer.search", "Errore di rete, ClientHost irraggiungibile.");
+			throw new RemoteException();
+		}
+		
+	}
+
+	/**
+	 * Metodo ping.
 	*
 	* @throws RemoteException Eccezione remota
 	*/

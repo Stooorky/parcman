@@ -4,6 +4,8 @@ import java.util.*;
 import java.lang.*;
 import java.io.*;
 import java.rmi.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import pshell.*;
 import plog.*;
@@ -228,5 +230,76 @@ public class ShellData extends PShellData
 	public void writePrompt()
 	{
         out.print(this.userName + "> ");
+	}
+
+	/**
+	* Metodo per il comando di shell get.
+	*
+	* @param param Stringa dei parametri per il comando
+	*/
+	@PShellDataAnnotation(
+		method = "commandGetFile",
+		name = "get",
+		info = "Esegue il download di un file dalla rete parcman",
+		help = "\tEsegue il download di un file dalla rete parcman.\n\tuse: get <owner>@<ID>"
+	)
+	public void commandGetFile(String param)
+	{
+		String[] params = new String[2];		
+		try
+		{
+			params = param.split("/");
+		}
+		catch (Exception e)
+		{
+			out.println("Fallito. '" + param + "' non e` valido.");
+			return; 
+		}
+
+		out.println("Inviata la richiesta di download, attendere...");
+		out.print("Download of file with ID '" + params[1] + "' from user '" + params[0] + "' in corso.");
+		
+		Timer timer = new Timer();
+		timer.schedule(new DownloadTimerTask(out, this.parcmanServerStub, this.parcmanClient.getStub(), this.userName, params), 0);
+	}
+
+}
+
+class DownloadTimerTask extends TimerTask
+{
+	private RemoteParcmanServerUser server;
+	private RemoteParcmanClient client;
+	private String username;
+	private String[] data;
+	private PrintStream shellOutput;
+
+	public DownloadTimerTask(PrintStream shellOutput, RemoteParcmanServerUser server, RemoteParcmanClient client, String username, String[] data)
+	{
+		this.shellOutput = shellOutput;
+		this.server = server;
+		this.client = client;
+		this.username = username;
+		this.data = data;
+	}
+
+	public void run()
+	{
+		try 
+		{
+			DownloadData downData = server.startDownload(client, username, data);
+			shellOutput.println("Richiesta di download inviata al server...");
+			RemoteParcmanClientUser remoteClient = downData.getStub();
+			remoteClient.getFile(downData.getShareBean().getId());
+			shellOutput.println("Download terminato con successo.");
+
+		}
+		catch (ParcmanServerRequestErrorRemoteException e)
+		{
+			shellOutput.println("Download fallito. " + e.getCause().getMessage());
+		}
+		catch (RemoteException e)
+		{
+			shellOutput.println("Download fallito. Si sono verificati degli errori di rete. Ritenta.");
+		}
 	}
 }

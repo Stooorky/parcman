@@ -189,52 +189,23 @@ public class DBServer
 	* Se il file non e` presente all'interno del database solleva una
 	* ParcmanDBServerShareNotExistException.
 	*
+	* @param ownert owner del file condiviso
 	* @param id Id del file condiviso
 	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
-	* @throws ParcmanDBServerShareNotExistRemoteException L'utente e` gia` presente all'interno del database.
+	* @throws ParcmanDBServerShareNotExistRemoteException Il file non e` presente all'interno del database.
 	* @throws RemoteException Eccezione remota.
 	*/
-	public ShareBean getShareById(String id) throws
+	public ShareBean getShare(String owner, String id) throws
 		ParcmanDBServerErrorRemoteException,
 		ParcmanDBServerShareNotExistRemoteException,
 		RemoteException
 	{
 		try
 		{
-			ShareBean share = db.getShareById(id);
+			ShareBean share = db.getShare(owner, id);
 			return share;
 		}
 		catch (ParcmanDBErrorException e)
-		{
-			throw new ParcmanDBServerErrorRemoteException();
-		}
-		catch (ParcmanDBShareNotExistException e)
-		{
-			throw new ParcmanDBServerShareNotExistRemoteException();
-		}
-	}
-
-	/**
-	* Ritorna un oggetto ShareBean contenente i dati del file condiviso.
-	* Se il file non e` presente all'interno del database solleva una
-	* ParcmanDBServerShareNotExistException.
-	*
-	* @param name Nome del file condiviso
-	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
-	* @throws ParcmanDBServerShareNotExistRemoteException L'utente e` gia` presente all'interno del database.
-	* @throws RemoteException Eccezione remota.
-	*/
-	public ShareBean getShareByName(String name) throws 
-		ParcmanDBServerErrorRemoteException,
-		ParcmanDBServerShareNotExistRemoteException,
-		RemoteException
-	{
-		try
-		{
-			ShareBean share = db.getShareByName(name);
-			return share;
-		}
-		catch (ParcmanDBErrorException e) 
 		{
 			throw new ParcmanDBServerErrorRemoteException();
 		}

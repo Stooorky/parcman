@@ -163,72 +163,23 @@ public class DBSharings
 	}
 
 	/**
-	 * Restituisce i dati di un file condiviso a partire dal nome del file.
+	 * Restituisce i dati di un file condiviso a partire dal proprietario e dall'id associato.
 	 * Se il file non e` presente viene sollevata l'eccezione
 	 * ParcmanDBShareNotExistException
 	 * 
-	 * @param name Stringa che rappresenta il nome del file
+	 * @param owner Stringa che rappresenta il nome del proprietario del file.
+	 * @param id Stringa che rappresenta l'ID del file.
 	 * @return ShareBean che contiene i dati del file
 	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
-	public ShareBean getShareByName(String name)
+	public ShareBean getShare(String owner, String id)
 		throws ParcmanDBShareNotExistException
 	{
 		Iterator i = this.sharings.iterator();
 		while (i.hasNext())
 		{
 			ShareBean s = (ShareBean) i.next();
-			if (s.getName().equals(name))
-			{
-				return s;
-			}
-		}
-		throw new ParcmanDBShareNotExistException();
-	}
-
-	/**
-	 * Restituisce i dati di un file condiviso a partire dall'id
-	 * ad esso e` associato.
-	 * In caso contrario viene sollevata l'eccezione
-	 * ParcmanDBShareNotExistException
-	 *
-	 * @param id int che rappresenta un id
-	 * @return ShareBean che contiene i dati del file
-	 * @throws ParcmanDBShareNotExistException File non presente nel database
-	 */
-	public ShareBean getShareById(int id)
-		throws ParcmanDBShareNotExistException
-	{
-		Iterator i = this.sharings.iterator();
-		while (i.hasNext())
-		{
-			ShareBean s = (ShareBean) i.next();
-			if (s.getId() == id)
-			{
-				return s;
-			}
-		}
-		throw new ParcmanDBShareNotExistException();
-	}
-
-	/**
-	 * Restituisce i dati di un file condiviso a partire da un tag a cui 
-	 * esso e` associato.
-	 * In caso contrario viene sollevata l'eccezione
-	 * ParcmanDBShareNotExistException
-	 *
-	 * @param tag Stringa che rappresenta una tag 
-	 * @return ShareBean che contiene i dati del file
-	 * @throws ParcmanDBShareNotExistException File non presente nel database
-	 */
-	public ShareBean getShareByTag(String tag)
-		throws ParcmanDBShareNotExistException
-	{
-		Iterator i = this.sharings.iterator();
-		while (i.hasNext())
-		{
-			ShareBean s = (ShareBean) i.next();
-			if (s.getKeywords().contains(tag))
+			if (s.getOwner().equals(owner) && (s.getId()+"").equals(id))
 			{
 				return s;
 			}
@@ -270,30 +221,33 @@ public class DBSharings
 	public Vector<SearchBean> searchFiles(String keywords)
 		throws ParcmanDBShareNotExistException
 	{
-		Vector<SearchBean> v = new Vector<SearchBean>();
-		String keySeparator = keywords.indexOf(",") != -1 ? "," : " ";
-		String[] keyArray = keywords.split(keySeparator);
-		for (int i=0; i<keyArray.length; i++)
-		{
-			ShareBean s = getShareByTag(keyArray[i]);
-			if (s != null)
-				v.add(new SearchBean(s));
-		}
-
-		return v;
 		//Vector<SearchBean> v = new Vector<SearchBean>();
-
-		//Iterator i = this.sharings.iterator();
-		//while (i.hasNext())
+		//String keySeparator = keywords.indexOf(",") != -1 ? "," : " ";
+		//String[] keyArray = keywords.split(keySeparator);
+		//for (int i=0; i<keyArray.length; i++)
 		//{
-		//	ShareBean s = (ShareBean) i.next();
-		//	if (s.hasKeyword(keywords))
-		//	{
+		//	ShareBean s = getShareByTag(keyArray[i]);
+		//	if (s != null)
 		//		v.add(new SearchBean(s));
-		//	}
 		//}
 
 		//return v;
+		Vector<SearchBean> v = new Vector<SearchBean>();
+		String keySeparator = keywords.indexOf(",") != -1 ? "," : " ";
+		String[] keyArray = keywords.split(keySeparator);
+		
+		// TODO: per il momento funziona solo con una tag. estendere a piu` tag
+		Iterator i = this.sharings.iterator();
+		while (i.hasNext())
+		{
+			ShareBean s = (ShareBean) i.next();
+			if (s.hasKeyword(keyArray[0]))
+			{
+				v.add(new SearchBean(s));
+			}
+		}
+
+		return v;
 	}
 
 	/**

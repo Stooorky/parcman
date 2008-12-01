@@ -225,62 +225,26 @@ public class DB
 	/**
 	 * Ritorna un ShareBean contenente i dati di un file condiviso.
 	 *
-	 * @param id Id del file
+	 * @param owner del file.
+	 * @param id ID del file.
 	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
 	 * @throws ParcmanDBShareNotExistException File non presente all'interno del DB
 	 */
-	public ShareBean getShareById(String id) throws
+	public ShareBean getShare(String owner, String id) throws
 		ParcmanDBErrorException,
 		ParcmanDBShareNotExistException
 	{
 		ShareBean share = null;
-		Object[] args = { id };
+		Object[] args = { owner, id };
 
 		DBManager dbManager = DBManager.getInstance();
 
 		try
 		{
-			share = (ShareBean) dbManager.call("SHARINGS", "getShareById", args);
+			share = (ShareBean) dbManager.call("SHARINGS", "getShare", args);
 		}
 		catch (InvocationTargetException e)
 		{
-			// File gia' presente nel DataBase
-			if (e.getTargetException() instanceof ParcmanDBShareNotExistException)
-				throw (ParcmanDBShareNotExistException) e.getTargetException();
-
-			throw new ParcmanDBErrorException();
-		}
-		catch (Exception e)
-		{
-			throw new ParcmanDBErrorException();
-		}
-
-		return share;
-	}
-
-	/**
-	 * Ritorna un ShareBean contenente i dati di un file condiviso.
-	 *
-	 * @param name Nome del file
-	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
-	 * @throws ParcmanDBShareNotExistException File non presente all'interno del DB
-	 */
-	public ShareBean getShareByName(String name) throws
-		ParcmanDBErrorException,
-		ParcmanDBShareNotExistException
-	{
-		ShareBean share = null;
-		Object[] args = { name };
-
-		DBManager dbManager = DBManager.getInstance();
-
-		try
-		{
-			share = (ShareBean) dbManager.call("SHARINGS", "getShareByName", args);
-		}
-		catch (InvocationTargetException e)
-		{
-			// File gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBShareNotExistException)
 				throw (ParcmanDBShareNotExistException) e.getTargetException();
 

@@ -9,6 +9,7 @@ import remoteexceptions.*;
 import parcmanclient.RemoteParcmanClient;
 import database.beans.SearchBean;
 import database.beans.ShareBean;
+import parcmanclient.DownloadData;
 
 /**
  * Interfaccia remota del ParcmanServer per gli utenti.
@@ -93,6 +94,21 @@ public interface RemoteParcmanServerUser
     public Vector<String> getConnectUsersList(RemoteParcmanClient parcmanClientStub, String userName)  throws
         ParcmanServerWrongPrivilegesRemoteException,
         RemoteException;
+
+	/**
+	 * Inizializza il download di un file.
+	 * E` necessario possedere lo stub dell'utente per poter fare questa richiesta.
+	 *
+	 * @param parcmanClientStub Stub del MobileServer
+	 * @param userName Nome utente proprietario della sessione
+	 * @param data array di 2 elementi. Il primo e` il proprietario del file, il secondo e` l'ID del file.	
+	 * @throws ParcmanServerRequestErrorRemoteException Impossibile esaudire la richiesta
+	 * @throws RemoteException Eccezione Remota
+	 */
+	public DownloadData startDownload(RemoteParcmanClient parcmanClientStub, String userName, String[] fileData) throws 
+		ParcmanServerRequestErrorRemoteException,
+		ParcmanServerHackWarningRemoteException,
+		RemoteException;
 
 	/**
 	* Ping.
