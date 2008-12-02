@@ -219,9 +219,6 @@ public class DBManager
 			}
 		}
 
-        PLog.debug("DBManager.call", "Args size:" + args.length);
-        for (int i=0; i < args.length; i++)
-            PLog.debug("DBManager.call", "Arg: " + args[i] + " Type: " + argsTypes[i]);
 		try
 		{
 			// TODO Warning in fase di compilazione. Controllare se e' evitabile.

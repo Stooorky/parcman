@@ -55,7 +55,6 @@ implements Serializable
 		this.stub = stub;
         this.status = status;
         this.updateList = null;
-        System.out.println("CACAAAAAAAAAAAA " + status);
 	}
 
 	/**
