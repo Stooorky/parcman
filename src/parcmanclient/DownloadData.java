@@ -1,8 +1,9 @@
 package parcmanclient;
 
 import database.beans.ShareBean;
+import java.io.Serializable;
 
-public class DownloadData
+public class DownloadData implements Serializable
 {
 	private ShareBean bean;
 	private RemoteParcmanClientUser rclient;

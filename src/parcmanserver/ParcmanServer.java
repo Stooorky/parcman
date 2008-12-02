@@ -564,10 +564,12 @@ public class ParcmanServer
 				if (this.connectUsers.containsKey(owner))
 				{
 					RemoteParcmanClientUser rclient = this.connectUsers.get(owner).getStub();
+					PLog.debug("ParcmanServer.startDownload", "RemoteParcmanClientUser ottenuto");
 					ShareBean bean = null;
 					try 
 					{
 						bean = this.dBServer.getShare(owner, id);
+						PLog.debug("ParcmanServer.startDownload", "ShareBean Ottenuto");
 					} 
 					catch (ParcmanDBServerShareNotExistRemoteException e)
 					{
