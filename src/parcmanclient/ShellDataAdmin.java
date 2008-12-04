@@ -20,40 +20,40 @@ public class ShellDataAdmin extends ShellData
 	//private RemoteParcmanServerUser parcmanServerStub;
 
 	/**
-	* Nome utente.
-	*/
+	 * Nome utente.
+	 */
 	//private String userName;
 
 	/**
-	* ParcmanClient.
-	*/
+	 * ParcmanClient.
+	 */
 	//private ParcmanClient parcmanClient;
 
 	/**
-	* Costruttore.
-	*
-	* @param parcmanServerStub Stub del MainServer della rete Parcman
-    * @param parcmanClient Referenza al ParcmanClient
-	* @param userName Nome utente
-	*/
+	 * Costruttore.
+	 *
+	 * @param parcmanServerStub Stub del MainServer della rete Parcman
+	 * @param parcmanClient Referenza al ParcmanClient
+	 * @param userName Nome utente
+	 */
 	public ShellDataAdmin(RemoteParcmanServerUser parcmanServerStub,
-            ParcmanClient parcmanClient,
-            String userName)
+			ParcmanClient parcmanClient,
+			String userName)
 	{
 		super(parcmanServerStub, parcmanClient, userName);
 	}
-    
-    /**
-	* Metodo per il comando di shell getConnectUsersList.
-	*
-	* @param param Stringa dei parametri per il comando
-	*/
+
+	/**
+	 * Metodo per il comando di shell getConnectUsersList.
+	 *
+	 * @param param Stringa dei parametri per il comando
+	 */
 	@PShellDataAnnotation(
-		method = "commandGetConnectUsersList",
-		name = "connectusers",
-		info = "Fornisce la lista dei client connessi alla rete parcman",
-		help = "\tFornisce la lista dei client connessi alla rete parcman.\n\tuse: connectusers"
-	)
+			method = "commandGetConnectUsersList",
+			name = "connectusers",
+			info = "Fornisce la lista dei client connessi alla rete parcman",
+			help = "\tFornisce la lista dei client connessi alla rete parcman.\n\tuse: connectusers"
+			)
 	public void commandGetConnectUsersList (String param)
 	{
 		try
@@ -71,7 +71,7 @@ public class ShellDataAdmin extends ShellData
 			out.println("Lista degli utenti connessi:");
 			for (int i=0; i<result.size(); i++)
 				this.out.println(result.get(i));
-			
+
 		}
 		catch (RemoteException e)
 		{
@@ -79,5 +79,52 @@ public class ShellDataAdmin extends ShellData
 			return;
 		}
 	}
+
+	/**
+	 * Metodo per il comando di shell enableAgentSystem.
+	 *
+	 */
+	@PShellDataAnnotation(
+			method = "commandEnableAgentSystem",
+			name = "enableAgentSystem",
+			info = "Attiva il sistema di gestione degli agenti remoti.",
+			help = "\tAttiva il sistema di gestione degli agenti remoti.\n\tuse: enableagents"
+			)
+	public void commandEnableAgentSystem(String param)
+	{
+		try
+		{
+			parcmanServerStub.setAgentSystemStatus(parcmanClient.getStub(), userName, true);
+			out.println("Sistema degli agenti remoti attivato.");
+		}
+		catch (RemoteException e)
+		{
+			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+		}
+	}
+
+	/**
+	 * Metodo per il comando di shell disableAgentSystem.
+	 *
+	 */
+	@PShellDataAnnotation(
+			method = "commandDisableAgentSystem",
+			name = "disableAgentSystem",
+			info = "Disattiva il sistema di gestione degli agenti remoti.",
+			help = "\tDisattiva il sistema di gestione degli agenti remoti.\n\tuse: disableagents"
+			)
+	public void commandDisableAgentSystem(String param)
+	{
+		try
+		{
+			parcmanServerStub.setAgentSystemStatus(parcmanClient.getStub(), userName, false);
+			out.println("Sistema degli agenti remoti disattivato.");
+		}
+		catch (RemoteException e)
+		{
+			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+		}
+	}
+
 
 }

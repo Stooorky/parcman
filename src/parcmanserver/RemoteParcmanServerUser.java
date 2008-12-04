@@ -111,6 +111,25 @@ public interface RemoteParcmanServerUser
 		RemoteException;
 
 	/**
+	 * Imposta lo stato del sistema di gestione degli agenti remoti.
+	 * Lo stato puo` essere attivo (true) oppure non attivo (false).
+	 * 
+	 * @param boolean un boolean che rappresenta lo stato. attivo = true, non attivo = false.
+	 * @throws RemoteException 
+	 */
+	public void setAgentSystemStatus(RemoteParcmanClient parcmanClientStub, String userName, boolean status) throws 
+		RemoteException;
+
+	/**
+	 * Ritorna lo stato del sistema di gestione degli agenti remoti. 
+	 * Lo stato puo` essere attivo (true) oppure non attivo (false).
+	 * 
+	 * @return un boolean che rappresenta lo stato. attivo = true, non attivo = false.
+	 * @throws RemoteException 
+	 */
+	public boolean getAgentSystemStatus(RemoteParcmanClient parcmanClientStub, String userName) throws 
+		RemoteException;
+	/**
 	* Ping.
 	*
 	* @throws RemoteException Eccezione Remota

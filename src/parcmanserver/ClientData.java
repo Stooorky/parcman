@@ -116,7 +116,7 @@ public class ClientData
      *
      * @param isAdmin privilegi utente
      */
-    public void setIsAdmin(boolean isAdmin)
+    public void setAdmin(boolean isAdmin)
     {
         this.isAdmin = isAdmin;
     }
@@ -126,7 +126,7 @@ public class ClientData
      *
      * @return privilegi utente
      */
-    public boolean getIsAdmin()
+    public boolean isAdmin()
     {
         return this.isAdmin;
     }

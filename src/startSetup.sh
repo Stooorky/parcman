@@ -1,7 +1,12 @@
+#!/bin/bash
+ADDRESS=10.0.0.4
+PORT=8003
+R_PATH="~sirio/common"
+
 java -classpath :. \
--Djava.rmi.server.codebase=http://10.0.0.13:8003/~sarimisar/common/ \
+-Djava.rmi.server.codebase=http://$ADDRESS:$PORT/$R_PATH/ \
 -Djava.security.policy=policy \
--Djava.rmi.server.hostname=10.0.0.13 \
+-Djava.rmi.server.hostname=$ADDRESS \
 -Dsetup.implCodebase=file://$HOME/PAR/parcman/src/ \
 -Dsetup.loginServerClass=loginserver.LoginServer \
 -Dsetup.policyGroup=setup/policy \
