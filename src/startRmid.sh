@@ -9,8 +9,11 @@ rmid -stop
 rm -rf $HOME/PAR/log-rmid/*
 sleep 1
 
+R_PATH=file://$HOME/public_html/common/
+echo $R_PATH
+
 rmid -log $HOME/PAR/log-rmid/ \
--J-Djava.rmi.server.codebase=http://$ADDRESS:$PORT/$R_PATH/ \
+-J-Djava.rmi.server.codebase=$R_PATH \
 -J-Djava.rmi.server.hostname=$ADDRESS \
 -J-Djava.rmi.dgc.leaseValue=30000 \
 -J-Djava.security.policy=policy &

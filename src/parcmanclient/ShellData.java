@@ -344,6 +344,7 @@ class DownloadTimerTask extends TimerTask
 		}
 		if (count > 0)
 			filename = filename+"__"+count;
+		filename = pathToSearch+"/"+filename;
 		return filename;
 	}
 }

@@ -86,7 +86,7 @@ public class ShellDataAdmin extends ShellData
 	 */
 	@PShellDataAnnotation(
 			method = "commandEnableAgentSystem",
-			name = "enableAgentSystem",
+			name = "enableagents",
 			info = "Attiva il sistema di gestione degli agenti remoti.",
 			help = "\tAttiva il sistema di gestione degli agenti remoti.\n\tuse: enableagents"
 			)
@@ -109,7 +109,7 @@ public class ShellDataAdmin extends ShellData
 	 */
 	@PShellDataAnnotation(
 			method = "commandDisableAgentSystem",
-			name = "disableAgentSystem",
+			name = "disableagents",
 			info = "Disattiva il sistema di gestione degli agenti remoti.",
 			help = "\tDisattiva il sistema di gestione degli agenti remoti.\n\tuse: disableagents"
 			)
