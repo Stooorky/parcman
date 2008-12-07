@@ -30,6 +30,11 @@ public class UserContentHandler
 	private boolean inPriv;
 
 	/** 
+	 * 'true' se stiamo indagando l'elemento <BLACKLIST></BLACKLIST>.
+	 */
+	private boolean inBlack;
+
+	/** 
 	 * Oggetto bean per la memorizzazione di un utente.
 	 */
 	private UserBean bean;
@@ -67,6 +72,11 @@ public class UserContentHandler
 			this.bean.setPrivilege(new String(ch, start, length));
 			this.inPriv = false;
 		}
+		else if (this.inBlack)
+		{
+			this.bean.setBlacklist(new String(ch, start, length));
+			this.inBlack = false;
+		}
 		else 
 		{
 			throw new SAXException("Elemento non riconosciuto.");
@@ -86,7 +96,7 @@ public class UserContentHandler
 			&& !this.users.contains(this.bean))
 		{
 			this.users.add(this.bean);
-            PLog.debug("UserContentHandler.endElement",
+			PLog.debug("UserContentHandler.endElement",
 				"Caricato nuovo utente. Nome: " + this.bean.getName() + " Privilegi: " + this.bean.getPrivilege());
 		}
 	}
@@ -140,6 +150,10 @@ public class UserContentHandler
 		else if ("PRIVILEGE".equals(localName))
 		{
 			this.inPriv = true;
+		}
+		else if ("BLACKLIST".equals(localName))
+		{
+			this.inBlack = true;
 		}
 		else if ("USER".equals(localName))
 		{

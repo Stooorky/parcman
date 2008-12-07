@@ -178,6 +178,20 @@ public class ParcmanClient
 	}
 
 	/**
+	 * Disconnette il client. 
+	 *
+	 * @throws RemoteException Eccezione Remota.
+	 */
+	public void disconnect(String message) throws 
+		RemoteException
+	{
+		PLog.debug("ParcmanClient.disconnect", "Sei stato inserito in blacklist.");
+		PLog.debug("ParcmanClient.disconnect", "Disconessione in corso...");
+		this.parcmanServerStub = null;
+		System.exit(0);
+	}
+
+	/**
 	 * Forza la riconnessione del client.
 	 *
 	 * @throws RemoteException Eccezione Remota

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# include argslib.sh
+. ./scripts/argslib.sh
+
+P_HOSTNAME=localhost
+P_PORT=8003
+P_CODEBASE_PATH=file://$HOME/public_html/common/
+P_POLICY=./policy
+P_LOG_RMID_PATH=$HOME/PAR/log-rmid
+
+for i in $@; do
+	case $i in 
+	--hostname=*)
+		argslib_get_long_option $i
+		shift
+		P_HOSTNAME="$ARGSLIB_OPT_VALUE"
+		;;
+	--port=*)
+		argslib_get_long_option $i
+		shift
+		P_PORT="$ARGSLIB_OPT_VALUE"
+		;;
+	--codebase-path=*)
+		argslib_get_long_option $i
+		shift
+		P_CODEBASE_PATH="$ARGSLIB_OPT_VALUE"
+		;;
+	--policy-file=*)
+		argslib_get_long_option $i
+		shift
+		P_POLICY="$ARGSLIB_OPT_VALUE"
+		;;
+	--log-rmid-path=*)
+		argslib_get_long_option $i
+		shift
+		P_LOG_RMID_PATH="$ARGSLIB_OPT_VALUE"
+		;;
+	*)
+		shift
+		;;
+	esac
+done
+
+rmid -stop
+rm -rf "$P_LOG_RMID_PATH"/*
+sleep 1
+
+rmid -log "$P_LOG_RMID_PATH"/ \
+-J-Djava.rmi.server.codebase=$P_CODEBASE_PATH \
+-J-Djava.rmi.server.hostname=$P_HOSTNAME \
+-J-Djava.rmi.dgc.leaseValue=30000 \
+-J-Djava.security.policy=$P_POLICY &
+

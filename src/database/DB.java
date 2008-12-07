@@ -60,6 +60,21 @@ public class DB
 		}
 	}
 
+	public void updateUsers() throws 
+		ParcmanDBErrorException
+	{
+		Object[] args = new Object[] {};
+		try
+		{
+			DBManager.getInstance().call("USERS", "save", args);
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+		PLog.debug("DB.updateUsers", "Aggiornamento del database utenti completato.");
+	}
+
 	/**
 	 * Aggiunge un utente al DataBase Utenti.
 	 * Esegue una validazione dei dati presenti all'interno dello UserBean

@@ -1,0 +1,96 @@
+#!/bin/bash
+P_ADDRESS=127.0.0.1
+P_HOSTNAME=localhost
+P_PORT=8003
+P_REMOTE_PATH="~sirio/common/"
+P_IMPL_CODEBASE_PATH=file://$HOME/programming/parcman/src/
+P_POLICY="policy"
+P_POLICY_GROUP="setup/policy"
+P_DATABASE_DIR="$HOME/PAR/parcman/dbDirectory"
+
+# include argslib.sh
+. ./scripts/argslib.sh
+
+# include loglib.sh
+. ./scripts/loglib.sh
+
+OPTIONS=( --address --hostname --port --remote-path --policy-file --policy-group --database-dir --impl-codebase-path --help )
+HELPS=( "codebase address" "hostname" "codebase port" "codebase path" "policy file path" "policy group" "database directory" "codebase implementation path" "prints help page" )
+DEFAULTS=( $P_ADDRESS $P_HOSTNAME $P_PORT $P_REMOTE_PATH $P_POLICY $P_POLICY_GROUP $P_DATABASE_DIR $P_IMPL_CODEBASE_PATH "")
+
+function usage()
+{
+	echo "Usage: server-start [options]"
+	echo " where options are:"
+	size=${#OPTIONS[*]}
+	for (( i=0; i<${#OPTIONS[*]}; i++ )); do
+		echo -n "  $i) ${OPTIONS[$i]}: ${HELPS[$i]}."
+		[[ ! -z ${DEFAULTS[$i]} ]] && echo " [${DEFAULTS[$i]}]"
+	done
+	echo 
+}
+
+
+for i in $@; do
+	case $i in 
+	--address=*)
+		argslib_get_long_option $i
+		shift
+		P_ADDRESS="$ARGSLIB_OPT_VALUE"
+		;;
+	--hostname=*)
+		argslib_get_long_option $i
+		shift
+		P_HOSTNAME="$ARGSLIB_OPT_VALUE"
+		;;
+	--port=*)
+		argslib_get_long_option $i
+		shift
+		P_PORT="$ARGSLIB_OPT_VALUE"
+		;;
+	--remote-path=*)
+		argslib_get_long_option $i
+		shift
+		P_REMOTE_PATH="$ARGSLIB_OPT_VALUE"
+		;;
+	--policy-file=*)
+		argslib_get_long_option $i
+		shift
+		P_POLICY="$ARGSLIB_OPT_VALUE"
+		;;
+	--policy-group=*)
+		argslib_get_long_option $i
+		shift
+		P_POLICY_GROUP="$ARGSLIB_OPT_VALUE"
+		;;
+	--database-dir=*)
+		argslib_get_long_option $i
+		shift
+		P_DATABASE_DIR="$ARGSLIB_OPT_VALUE"
+		;;
+	--impl-codebase-path=*)
+		argslib_get_long_option $i
+		shift
+		P_IMPL_CODEBASE_PATH="$ARGSLIB_OPT_VALUE"
+		;;
+	--help)
+		shift
+		usage
+		exit 0
+		;;
+	*)
+		shift
+		;;
+	esac
+done
+
+
+bt_info "java -classpath :. \
+-Djava.rmi.server.codebase=http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH \
+-Djava.security.policy="$P_POLICY" \
+-Djava.rmi.server.hostname=$P_HOSTNAME \
+-Dsetup.implCodebase="$P_IMPL_CODEBASE_PATH" \
+-Dsetup.loginServerClass=loginserver.LoginServer \
+-Dsetup.policyGroup="$P_POLICY_GROUP" \
+-Dsetup.dbDirectory="$P_DATABASE_DIR" \
+setup.Setup" "start parcman server" "server-start"

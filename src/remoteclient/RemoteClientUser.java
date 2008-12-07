@@ -32,7 +32,7 @@ public class RemoteClientUser
 		String userName = null;
 		String password = null;
 
-        String loginServerAdress = System.getProperty("remoteclient.loginserveradress");
+		String loginServerAdress = System.getProperty("remoteclient.loginserveradress");
 
 		System.out.println("Parcman, The Italian Arcade Network v1.0.");
 		System.out.println("Bootstrap del Client avvenuto correttamente. LoginServerAdress: " + loginServerAdress);
@@ -49,17 +49,17 @@ public class RemoteClientUser
 				String newUserName = new String(myInput.readLine());
 
 				System.out.print("\tInserisci la password: ");
-                this.echo(false);
+				this.echo(false);
 				String newPassword = new String(myInput.readLine());
-                this.echo(true);
-    
-				System.out.print("\n\tReinserisci la password per conferma: ");
-                this.echo(false);
-				String newPasswordR = new String(myInput.readLine());
-                this.echo(true);
-                System.out.print("\n");
+				this.echo(true);
 
-                if (!newPassword.equals(newPasswordR))
+				System.out.print("\n\tReinserisci la password per conferma: ");
+				this.echo(false);
+				String newPasswordR = new String(myInput.readLine());
+				this.echo(true);
+				System.out.print("\n");
+
+				if (!newPassword.equals(newPasswordR))
 				{
 					System.out.print("Le password non corrispondono.\n");
 					return;
@@ -92,12 +92,12 @@ public class RemoteClientUser
 			}
 			else
 			{
-                this.echo(false); 
+				this.echo(false); 
 				// Inserimento della password
 				System.out.print("\tInserisci la password: ");
 				password = new String(myInput.readLine());
-                this.echo(true);
-                System.out.print("\n");
+				this.echo(true);
+				System.out.print("\n");
 			}
 		}
 		catch(IOException e)
@@ -112,30 +112,59 @@ public class RemoteClientUser
 			RemoteLoginServer loginServer = (RemoteLoginServer)Naming.lookup(loginServerAdress);
 			RemoteParcmanClient parcmanClient = loginServer.login(userName, password);
 
-			if (parcmanClient == null)
+			// Elimino la referenza al LoginServer
+			loginServer =  null;
+			System.gc();
+
+			// Avvio il MobileServer
+			parcmanClient.startConnection();
+		}
+		catch (ServerException e)
+		{
+			if (e.getCause() instanceof LoginServerUserInBlacklistRemoteException)
 			{
-				System.out.println("Spiacente, nome utente o password errati.");
-				return;	
+				System.out.println("Richiesta di login rifiutata, l'utente e` stato inserito nella blacklist. Ritenta.");
+				// e.printStackTrace();
 			}
-
-            // Elimino la referenza al LoginServer
-            loginServer =  null;
-            System.gc();
-
-            // Avvio il MobileServer
-            parcmanClient.startConnection();
+			else if (e.getCause() instanceof LoginServerUserFailedRemoteException)
+			{
+				System.out.println("Richiesta di login rifiutata, username non corretto. Ritenta.");
+				// e.printStackTrace();
+			}
+			else if (e.getCause() instanceof LoginServerUserOrPasswordFailedRemoteException)
+			{
+				System.out.println("Richiesta di login rifiutata, username o password non corratti. Ritenta.");
+				// e.printStackTrace();
+			}
+			else if (e.getCause() instanceof LoginServerUserPrivilegeFailedRemoteException)
+			{
+				System.out.println("Richiesta di login rifiutata, l'utente non ha i privilegi adeguati. Ritenta.");
+				// e.printStackTrace();
+			}
+			else if (e.getCause() instanceof LoginServerUserIsConnectRemoteException)
+			{
+				System.out.println("Richiesta di login rifiutata, l'utente e` gia` connesso alla rete.");
+				// e.printStackTrace();
+			}
+			else if (e.getCause() instanceof LoginServerClientHostUnreachableRemoteException)
+			{
+				System.out.println("Impossibile eseguire il login. Il Login Server risulta irraggiungibile. (1)");
+				// e.printStackTrace();
+			}
+			else
+			{
+				// e.printStackTrace();
+			}
 		}
 		catch(RemoteException e)
 		{
-			if (e.getCause() instanceof ParcmanServerUserIsConnectRemoteException)
-				System.out.println("Richiesta di login rifiutata, l'utente e' gia' connesso alla rete.");
-			else
-				System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (0)");
+			System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (0)");
 			e.printStackTrace();
 		}
 		catch(Exception e)
 		{
 			System.out.println("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (1)");
+			e.printStackTrace();
 		}
 	}
 
@@ -144,21 +173,21 @@ public class RemoteClientUser
 	 *
 	 * @param on true per accendere l'echo, false per spegnere l'echo
 	 */
-    public void echo(boolean on)
-    {
-        try
-        {
-            String[] cmd = {"/bin/sh", "-c", "/bin/stty " + (on ? "echo" : "-echo") + " < /dev/tty"};
-            Process p = Runtime.getRuntime().exec(cmd);
-            p.waitFor();
-        }
-        catch (IOException e)
+	public void echo(boolean on)
+	{
+		try
+		{
+			String[] cmd = {"/bin/sh", "-c", "/bin/stty " + (on ? "echo" : "-echo") + " < /dev/tty"};
+			Process p = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+		}
+		catch (IOException e)
 		{
 			PLog.err("RemoteClientUser.echo", "Impossibile disattivare l'echo.");
 		}
-        catch (InterruptedException e)
+		catch (InterruptedException e)
 		{
 			PLog.err("RemoteClientUser.echo", "Impossibile disattivare l'echo.");
 		}
-    }
+	}
 }

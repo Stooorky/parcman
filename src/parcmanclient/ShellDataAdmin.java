@@ -94,6 +94,7 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
+			out.print("Inviata la richiesta...");
 			parcmanServerStub.setAgentSystemStatus(parcmanClient.getStub(), userName, true);
 			out.println("Sistema degli agenti remoti attivato.");
 		}
@@ -117,6 +118,7 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
+			out.print("Inviata la richiesta...");
 			parcmanServerStub.setAgentSystemStatus(parcmanClient.getStub(), userName, false);
 			out.println("Sistema degli agenti remoti disattivato.");
 		}
@@ -125,6 +127,91 @@ public class ShellDataAdmin extends ShellData
 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 		}
 	}
+
+	/**
+	 * Metodo per il comando di shell addToBlacklist.
+	 *
+	 */
+	@PShellDataAnnotation(
+			method = "commandAddToBlacklist",
+			name = "addtoblacklist",
+			info = "Aggiunge un utente alla blacklist.",
+			help = "\tAggiunge un utente alla blacklist.\n\tuse: addtoblacklist username"
+			)
+	public void commandAddToBlacklist(String param)
+	{
+		try
+		{
+			out.print("Inviata la richiesta...");
+			parcmanServerStub.addToBlacklist(parcmanClient.getStub(), userName, param);
+			out.println("Aggiunto utente '" + param + "' alla blacklist.");
+		}
+		catch (RemoteException e)
+		{
+			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+		}
+	}
+
+	/**
+	 * Metodo per il comando di shell delFromBlacklist.
+	 *
+	 */
+	@PShellDataAnnotation(
+			method = "commandDelFromBlacklist",
+			name = "delfromblacklist",
+			info = "Toglie un utente dalla blacklist.",
+			help = "\tToglie un utente dalla blacklist.\n\tuse: delfromblacklist username"
+			)
+	public void commandDelFromBlacklist(String param)
+	{
+		try
+		{
+			out.println("Inviata la richiesta...");
+			parcmanServerStub.delFromBlacklist(parcmanClient.getStub(), userName, param);
+			out.println("Rimosso utente '" + param + "' alla blacklist.");
+		}
+		catch (RemoteException e)
+		{
+			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+		}
+	}
+
+// 	/**
+// 	 * Metodo per il comando di shell blacklist.
+// 	 *
+// 	 */
+// 	@PShellDataAnnotation(
+// 			method = "commandBlacklist",
+// 			name = "blacklist",
+// 			info = "Mostra la lista blacklist.",
+// 			help = "\tMosta la lista blacklist.\n\tuse: blacklist"
+// 			)
+// 	public void commandBlacklist(String param)
+// 	{
+// 		try
+// 		{
+// 			out.print("Inviata la richiesta...");
+// 			Vector<String> result = parcmanServerStub.blacklist(parcmanClient.getStub(), userName);
+// 			out.println("Done.");
+// 
+// 			if (result == null || result.size() == 0)
+// 			{
+// 				out.println("Nessun utente in blacklist.");
+// 			}
+// 			else 
+// 			{
+// 				out.println("Blacklist: ");
+// 				for (int i=0; i<result.size(); i++)
+// 					out.println(result.get(i));
+// 			}
+// 		}
+// 		catch (RemoteException e)
+// 		{
+// 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+// 		}
+// 	}
+// 
+// 
 
 
 }

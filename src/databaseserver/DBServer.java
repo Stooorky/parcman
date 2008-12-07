@@ -51,6 +51,26 @@ public class DBServer
 			throw new ParcmanDBServerErrorRemoteException();
 		}
 	}
+	
+	/**
+	 * Esegue il salvataggio del database utenti aggiornandolo.
+	 *
+	 * @throws ParcmanDBServerErrorRemoteException Errore interno al database.
+	 * @throws RemoteException eccezione remota.
+	 */
+	public void updateUsers() throws 
+		ParcmanDBServerErrorRemoteException,
+		RemoteException
+	{
+		try
+		{
+			db.updateUsers();
+		}
+		catch (ParcmanDBErrorException e)
+		{
+			throw new ParcmanDBServerErrorRemoteException();
+		}
+	}
 
 	/**
 	* Restituisce i dati di un utente a partire dal nome.

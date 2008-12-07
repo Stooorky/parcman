@@ -70,7 +70,7 @@ public class LoginServer
 		PLog.debug("LoginServer", "Inizializzo il LoginServer.");
 		PLog.debug("LoginServer", "Ripristino e aggiornamento dei dati di sessione.");
 
-        // Ricavo dall'atDate i dati della sessione
+		// Ricavo dall'atDate i dati della sessione
 		LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
 		this.parcmanServerStub = onAtDate.getParcmanServerStub();
 		this.dBServerStub = onAtDate.getDBServerStub();
@@ -90,8 +90,20 @@ public class LoginServer
 	 * @param password Password utente
 	 * @return Un MobileServer di tipo ParcmanClient se il login ha successo, null altrimenti.
 	 * @throws RemoteException Eccezione Remota.
+	 * @throws LoginServerUserInBlacklistRemoteException utente in blacklist.
+	 * @throws LoginServerUserFailedRemoteException username non riconosciuto.
+	 * @throws LoginServerUserOrPasswordFailedRemoteException username o password non validi.
+	 * @throws LoginServerUserPrivilegeFailedRemoteException privilegi utente non validi.
+	 * @throws LoginServerUserIsConnectRemoteException utente gia` connesso.
+	 * @throws LoginServerClientHostUnreachableRemoteException client host irraggiungibile.
 	 */
 	public RemoteParcmanClient login(String name, String password) throws
+		LoginServerUserInBlacklistRemoteException,
+		LoginServerUserFailedRemoteException,
+		LoginServerUserOrPasswordFailedRemoteException,
+		LoginServerUserPrivilegeFailedRemoteException, 
+		LoginServerUserIsConnectRemoteException,
+		LoginServerClientHostUnreachableRemoteException,
 		RemoteException
 	{
 		try
@@ -101,7 +113,7 @@ public class LoginServer
 		catch(ServerNotActiveException e)
 		{
 			PLog.err(e, "LoginServer.login", "E' stata ricevuta una richiesta di login ma l'Host risulta irraggiungibile.");
-			return null;
+			throw new LoginServerClientHostUnreachableRemoteException();
 		}
 
 		UserBean user;
@@ -113,7 +125,7 @@ public class LoginServer
 		catch(ParcmanDBServerUserNotExistRemoteException e)
 		{
 			PLog.debug("LoginServer.login", "Richiesta rifiutata, nome utente errato.");
-			return null;
+			throw new LoginServerUserFailedRemoteException();
 		}
 
 		// cripto la password
@@ -122,52 +134,57 @@ public class LoginServer
 		if (user == null || !(encryptedPassword.equals(user.getPassword())))
 		{
 			PLog.debug("LoginServer.login", "Richiesta rifiutata, password o nome utente errati.");
-			return null;
+			throw new LoginServerUserOrPasswordFailedRemoteException();
 		}
 
-        RemoteParcmanClient parcmanClient = null;
+		if ("true".equals(user.getBlacklist()))
+		{
+			PLog.debug("LoginServer.login", "Richiesta rifiutata, utente in blacklist.");
+			throw new LoginServerUserInBlacklistRemoteException();
+		}
+
+		RemoteParcmanClient parcmanClient = null;
 
 		// Creo un'istanza di ParcmanClient da passare al Client
-        if (user.getPrivilege().equals(Privilege.getUserPrivilege())) // Utente
-		    parcmanClient = new ParcmanClient(((RemoteParcmanServerUser)this.parcmanServerStub), user.getName(), false);
-        else if (user.getPrivilege().equals(Privilege.getAdminPrivilege()))
-		    parcmanClient = new ParcmanClient(((RemoteParcmanServerUser)this.parcmanServerStub), user.getName(), true);
-        else
-        {
-            PLog.err("LoginServer.login", "Privilegi dell'utente " + user.getName() + " errati (" + user.getPrivilege() + ")");
-            return null;
-        }
+		if (user.getPrivilege().equals(Privilege.getUserPrivilege())) // Utente
+			parcmanClient = new ParcmanClient(((RemoteParcmanServerUser)this.parcmanServerStub), user.getName(), false);
+		else if (user.getPrivilege().equals(Privilege.getAdminPrivilege()))
+			parcmanClient = new ParcmanClient(((RemoteParcmanServerUser)this.parcmanServerStub), user.getName(), true);
+		else
+		{
+			PLog.err("LoginServer.login", "Privilegi dell'utente " + user.getName() + " errati (" + user.getPrivilege() + ")");
+			throw new LoginServerUserPrivilegeFailedRemoteException();
+		}
 
-	    // Deesporto il server appena creato
-	    unexportObject(parcmanClient, true);
+		// Deesporto il server appena creato
+		unexportObject(parcmanClient, true);
 
-        try
-        {
-            // Aggiungo il Client alla lista di attemp del Parcmanserver
-            parcmanServerStub.connectAttemp(name, this.getClientHost());
-	    }
-	    catch(ServerNotActiveException e)
-	    {
-		    PLog.err(e, "LoginServer.login", "Errore di rete, ClientHost irraggiungibile.");
-            return null;
-	    }
-        catch(RemoteException e)
-        {
+		try
+		{
+			// Aggiungo il Client alla lista di attemp del Parcmanserver
+			parcmanServerStub.connectAttemp(name, this.getClientHost());
+		}
+		catch(ServerNotActiveException e)
+		{
+			PLog.err(e, "LoginServer.login", "Errore di rete, ClientHost irraggiungibile.");
+			throw new LoginServerClientHostUnreachableRemoteException();
+		}
+		catch(RemoteException e)
+		{
 			if (e.getCause() instanceof ParcmanServerUserIsConnectRemoteException)
 			{
 				PLog.debug("LoginServer.login", "Richiesta rifiutata, Utente gia' connesso.");
-				throw new ParcmanServerUserIsConnectRemoteException(e.getMessage());
+				throw new LoginServerUserIsConnectRemoteException(e.getMessage());
 			}
 			else
-	    		PLog.err(e, "LoginServer.login", "Errore interno del ParcmanServer.");
+				PLog.err(e, "LoginServer.login", "Errore interno del ParcmanServer.");
+				throw e;
+		}
 
-			return null;
-        }
+		PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
 
-	    PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
-
-	    return parcmanClient;
-    }
+		return parcmanClient;
+	}
 
 	/**
 	 * Esegue la registrazione di un nuovo account.
@@ -201,6 +218,7 @@ public class LoginServer
 		user.setName(name);
 		user.setPassword(encryptedPassword);
 		user.setPrivilege(Privilege.getUserPrivilege());
+		user.setBlacklist("false");
 
 		try
 		{
@@ -241,10 +259,10 @@ public class LoginServer
 		}
 	}
 
-    /**
-     * Dereferenziazione del Server.
-     * Chiamato dal sistema Rmid.
-     */
+	/**
+	 * Dereferenziazione del Server.
+	 * Chiamato dal sistema Rmid.
+	 */
 	public void unreferenced()
 	{
 		try

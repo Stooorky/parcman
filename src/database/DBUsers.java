@@ -67,6 +67,7 @@ public class DBUsers
 		ps.println("<!ELEMENT NAME (#PCDATA)>");
 		ps.println("<!ELEMENT PASSWORD (#PCDATA)>");
 		ps.println("<!ELEMENT PRIVILEGE (#PCDATA)>");
+		ps.println("<!ELEMENT BLACKLIST (#PCDATA)>");
 		ps.println("]>");
 
 		// XML
@@ -78,6 +79,7 @@ public class DBUsers
 			ps.println("<NAME>" + this.getUserName(i) + "</NAME>");
 			ps.println("<PASSWORD>" + this.getUserPassword(i) + "</PASSWORD>");
 			ps.println("<PRIVILEGE>" + this.getUserPrivilege(i) + "</PRIVILEGE>");
+			ps.println("<BLACKLIST>" + this.getUserBlackList(i) + "</BLACKLIST>");
 			ps.println("</USER>");
 		}
 
@@ -227,6 +229,21 @@ public class DBUsers
 		throw new ArrayIndexOutOfBoundsException();
 	}
 
+	/**
+	 * Restituisce lo stato dell'utente per quanto riguarda la black-list.
+	 *
+	 * @param index Indice dell'utente.
+	 * @return Una stringa. '<tt>true</tt>' se l'utente e` in black-list. '<tt>false</tt>' altrimenti.
+	 * @throws ArrayIndexOutOfBoundsException Indice non valido.
+	 */
+	private String getUserBlackList(int index) throws 
+		ArrayIndexOutOfBoundsException
+	{
+		if (index >= 0 && index < this.getSize())
+			return users.elementAt(index).getBlacklist();
+
+		throw new ArrayIndexOutOfBoundsException();
+	}
 	/** 
 	 * Restituisce il numero di utenti nel database.
 	 *

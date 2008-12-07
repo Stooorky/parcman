@@ -129,6 +129,41 @@ public interface RemoteParcmanServerUser
 	 */
 	public boolean getAgentSystemStatus(RemoteParcmanClient parcmanClientStub, String userName) throws 
 		RemoteException;
+	
+	/**
+	 * Aggiunge un utente in blacklist.
+	 * 
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @param userForBlacklist La stringa che rappresenta il nome del client che si vuole inserire nella blacklist.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public void addToBlacklist(RemoteParcmanClient parcmanClientStub, String userName, String userForBlacklist) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException;
+	
+	/**
+	 * Rimuove un utente dalla blacklist.
+	 * 
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @param userForBlacklist La stringa che rappresenta il nome del client che si vuole togliere dalla blacklist.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public void delFromBlacklist(RemoteParcmanClient parcmanClientStub, String userName, String userForBlacklist) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException;
+
 	/**
 	* Ping.
 	*

@@ -15,7 +15,7 @@ import remoteexceptions.*;
 public interface RemoteParcmanClient
 	extends RemoteParcmanClientUser, RemoteParcmanClientAgent, Remote, Serializable
 {
-    /**
+	/**
 	 * Lancia la connessione alla rete Parcman.
 	 *
 	 * @throws RemoteException Eccezione Remota
@@ -23,13 +23,13 @@ public interface RemoteParcmanClient
 	public void startConnection() throws
 		RemoteException;
 
-    /**
-     * Forza la riconnessione del client.
-     *
-     * @throws RemoteException Eccezione Remota
-     */
-    public void reconnect() throws
-        RemoteException;
+	/**
+	 * Forza la riconnessione del client.
+	 *
+	 * @throws RemoteException Eccezione Remota
+	 */
+	public void reconnect() throws
+		RemoteException;
 
 	/**
 	 * Ping.

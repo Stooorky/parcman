@@ -1,5 +1,5 @@
 #!/bin/bash
-ADDRESS=10.0.0.4
+ADDRESS=127.0.0.1
 PORT=8003
 R_PATH="~sirio/common"
 

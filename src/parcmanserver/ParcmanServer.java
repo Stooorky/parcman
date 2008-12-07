@@ -4,6 +4,7 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
 import java.rmi.*;
+import java.io.EOFException;
 
 import plog.*;
 import remoteexceptions.*;
@@ -41,7 +42,7 @@ public class ParcmanServer
 	/**
 	 * Stub del DBServer.
 	 */
-	private RemoteDBServer dBServer;
+	private RemoteDBServer dbServer;
 
 	/**
 	 * SerialVersionUID.
@@ -57,13 +58,13 @@ public class ParcmanServer
 	/**
 	 * Costruttore.
 	 *
-	 * @param dBServer Stub del DBServer
+	 * @param dbServer Stub del DBServer
 	 * @throws RemoteException Eccezione remota
 	 */
-	public ParcmanServer(RemoteDBServer dBServer) throws
+	public ParcmanServer(RemoteDBServer dbServer) throws
 		RemoteException
 	{
-		this.dBServer = dBServer;
+		this.dbServer = dbServer;
 		this.connectUsers = new HashMap<String, ClientData>();
 		this.attempUsers = new HashMap<String, String>();
 
@@ -260,7 +261,7 @@ public class ParcmanServer
 
 				try
 				{
-					userBean = this.dBServer.getUser(userName);
+					userBean = this.dbServer.getUser(userName);
 				}
 				catch(ParcmanDBServerUserNotExistRemoteException e)
 				{
@@ -288,6 +289,31 @@ public class ParcmanServer
 	}
 
 	/**
+	 * Esegue la rimozione di un utente dalla lista degli utenti di attemp.
+	 *
+	 * @param username Nome dell'utente da rimuovere.
+	 */
+	private void removeUserFromAttempList(String username) 
+	{
+		PLog.debug("ParcmanServer.disconnectUser", "Disconnessione di '" + username + "' in corso... ");
+		this.attempUsers.remove(username);
+		PLog.debug("ParcmanServer.disconnectUser", "Done.");
+	}
+
+	/**
+	 * Esegue la rimozione di un utente dalla lista degli utenti connessi.
+	 *
+	 * @param username Nome dell'utente connesso da rimuovere.
+	 */
+	private void removeUserFromConnectList(String username) 
+	{
+		PLog.debug("ParcmanServer.disconnectUser", "Disconnessione di '" + username + "' in corso... ");
+		this.connectUsers.get(username).setStub(null);
+		this.connectUsers.remove(username);
+		PLog.debug("ParcmanServer.disconnectUser", "Done.");
+	}
+
+	/**
 	 * Esegue la disconnessione di RemoteParcmanClient dalla rete Parcman.
 	 *
 	 * @param parcmanClientStub Stub del MobileServer
@@ -304,8 +330,7 @@ public class ParcmanServer
 		checkHacking(parcmanClientStub, userName);
 
 		//Rimuovo l'utente dalla lista dei Client Connessi
-		connectUsers.get(userName).setStub(null);
-		connectUsers.remove(userName);
+		this.removeUserFromConnectList(userName);
 
 		try
 		{
@@ -338,7 +363,7 @@ public class ParcmanServer
 		checkHacking(parcmanClientStub, userName);
 		try
 		{
-			Vector<ShareBean> shares = dBServer.getSharings(userName);
+			Vector<ShareBean> shares = dbServer.getSharings(userName);
 			PLog.debug("ParcmanServer.getSharings", "Spedita la lista file condivisi (" + shares.size() + " file)");
 			return shares;
 		}
@@ -414,7 +439,7 @@ public class ParcmanServer
 
 		try
 		{
-			Vector<SearchBean> searchList = dBServer.searchFiles(keywords);
+			Vector<SearchBean> searchList = dbServer.searchFiles(keywords);
 			PLog.debug("ParcmanServer.search", "Ricerca effettuata (" + searchList.size() + " file trovati)");
 			return searchList;
 		}
@@ -572,7 +597,7 @@ public class ParcmanServer
 			ShareBean bean = null;
 			try 
 			{
-				bean = this.dBServer.getShare(owner, id);
+				bean = this.dbServer.getShare(owner, id);
 				PLog.debug("ParcmanServer.startDownload", "ShareBean Ottenuto");
 			} 
 			catch (ParcmanDBServerShareNotExistRemoteException e)
@@ -594,6 +619,124 @@ public class ParcmanServer
 			PLog.err("ParcmanServer.startDownload", "Proprietario '" + owner + "' non connesso.");
 			throw new ParcmanServerRequestErrorRemoteException("Proprietario '" + owner + "' non connesso.");
 		}
+	}
+
+	/**
+	 * Aggiunge un utente in blacklist.
+	 * 
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @param userForBlacklist La stringa che rappresenta il nome del client che si vuole inserire nella blacklist.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public void addToBlacklist(RemoteParcmanClient parcmanClientStub, String userName, String userForBlacklist) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException
+	{
+		PLog.debug("ParcmanServer.addToBlacklist", "Richiesta di inserire in blacklist '"+ userForBlacklist +"' da parte di '" + userName + "'.");
+
+		checkHacking(parcmanClientStub, userName);
+		checkAdminPrivileges(connectUsers.get(userName));
+
+		// imposto comunque il flag sul database. 
+		try
+		{
+			UserBean userbean = dbServer.getUser(userForBlacklist);
+			userbean.setBlacklist("true");
+			dbServer.updateUsers(); // aggiorna il database.
+		}
+		catch (ParcmanDBServerErrorRemoteException e)
+		{
+			PLog.err(e, "ParcmanServer.addToBlacklist", "Errore interno al database.");
+			throw new ParcmanServerRequestErrorRemoteException();
+		}
+		catch (ParcmanDBServerUserNotExistRemoteException e)
+		{
+			PLog.err(e, "ParcmanServer,addToBlacklist", "L'utente '" + userForBlacklist + "' non e` presente sul database.");
+			throw new ParcmanServerRequestErrorRemoteException();
+		}
+		//catch (RemoteException e) 
+		//{
+		//	PLog.err(e, "ParcmanServer.addToBlacklist", "Si sono verificati problemi di rete.");
+		//}
+		
+		// se l'utente e` nella attemp list lo rimuovo.
+		if (this.attempUsers.containsKey(userForBlacklist))
+		{
+			this.removeUserFromAttempList(userForBlacklist);
+		}
+
+		// se l'utente e` online lo disconetto.
+		if (this.connectUsers.containsKey(userForBlacklist))
+		{
+			RemoteParcmanClientUser rclient = this.connectUsers.get(userForBlacklist).getStub();
+			try
+			{
+			      rclient.disconnect("Utente inserito in blacklist.");
+			} 
+			catch (UnmarshalException e)
+			{
+				if (e.getCause() instanceof EOFException)
+					PLog.debug("ParcmanServer.addToBlacklist", "Client disconnesso.");
+				else 
+					PLog.err(e, "ParcmanServer.addToBlacklist", "Probabilmente si sono verificati alcuni errori durante la disconnessione.");
+			}
+			catch (RemoteException e) 
+			{
+				PLog.err(e, "ParcmanServer.addToBlacklist", "Si sono verificati problemi di rete.");
+			}
+			this.removeUserFromConnectList(userForBlacklist);
+		}
+	}
+
+	/**
+	 * Rimuove un utente dalla blacklist.
+	 * 
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @param userForBlacklist La stringa che rappresenta il nome del client che si vuole togliere dalla blacklist.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public void delFromBlacklist(RemoteParcmanClient parcmanClientStub, String userName, String userForBlacklist) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException
+	{
+		PLog.debug("ParcmanServer.putInBlacklist", "Richiesta di togliere dalla blacklist '"+ userForBlacklist +"' da parte di '" + userName + "'.");
+
+		checkHacking(parcmanClientStub, userName);
+		checkAdminPrivileges(connectUsers.get(userName));
+
+		// imposto comunque il flag sul database. 
+		try
+		{
+			UserBean userbean = dbServer.getUser(userForBlacklist);
+			userbean.setBlacklist("false");
+			dbServer.updateUsers(); // aggiorna il database.
+		}
+		catch (ParcmanDBServerErrorRemoteException e)
+		{
+			PLog.err(e, "ParcmanServer.putInBlacklist", "Errore interno al database.");
+			throw new ParcmanServerRequestErrorRemoteException();
+		}
+		catch (ParcmanDBServerUserNotExistRemoteException e)
+		{
+			PLog.err(e, "ParcmanServer,putInBlacklist", "L'utente '" + userForBlacklist + "' non e` presente sul database.");
+			throw new ParcmanServerRequestErrorRemoteException();
+		}
+		//catch (RemoteException e) 
+		//{
+		//	PLog.err(e, "ParcmanServer.putInBlacklist", "Si sono verificati problemi di rete.");
+		//}
 	}
 
 	/**

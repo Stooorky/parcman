@@ -9,9 +9,15 @@ sourcefile=(ParcmanDBServerErrorRemoteException.java \
 	ParcmanDBServerShareExistRemoteException.java \
 	ParcmanDBServerShareNotValidRemoteException.java \
 	ParcmanServerUserIsConnectRemoteException.java \
-    IndexingServerRequestAfterTimeOutRemoteException.java \
-    ParcmanClientFileNotExistsRemoteException.java \
-    ParcmanClientFileErrorRemoteException.java)
+	IndexingServerRequestAfterTimeOutRemoteException.java \
+	ParcmanClientFileNotExistsRemoteException.java \
+	ParcmanClientFileErrorRemoteException.java \
+	LoginServerUserInBlacklistRemoteException.java \
+	LoginServerUserFailedRemoteException.java \
+	LoginServerUserOrPasswordFailedRemoteException.java \
+	LoginServerUserIsConnectRemoteException.java \
+	LoginServerClientHostUnreachableRemoteException.java \
+	LoginServerUserPrivilegeFailedRemoteException.java)
 
 clpath=`pwd`"/../"
 dom="[REMOTEEXCEPTIONS]"

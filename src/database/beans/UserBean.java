@@ -35,6 +35,11 @@ public class UserBean
 	private String privilege;
 
 	/**
+	 * Stato black-list.
+	 */
+	private String blacklist;
+
+	/**
 	 * Restituisce il nome utente.
 	 *
 	 * @return Nome utente.
@@ -95,6 +100,27 @@ public class UserBean
 	}
 
 	/**
+	 * Restituisce lo stato della black-list.
+	 *
+	 * @return stato black-list.
+	 */
+	public String getBlacklist()
+	{
+		return blacklist;
+	}
+
+	/**
+	 * Assegna lo stato della blacklist.
+	 *
+	 * @param blacklist stato della black-list.
+	 */
+	public void setBlacklist(String blacklist)
+	{
+		this.blacklist = blacklist;
+	}
+
+
+	/**
 	 * Controlla di equivalenza.
 	 *
 	 * @param obj Oggetto da confrontare
@@ -110,7 +136,8 @@ public class UserBean
 		UserBean bean = (UserBean) obj;
 		if (!this.name.equals(bean.getName())
 			|| !this.password.equals(bean.getPassword())
-			|| !this.privilege.equals(bean.getPrivilege()))
+			|| !this.privilege.equals(bean.getPrivilege())
+			|| !this.blacklist.equals(bean.getBlacklist()))
 		{
 			return false;
 		}
@@ -131,6 +158,8 @@ public class UserBean
 		if (this.password == null || this.password.equals(""))
 			return false;
 		if (this.privilege == null || this.privilege.equals(""))
+			return false;
+		if (this.blacklist == null || this.blacklist.equals(""))
 			return false;
 
 		return true;
