@@ -40,6 +40,16 @@ public class PLog
 	}
 
 	/**
+	 * Log di informazione.
+	 *
+	 * @param str Messaggio
+	 */
+	public static void info(String func, String str)
+	{
+		System.out.println("[LOG]<" + func + "> "  + str);
+	}
+
+	/**
 	 * Log generico.
 	 *
 	 * @param str Messaggio

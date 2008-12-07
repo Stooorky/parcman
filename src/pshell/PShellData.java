@@ -39,7 +39,7 @@ public abstract class PShellData
 	*/
 	public void writePrompt()
 	{
-        out.print("\033[31;1m-->\033[0m ");
+	        out.print("\033[31;1m-->\033[0m ");
 	}
 
 	/**

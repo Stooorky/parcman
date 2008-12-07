@@ -145,14 +145,14 @@ public class IndexingServer
 		// Controllo che l'agente sia arrivato prima del timeOut
 		if (validity < System.currentTimeMillis())
 		{
-			PLog.debug("IndexingServer.sendUpdateLists", "Richiesta da parte di un ParcmanAgent arrivata oltre il TimeOut. Nessun aggiornamento eseguito");
+			PLog.info("IndexingServer.sendUpdateLists", "Richiesta da parte di un ParcmanAgent arrivata oltre il TimeOut. Nessun aggiornamento eseguito");
 			throw new IndexingServerRequestAfterTimeOutRemoteException(); 
 		}
 
 		String key;
 		ClientDataForAgent data;
 
-		PLog.log("IndexingServer.sendUpdateLists", "Nuova richiesta di aggiornamento da parte dell'agent " + identify);
+		PLog.info("IndexingServer.sendUpdateLists", "Nuova richiesta di aggiornamento da parte dell'agent " + identify);
 
 		for (Iterator<String> iter = updateLists.keySet().iterator(); iter.hasNext(); )
 		{
@@ -167,12 +167,12 @@ public class IndexingServer
 			Vector<ShareBean> addShares = data.getUpdateList().getAddList();
 			Vector<Integer> removeShares = data.getUpdateList().getRemoveList();
 
-			PLog.log("IndexingServer.sendUpdateLists", "Aggiorno la lista share dell'utente " + key);
+			PLog.info("IndexingServer.sendUpdateLists", "Aggiorno la lista share dell'utente " + key);
 			for (int i = 0; i < addShares.size(); i++)
 			{
 				if (!addShares.get(i).getOwner().equals(key))
 				{
-					PLog.debug("IndexingServer.sendUpdateLists", "Lista Shares non coerente con i dati utente "
+					PLog.err("IndexingServer.sendUpdateLists", "Lista Shares non coerente con i dati utente "
 							+ addShares.get(i).getName() + "@" + addShares.get(i).getOwner());
 					this.forceUserToReconnect(key);
 					break;
@@ -258,7 +258,7 @@ public class IndexingServer
 	{
 		try
 		{
-			PLog.debug("IndexingServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+			PLog.info("IndexingServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
 		{
@@ -348,7 +348,7 @@ extends TimerTask
 			return;
 		}
 
-		PLog.debug("SendAgentTimerTask.run", "Invio degli agenti in corso");
+		PLog.info("SendAgentTimerTask.run", "Invio degli agenti in corso");
 
 		int x=0;
 		Vector<ClientDataForAgent> clients = new Vector<ClientDataForAgent>();

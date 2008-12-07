@@ -72,7 +72,7 @@ public class DB
 		{
 			throw new ParcmanDBErrorException();
 		}
-		PLog.debug("DB.updateUsers", "Aggiornamento del database utenti completato.");
+		PLog.info("DB.updateUsers", "Aggiornamento del database utenti completato.");
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class DB
 		// Salvo il DB Utenti
 		dbManager.save("USERS");
 
-		PLog.debug("DB.addUser", "Nuovo utente aggiunto al DB Utenti: " + user.getName());
+		PLog.info("DB.addUser", "Nuovo utente aggiunto al DB Utenti: " + user.getName());
 	}
 
 	/**
@@ -387,11 +387,11 @@ public class DB
 		// Controllo l'esistenza della directory
 		if (!dir.exists()) // La Directory non esiste
 		{
-			PLog.debug("DB.fixDirectory", "Creazione della Directory " + dbDirectory);
+			PLog.info("DB.fixDirectory", "Creazione della Directory " + dbDirectory);
 			// Creo la directory, comprese le directory nel PATH
 			dir.mkdirs();
 
-			PLog.debug("DB.fixDirectory", "Creo i file \n\t" + DB_USERS_FILE + "\n\t" + DB_SHARINGS_FILE + "\nnella directory " + this.dbDirectory);
+			PLog.info("DB.fixDirectory", "Creo i file \n\t" + DB_USERS_FILE + "\n\t" + DB_SHARINGS_FILE + "\nnella directory " + this.dbDirectory);
 			// Creo il file XML del DB Utenti invocando save della classe DBUsers
 			DBManager dbManager = DBManager.getInstance();
 
@@ -407,7 +407,7 @@ public class DB
 
 				if (!dbUsers.exists()) // Il file XML per il DB Utenti non esiste
 				{
-					PLog.debug("DB.fixDirectory", "Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
+					PLog.info("DB.fixDirectory", "Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
 					// Creo il file XML del DB Utenti invocando save della classe DBUsers
 					DBManager dbManager = DBManager.getInstance();
 
@@ -415,7 +415,7 @@ public class DB
 				}
 				else // Il file XML per il DB Utenti esiste
 				{
-					PLog.debug("DB.fixDirectory", "Carico il DB Utenti");
+					PLog.info("DB.fixDirectory", "Carico il DB Utenti");
 					// Carico il file XML del DB Utenti
 					DBManager dbManager = DBManager.getInstance();
 
@@ -424,7 +424,7 @@ public class DB
 
 				if (!dbSharings.exists()) // Il file XML per il DB Utenti non esiste
 				{
-					PLog.debug("DB.fixDirectory", "Creo il file " + DB_SHARINGS_FILE + " nella directory " + this.dbDirectory);
+					PLog.info("DB.fixDirectory", "Creo il file " + DB_SHARINGS_FILE + " nella directory " + this.dbDirectory);
 					// Creo il file XML del DB Utenti invocando save della classe DBUsers
 					DBManager dbManager = DBManager.getInstance();
 
@@ -432,7 +432,7 @@ public class DB
 				}
 				else // Il file XML per il DB Utenti esiste
 				{
-					PLog.debug("DB.fixDirectory", "Carico il DB dei file condivisi");
+					PLog.info("DB.fixDirectory", "Carico il DB dei file condivisi");
 					// Carico il file XML del DB Utenti
 					DBManager dbManager = DBManager.getInstance();
 

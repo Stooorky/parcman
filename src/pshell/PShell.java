@@ -54,7 +54,7 @@ public class PShell
 
 		PShellDataAnnotation ant;
 
-		PLog.debug("Pshell", "Avvio compilazione Shell...");
+		PLog.info("Pshell", "Avvio compilazione Shell...");
 
 		boolean err = false;
 
@@ -85,9 +85,9 @@ public class PShell
 		}
 
 		if (!err)
-			PLog.debug("Pshell", "Done.");
+			PLog.info("Pshell", "Done.");
 		else
-			PLog.debug("Pshell", "Si sono verificati errori durante la compilazione.");
+			PLog.err("Pshell", "Si sono verificati errori durante la compilazione.");
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class PShell
 
 			if (method == null)
 			{
-				PLog.debug("PShell.runCommand", "Comando non trovato");
+				PLog.info("PShell.runCommand", "Comando non trovato");
 				out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 				return;
 			}
@@ -214,27 +214,27 @@ public class PShell
 		}
 		catch (SecurityException e)
 		{
-			PLog.err(e, "Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (NullPointerException e)
 		{
-			PLog.err(e, "Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (NoSuchMethodException e)
 		{
-			PLog.err(e, "Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (InvocationTargetException e)
 		{
-			PLog.err(e, "Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (IllegalAccessException e)
 		{
-			PLog.err(e, "Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 	}

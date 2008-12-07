@@ -68,8 +68,8 @@ public class LoginServer
 		// Ricavo l'ActivationDesc dall'ActivationSystem
 		ActivationDesc actDesc = actSystem.getActivationDesc(id);
 
-		PLog.debug("LoginServer", "Inizializzo il LoginServer.");
-		PLog.debug("LoginServer", "Ripristino e aggiornamento dei dati di sessione.");
+		PLog.info("LoginServer", "Inizializzo il LoginServer.");
+		PLog.info("LoginServer", "Ripristino e aggiornamento dei dati di sessione.");
 
 		// Ricavo dall'atDate i dati della sessione
 		LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
@@ -109,7 +109,7 @@ public class LoginServer
 	{
 		try
 		{
-			PLog.debug("LoginServer.login", "E' stata ricevuta una richiesta di login dall'host " + this.getClientHost());
+			PLog.info("LoginServer.login", "E' stata ricevuta una richiesta di login dall'host " + this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
 		{
@@ -125,7 +125,7 @@ public class LoginServer
 		}
 		catch(ParcmanDBServerUserNotExistRemoteException e)
 		{
-			PLog.debug("LoginServer.login", "Richiesta rifiutata, nome utente errato.");
+			PLog.info("LoginServer.login", "Richiesta rifiutata, nome utente errato.");
 			throw new LoginServerUserFailedRemoteException();
 		}
 
@@ -134,25 +134,25 @@ public class LoginServer
 
 		if (user == null || !(encryptedPassword.equals(user.getPassword())))
 		{
-			PLog.debug("LoginServer.login", "Richiesta rifiutata, password o nome utente errati.");
+			PLog.info("LoginServer.login", "Richiesta rifiutata, password o nome utente errati.");
 			throw new LoginServerUserOrPasswordFailedRemoteException();
 		}
 
 		if ("WAITING".equals(user.getStatus()))
 		{
-			PLog.debug("LoginServer.login", "Richiesta rifiutata, utente non autorizzato.");
+			PLog.info("LoginServer.login", "Richiesta rifiutata, utente non autorizzato.");
 			throw new LoginServerUserNotAuthorizedRemoteException();
 		}
 
 		if ("BLACKLIST".equals(user.getStatus()))
 		{
-			PLog.debug("LoginServer.login", "Richiesta rifiutata, utente in blacklist.");
+			PLog.info("LoginServer.login", "Richiesta rifiutata, utente in blacklist.");
 			throw new LoginServerUserInBlacklistRemoteException();
 		}
 
 		if (!"READY".equals(user.getStatus()))
 		{
-			PLog.debug("Loginserver.login", "Richiesta rifiutata, status utente non riconosciuto.");
+			PLog.info("Loginserver.login", "Richiesta rifiutata, status utente non riconosciuto.");
 			throw new LoginServerUserInvalidStatusRemoteException();
 		}
 
@@ -186,7 +186,7 @@ public class LoginServer
 		{
 			if (e.getCause() instanceof ParcmanServerUserIsConnectRemoteException)
 			{
-				PLog.debug("LoginServer.login", "Richiesta rifiutata, Utente gia' connesso.");
+				PLog.info("LoginServer.login", "Richiesta rifiutata, Utente gia' connesso.");
 				throw new LoginServerUserIsConnectRemoteException(e.getMessage());
 			}
 			else
@@ -194,7 +194,7 @@ public class LoginServer
 				throw e;
 		}
 
-		PLog.debug("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
+		PLog.info("LoginServer.login", "Richiesta accettata, e' stato inviato il ParcmanClient.");
 
 		return parcmanClient;
 	}
@@ -214,7 +214,7 @@ public class LoginServer
 	{
 		try
 		{
-			PLog.debug("LoginServer.createAccount", "E' stata ricevuta una richiesta di creazione account da " + this.getClientHost());
+			PLog.info("LoginServer.createAccount", "E' stata ricevuta una richiesta di creazione account da " + this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
 		{
@@ -246,12 +246,12 @@ public class LoginServer
 		}
 		catch(ParcmanDBServerUserExistRemoteException e)
 		{
-			PLog.debug("LoginServer.createAccount", "Richiesta rifiutata, il nome utente fornito e' gia' in uso.");
+			PLog.info("LoginServer.createAccount", "Richiesta rifiutata, il nome utente fornito e' gia' in uso.");
 			throw new ParcmanDBServerUserExistRemoteException();
 		}
 		catch(ParcmanDBServerUserNotValidRemoteException e)
 		{
-			PLog.debug("LoginServer.createAccount", "Richiesta rifiutata, i dati forniti non sono validi.");
+			PLog.info("LoginServer.createAccount", "Richiesta rifiutata, i dati forniti non sono validi.");
 			throw new ParcmanDBServerUserNotValidRemoteException();
 		}
 		catch(RemoteException e)
@@ -271,7 +271,7 @@ public class LoginServer
 	{
 		try
 		{
-			PLog.debug("LoginServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+			PLog.info("LoginServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
 		{
@@ -287,14 +287,14 @@ public class LoginServer
 	{
 		try
 		{
-			PLog.debug("LoginServer.unreferenced", "Disattivazione del LoginServer in corso");
+			PLog.info("LoginServer.unreferenced", "Disattivazione del LoginServer in corso");
 			// Rendo inattivo il LoginServer
 			this.inactive(getID());
 
 			// Invoco il Garbage Collector
 			System.gc();
 
-			PLog.debug("LoginServer.unreferenced", "Disattivazione avvenuta con succeso");
+			PLog.info("LoginServer.unreferenced", "Disattivazione avvenuta con succeso");
 		}
 		catch (Exception e)
 		{
