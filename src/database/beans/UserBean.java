@@ -3,7 +3,10 @@ package database.beans;
 import java.io.Serializable;
 import java.util.*;
 import java.io.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
+import database.exceptions.ParcmanDBUserInvalidStatusException;
 import database.xmlhandlers.*;
 
 /**
@@ -35,9 +38,9 @@ public class UserBean
 	private String privilege;
 
 	/**
-	 * Stato black-list.
+	 * Stato dell'utente.
 	 */
-	private String blacklist;
+	private String status;
 
 	/**
 	 * Restituisce il nome utente.
@@ -100,23 +103,40 @@ public class UserBean
 	}
 
 	/**
-	 * Restituisce lo stato della black-list.
+	 * Restituisce lo stato dell'utente.
+	 * Le possibilta` sono:
+	 * <ul>
+	 * <li><tt>READY</tt>: indica che le informazioni relative all'utente sono pronte per essere usate.</li>
+	 * <li><tt>BLACKLIST</tt>: indica che l'utente e` stato inserito nella black-list.</li>
+	 * <li><tt>WAITING</tt>: indica che l'utente non e` stato ancora autorizzato.</li>
+	 * </ul>
 	 *
-	 * @return stato black-list.
+	 * @return lo stato dell'utente.
 	 */
-	public String getBlacklist()
+	public String getStatus()
 	{
-		return blacklist;
+		return status;
 	}
 
 	/**
-	 * Assegna lo stato della blacklist.
+	 * Assegna lo stato dell'utente.
+	 * Le possibilta` sono:
+	 * <ul>
+	 * <li><tt>READY</tt>: indica che le informazioni relative all'utente sono pronte per essere usate.</li>
+	 * <li><tt>BLACKLIST</tt>: indica che l'utente e` stato inserito nella black-list.</li>
+	 * <li><tt>WAITING</tt>: indica che l'utente non e` stato ancora autorizzato.</li>
+	 * </ul>
 	 *
-	 * @param blacklist stato della black-list.
+	 * @param status lo stato dell'utente.
 	 */
-	public void setBlacklist(String blacklist)
+	public void setStatus(String status) throws 
+		ParcmanDBUserInvalidStatusException
 	{
-		this.blacklist = blacklist;
+		Pattern pattern = Pattern.compile("READY|BLACKLIST|WAITING");
+		Matcher matcher = pattern.matcher(status);
+		if (!matcher.matches())
+			throw new ParcmanDBUserInvalidStatusException();
+		this.status = status;
 	}
 
 
@@ -137,7 +157,7 @@ public class UserBean
 		if (!this.name.equals(bean.getName())
 			|| !this.password.equals(bean.getPassword())
 			|| !this.privilege.equals(bean.getPrivilege())
-			|| !this.blacklist.equals(bean.getBlacklist()))
+			|| !this.status.equals(bean.getStatus()))
 		{
 			return false;
 		}
@@ -159,7 +179,7 @@ public class UserBean
 			return false;
 		if (this.privilege == null || this.privilege.equals(""))
 			return false;
-		if (this.blacklist == null || this.blacklist.equals(""))
+		if (this.status == null || this.status.equals(""))
 			return false;
 
 		return true;

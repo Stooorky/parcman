@@ -67,7 +67,7 @@ public class DBUsers
 		ps.println("<!ELEMENT NAME (#PCDATA)>");
 		ps.println("<!ELEMENT PASSWORD (#PCDATA)>");
 		ps.println("<!ELEMENT PRIVILEGE (#PCDATA)>");
-		ps.println("<!ELEMENT BLACKLIST (#PCDATA)>");
+		ps.println("<!ELEMENT STATUS (#PCDATA)>");
 		ps.println("]>");
 
 		// XML
@@ -79,7 +79,7 @@ public class DBUsers
 			ps.println("<NAME>" + this.getUserName(i) + "</NAME>");
 			ps.println("<PASSWORD>" + this.getUserPassword(i) + "</PASSWORD>");
 			ps.println("<PRIVILEGE>" + this.getUserPrivilege(i) + "</PRIVILEGE>");
-			ps.println("<BLACKLIST>" + this.getUserBlackList(i) + "</BLACKLIST>");
+			ps.println("<STATUS>" + this.getUserStatus(i) + "</STATUS>");
 			ps.println("</USER>");
 		}
 
@@ -230,20 +230,27 @@ public class DBUsers
 	}
 
 	/**
-	 * Restituisce lo stato dell'utente per quanto riguarda la black-list.
+	 * Restituisce lo stato dell'utente.
+	 * Gli stati possibili sono:
+	 * <ul>
+	 * <li><tt>READY</tt>: indica che le informazioni relative all'utente sono pronte per essere usate.</li>
+	 * <li><tt>BLACKLIST</tt>: indica che l'utente e` stato inserito nella black-list.</li>
+	 * <li><tt>WAITING</tt>: indica che l'utente non e` stato ancora autorizzato.</li>
+	 * </ul>
 	 *
 	 * @param index Indice dell'utente.
-	 * @return Una stringa. '<tt>true</tt>' se l'utente e` in black-list. '<tt>false</tt>' altrimenti.
+	 * @return Una stringa che rappresenta lo stato dell'utente.
 	 * @throws ArrayIndexOutOfBoundsException Indice non valido.
 	 */
-	private String getUserBlackList(int index) throws 
+	private String getUserStatus(int index) throws 
 		ArrayIndexOutOfBoundsException
 	{
 		if (index >= 0 && index < this.getSize())
-			return users.elementAt(index).getBlacklist();
+			return users.elementAt(index).getStatus();
 
 		throw new ArrayIndexOutOfBoundsException();
 	}
+
 	/** 
 	 * Restituisce il numero di utenti nel database.
 	 *

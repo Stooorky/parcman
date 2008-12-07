@@ -19,6 +19,9 @@ local_compile()
 		echo "$dom Compile: ${sourcefile[@]}."
 		javac -classpath :$clpath ${sourcefile[@]} 2> /dev/null
 	fi
+	cd exceptions
+	bash compile.sh "$1"
+	cd ..
 }
 
 local_clean()

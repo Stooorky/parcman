@@ -4,6 +4,7 @@ import java.util.*;
 import org.xml.sax.*;
 
 import database.beans.*;
+import database.exceptions.ParcmanDBUserInvalidStatusException;
 import plog.*;
 
 /**
@@ -30,9 +31,9 @@ public class UserContentHandler
 	private boolean inPriv;
 
 	/** 
-	 * 'true' se stiamo indagando l'elemento <BLACKLIST></BLACKLIST>.
+	 * 'true' se stiamo indagando l'elemento <STATUS></STATUS>.
 	 */
-	private boolean inBlack;
+	private boolean inStatus;
 
 	/** 
 	 * Oggetto bean per la memorizzazione di un utente.
@@ -72,10 +73,17 @@ public class UserContentHandler
 			this.bean.setPrivilege(new String(ch, start, length));
 			this.inPriv = false;
 		}
-		else if (this.inBlack)
+		else if (this.inStatus)
 		{
-			this.bean.setBlacklist(new String(ch, start, length));
-			this.inBlack = false;
+			try
+			{
+				this.bean.setStatus(new String(ch, start, length));
+			}
+			catch (ParcmanDBUserInvalidStatusException e)
+			{
+				PLog.err("UserContentHandler.characters", "Stato utente non valido.");
+			}
+			this.inStatus = false;
 		}
 		else 
 		{
@@ -151,9 +159,9 @@ public class UserContentHandler
 		{
 			this.inPriv = true;
 		}
-		else if ("BLACKLIST".equals(localName))
+		else if ("STATUS".equals(localName))
 		{
-			this.inBlack = true;
+			this.inStatus = true;
 		}
 		else if ("USER".equals(localName))
 		{

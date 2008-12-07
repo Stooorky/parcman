@@ -17,6 +17,8 @@ sourcefile=(ParcmanDBServerErrorRemoteException.java \
 	LoginServerUserOrPasswordFailedRemoteException.java \
 	LoginServerUserIsConnectRemoteException.java \
 	LoginServerClientHostUnreachableRemoteException.java \
+	LoginServerUserInvalidStatusRemoteException.java \
+	LoginServerUserNotAuthorizedRemoteException.java \
 	LoginServerUserPrivilegeFailedRemoteException.java)
 
 clpath=`pwd`"/../"

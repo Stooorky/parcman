@@ -14,6 +14,7 @@ import parcmanserver.RemoteParcmanServer;
 import parcmanserver.RemoteParcmanServerUser;
 import parcmanclient.*;
 import database.beans.UserBean;
+import database.exceptions.ParcmanDBUserInvalidStatusException;
 import databaseserver.RemoteDBServer;
 import privilege.Privilege;
 
@@ -137,10 +138,22 @@ public class LoginServer
 			throw new LoginServerUserOrPasswordFailedRemoteException();
 		}
 
-		if ("true".equals(user.getBlacklist()))
+		if ("WAITING".equals(user.getStatus()))
+		{
+			PLog.debug("LoginServer.login", "Richiesta rifiutata, utente non autorizzato.");
+			throw new LoginServerUserNotAuthorizedRemoteException();
+		}
+
+		if ("BLACKLIST".equals(user.getStatus()))
 		{
 			PLog.debug("LoginServer.login", "Richiesta rifiutata, utente in blacklist.");
 			throw new LoginServerUserInBlacklistRemoteException();
+		}
+
+		if (!"READY".equals(user.getStatus()))
+		{
+			PLog.debug("Loginserver.login", "Richiesta rifiutata, status utente non riconosciuto.");
+			throw new LoginServerUserInvalidStatusRemoteException();
 		}
 
 		RemoteParcmanClient parcmanClient = null;
@@ -218,7 +231,14 @@ public class LoginServer
 		user.setName(name);
 		user.setPassword(encryptedPassword);
 		user.setPrivilege(Privilege.getUserPrivilege());
-		user.setBlacklist("false");
+		try
+		{
+			user.setStatus("WAITING");
+		} 
+		catch (ParcmanDBUserInvalidStatusException e)
+		{
+			PLog.err("LoginServer.createAccount", "Status non valido.");
+		}
 
 		try
 		{

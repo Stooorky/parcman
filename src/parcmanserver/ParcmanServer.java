@@ -11,6 +11,7 @@ import remoteexceptions.*;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
 import database.beans.UserBean;
+import database.exceptions.ParcmanDBUserInvalidStatusException;
 import databaseserver.RemoteDBServer;
 import indexingserver.RemoteIndexingServer;
 import parcmanclient.RemoteParcmanClient;
@@ -647,7 +648,14 @@ public class ParcmanServer
 		try
 		{
 			UserBean userbean = dbServer.getUser(userForBlacklist);
-			userbean.setBlacklist("true");
+			try
+			{
+				userbean.setStatus("BLACKLIST");
+			} 
+			catch (ParcmanDBUserInvalidStatusException e)
+			{
+				PLog.err("ParcmanServer.putInBlacklist", "Stato utente non valido");
+			}
 			dbServer.updateUsers(); // aggiorna il database.
 		}
 		catch (ParcmanDBServerErrorRemoteException e)
@@ -720,7 +728,14 @@ public class ParcmanServer
 		try
 		{
 			UserBean userbean = dbServer.getUser(userForBlacklist);
-			userbean.setBlacklist("false");
+			try
+			{
+				userbean.setStatus("READY");
+			} 
+			catch (ParcmanDBUserInvalidStatusException e)
+			{
+				PLog.err("ParcmanServer.putInBlacklist", "Stato utente non valido");
+			}
 			dbServer.updateUsers(); // aggiorna il database.
 		}
 		catch (ParcmanDBServerErrorRemoteException e)
