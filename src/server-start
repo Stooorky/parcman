@@ -18,18 +18,6 @@ OPTIONS=( --address --hostname --port --remote-path --policy-file --policy-group
 HELPS=( "codebase address" "hostname" "codebase port" "codebase path" "policy file path" "policy group" "database directory" "codebase implementation path" "prints help page" )
 DEFAULTS=( $P_ADDRESS $P_HOSTNAME $P_PORT $P_REMOTE_PATH $P_POLICY $P_POLICY_GROUP $P_DATABASE_DIR $P_IMPL_CODEBASE_PATH "")
 
-function usage()
-{
-	echo "Usage: server-start [options]"
-	echo " where options are:"
-	size=${#OPTIONS[*]}
-	for (( i=0; i<${#OPTIONS[*]}; i++ )); do
-		echo -n "  $i) ${OPTIONS[$i]}: ${HELPS[$i]}."
-		[[ ! -z ${DEFAULTS[$i]} ]] && echo " [${DEFAULTS[$i]}]"
-	done
-	echo 
-}
-
 
 for i in $@; do
 	case $i in 
@@ -75,7 +63,7 @@ for i in $@; do
 		;;
 	--help)
 		shift
-		usage
+		argslib_usage
 		exit 0
 		;;
 	*)

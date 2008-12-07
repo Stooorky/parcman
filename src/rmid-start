@@ -9,17 +9,16 @@ P_CODEBASE_PATH=file://$HOME/public_html/common/
 P_POLICY=./policy
 P_LOG_RMID_PATH=$HOME/PAR/log-rmid
 
+OPTIONS=( --hostname --codebase-path --policy-file --log-rmid-path --help )
+HELPS=( "hostname" "codebase path" "policy file path" "log rmid path" "prints help page" )
+DEFAULTS=( $P_HOSTNAME $P_CODEBASE_PATH $P_POLICY $P_LOG_RMID_PATH "" )
+
 for i in $@; do
 	case $i in 
 	--hostname=*)
 		argslib_get_long_option $i
 		shift
 		P_HOSTNAME="$ARGSLIB_OPT_VALUE"
-		;;
-	--port=*)
-		argslib_get_long_option $i
-		shift
-		P_PORT="$ARGSLIB_OPT_VALUE"
 		;;
 	--codebase-path=*)
 		argslib_get_long_option $i
@@ -35,6 +34,11 @@ for i in $@; do
 		argslib_get_long_option $i
 		shift
 		P_LOG_RMID_PATH="$ARGSLIB_OPT_VALUE"
+		;;
+	--help)
+		argslib_usage
+		shift
+		exit 0
 		;;
 	*)
 		shift

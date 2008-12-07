@@ -3,6 +3,15 @@
 # include argslib.sh
 . ./scripts/argslib.sh
 
+P_ADDRESS=localhost
+P_PORT=8003
+P_REMOTE_PATH="~$USER/common/"
+P_POLICY=policy	
+
+OPTIONS=( --address --port --remote-path --policy-file --help )
+HELPS=( "LoginServer address" "LoginServer port" "LoginServer path" "policy file path" "prints help page" )
+DEFAULTS=( $P_ADDRESS $P_PORT $P_REMOTE_PATH $P_POLICY "")
+
 for i in $@; do
 	case $i in 
 	--address=*)
@@ -24,6 +33,11 @@ for i in $@; do
 		argslib_get_long_option $i
 		shift
 		P_POLICY="$ARGSLIB_OPT_VALUE"
+		;;
+	--help)
+		argslib_usage
+		shift
+		exit 0
 		;;
 	*)
 		shift
