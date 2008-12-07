@@ -3,6 +3,11 @@ package parcmanclient;
 import database.beans.ShareBean;
 import java.io.Serializable;
 
+/**
+ * Contenitore per la trasmissione dei dati relativi al file che si vuole scaricare.
+ *
+ * @author Parcman Tm
+ */
 public class DownloadData implements Serializable
 {
 	private ShareBean bean;
