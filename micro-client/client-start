@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# include argslib.sh
+. ./scripts/argslib.sh
+
+P_ADDRESS=localhost
+P_PORT=8003
+P_REMOTE_PATH="~$USER/common/"
+P_POLICY=policy	
+
+OPTIONS=( --address --port --remote-path --policy-file --help )
+HELPS=( "LoginServer address" "LoginServer port" "LoginServer path" "policy file path" "prints help page" )
+DEFAULTS=( $P_ADDRESS $P_PORT $P_REMOTE_PATH $P_POLICY "")
+
+for i in $@; do
+	case $i in 
+	--address=*)
+		argslib_get_long_option $i
+		shift
+		P_ADDRESS="$ARGSLIB_OPT_VALUE"
+		;;
+	--port=*)
+		argslib_get_long_option $i
+		shift
+		P_PORT="$ARGSLIB_OPT_VALUE"
+		;;
+	--remote-path=*)
+		argslib_get_long_option $i
+		shift
+		P_REMOTE_PATH="$ARGSLIB_OPT_VALUE"
+		;;
+	--policy-file=*)
+		argslib_get_long_option $i
+		shift
+		P_POLICY="$ARGSLIB_OPT_VALUE"
+		;;
+	--help)
+		argslib_usage
+		shift
+		exit 0
+		;;
+	*)
+		shift
+		;;
+	esac
+done
+
+java -Xdebug \
+-Dremoteclient.loginserveradress=//$P_ADDRESS:1098/LoginServer \
+-Djava.security.policy=$P_POLICY \
+-Djava.rmi.dgc.leaseValue=30000 \
+clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH remoteclient.RemoteClientUser
+
