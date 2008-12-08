@@ -1,4 +1,4 @@
-package microclient.plog;
+package plog;
 
 /**
  * Gestore messaggi di errore e di debug.
@@ -37,6 +37,16 @@ public class PLog
 	public static void debug(String func, String str)
 	{
 		System.out.println("[DEBUG]<" + func + "> " + str);
+	}
+
+	/**
+	 * Log di informazione.
+	 *
+	 * @param str Messaggio
+	 */
+	public static void info(String func, String str)
+	{
+		System.out.println("[LOG]<" + func + "> "  + str);
 	}
 
 	/**

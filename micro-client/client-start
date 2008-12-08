@@ -1,7 +1,19 @@
 #!/bin/bash
 
+E_MC_INLCUDE_ARGSLIB=65
+E_MC_INLCUDE_ARGSLIB_MSG="Impossibile includere argslib.sh"
+E_MC_INLCUDE_LOGLIB=66
+E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
+
+G_LOGPOS=$(basename $0)
+
 # include argslib.sh
-. ../bash/argslib.sh
+. ../bash/argslib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_ARGSLIB_MSG && exit $E_MC_INLCUDE_ARGSLIB
+
+# include loglib.sh
+. ../bash/loglib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_LOGLIB_MSG && exit $E_MC_INLCUDE_LOGLIB
 
 P_ADDRESS=localhost
 P_PORT=8003
@@ -45,9 +57,14 @@ for i in $@; do
 	esac
 done
 
-java -Xdebug \
+bt_info_inline "lancio il client con i seguenti parametri:" $G_LOGPOS
+bt_info_inline " 0) -Dremoteclient.loginserveradress=//$P_ADDRESS:1098/LoginServer" $G_LOGPOS
+bt_info_inline " 1) -Djava.security.policy=$P_POLICY " $G_LOGPOS
+bt_info_inline " 2) -Djava.rmi.dgc.leaseValue=30000" $G_LOGPOS
+bt_info_inline " 3) clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH remoteclient.RemoteClientUser" $G_LOGPOS
+bt_info_nl "java -Xdebug \
 -Dremoteclient.loginserveradress=//$P_ADDRESS:1098/LoginServer \
 -Djava.security.policy=$P_POLICY \
 -Djava.rmi.dgc.leaseValue=30000 \
-clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH remoteclient.RemoteClientUser
+clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH remoteclient.RemoteClientUser" "run client" $G_LOGPOS
 

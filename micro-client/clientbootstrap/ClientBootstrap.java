@@ -1,11 +1,11 @@
-package microclient.clientbootstrap;
+package clientbootstrap;
 
 import java.net.*;
 import java.rmi.server.*;
 import java.rmi.RMISecurityManager;
 import java.util.Properties;
 
-import microclient.plog.*;
+import plog.*;
 
 /**
  * Client Minimale per il BootStrap.

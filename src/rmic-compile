@@ -21,6 +21,7 @@ G_CODEBASE_FILES=(	parcmanserver/RemoteParcmanServer.class \
 			parcmanclient/*.class \
 			remoteclient/*.class \
 			parcmanagent/*.class \
+			parcmanagent/exceptions/*.class \
 			pshell/*.class \
 			indexingserver/RemoteIndexingServer.class \
 			indexingserver/RemoteIndexingServerAgent.class \
