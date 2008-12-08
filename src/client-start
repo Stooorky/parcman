@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # include argslib.sh
-. ./scripts/argslib.sh
+. ../bash/argslib.sh
 
 P_ADDRESS=localhost
 P_PORT=8003

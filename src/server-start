@@ -8,11 +8,18 @@ P_POLICY="policy"
 P_POLICY_GROUP="setup/policy"
 P_DATABASE_DIR="$HOME/PAR/parcman/dbDirectory"
 
+E_MC_INLCUDE_ARGSLIB=65
+E_MC_INLCUDE_ARGSLIB_MSG="Impossibile includere argslib.sh"
+E_MC_INLCUDE_LOGLIB=66
+E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
+
 # include argslib.sh
-. ./scripts/argslib.sh
+. ./bash/argslib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_ARGSLIB_MSG && exit $E_MC_INLCUDE_ARGSLIB
 
 # include loglib.sh
-. ./scripts/loglib.sh
+. ./bash/loglib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_LOGLIB_MSG && exit $E_MC_INLCUDE_LOGLIB
 
 OPTIONS=( --address --hostname --port --remote-path --policy-file --policy-group --database-dir --impl-codebase-path --help )
 HELPS=( "codebase address" "hostname" "codebase port" "codebase path" "policy file path" "policy group" "database directory" "codebase implementation path" "prints help page" )
