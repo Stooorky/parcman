@@ -261,7 +261,7 @@ function bt_info_on_list_exec()
 		bt_info "$2 $el" "$4 '$(basename $el)'" "$5" $6
 	done
 	# $1=type, $2=exit_status, $3=param
-	bt_info_down "$BT_TYPE_NOP" "DONE"
+	bt_info_down "$BT_TYPE_NOP" $BT_OUT_DONE 
 }
 function bt_info_on_list_exec_oneshot()
 {
