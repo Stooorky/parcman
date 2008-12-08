@@ -200,6 +200,44 @@ public class DB
 	}
 
 	/**
+	 * Aggiorna il database degli utenti.
+	 *
+	 * @throws ParcmanDBErrorException Errore interno del database degli utenti
+	 */
+	public void reloadUsers() throws 
+		ParcmanDBErrorException
+	{
+		try
+		{
+			Object[] args = new Object[] { };
+			DBManager.getInstance().call("USERS", "load", args);
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+	}
+
+	/**
+	 * Aggiorna il database dei file condivisi.
+	 *
+	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	 */
+	public void reloadShares() throws 
+		ParcmanDBErrorException
+	{
+		try
+		{
+			Object[] args = new Object[] { };
+			DBManager.getInstance().call("SHARINGS", "load", args);
+		}
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+	}
+
+	/**
 	 * Ritorna la lista degli utenti registrati nel database.
 	 *
 	 * @throws ParcmanDBErrorException Errore interno del database degli utenti. 

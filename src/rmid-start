@@ -21,9 +21,17 @@ P_LOG_RMID_PATH=$HOME/PAR/log-rmid
 
 G_LOGPOS=$(basename $0)
 
-OPTIONS=( --hostname --codebase-path --policy-file --log-rmid-path --help )
-HELPS=( "hostname" "codebase path" "policy file path" "log rmid path" "prints help page" )
-DEFAULTS=( $P_HOSTNAME $P_CODEBASE_PATH $P_POLICY $P_LOG_RMID_PATH "" )
+OPTIONS=( --hostname --codebase-path --policy-file --log-rmid-path --stop --help )
+HELPS=( "hostname" "codebase path" "policy file path" "log rmid path" "spegne il server rmid" "prints help page" )
+DEFAULTS=( "$P_HOSTNAME" "$P_CODEBASE_PATH" "$P_POLICY" "$P_LOG_RMID_PATH" "" "" )
+
+function stop_rmid()
+{
+	echo 
+	rmid -stop &> /dev/null
+	killall -9 rmid &> /dev/null
+}
+
 
 for i in $@; do
 	case $i in 
@@ -47,6 +55,11 @@ for i in $@; do
 		shift
 		P_LOG_RMID_PATH="$ARGSLIB_OPT_VALUE"
 		;;
+	--stop)
+		shift
+		stop_rmid 
+		exit 0
+		;;
 	--help)
 		argslib_usage
 		shift
@@ -57,13 +70,6 @@ for i in $@; do
 		;;
 	esac
 done
-
-function stop_rmid()
-{
-	echo 
-	rmid -stop &> /dev/null
-	killall -9 rmid &> /dev/null
-}
 
 bt_info "stop_rmid" "stop any active rmid server" $G_LOGPOS 
 bt_info "rm -rf $P_LOG_RMID_PATH/*" "clear rmid log dir" $G_LOGPOS $BT_OUT_TYPE_NOOUT

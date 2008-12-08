@@ -778,11 +778,14 @@ public class ParcmanServer
 		Vector<UserBean> users = null;
 		try
 		{
+			dbServer.reloadUsers();
 			users = dbServer.getUsers();
 			for (int i=0; i<users.size(); i++)
 			{
 				if (!"BLACKLIST".equals(users.get(i).getStatus()))
+				{
 					users.remove(i);
+				}
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e)

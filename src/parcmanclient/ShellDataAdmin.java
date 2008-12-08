@@ -195,19 +195,28 @@ public class ShellDataAdmin extends ShellData
  			Vector<UserBean> result = parcmanServerStub.blacklist(parcmanClient.getStub(), userName);
  			out.println("Done.");
  
+			Vector<String> names = new Vector<String>();
+			Vector<String> privileges = new Vector<String>();
+			names.add("NOME UTENTE");
+			privileges.add("PRIVILEGI");
+			String header = "Blacklist:";
+
  			if (result == null || result.size() == 0)
  			{
  				out.println("Nessun utente in blacklist.");
  			}
  			else 
  			{
- 				out.println("Blacklist: ");
-				out.println("\tUSERNAME\tPRIVILEGES");
  				for (int i=0; i<result.size(); i++)
 				{
 					UserBean bean = result.get(i);
-					out.println(i + ")\t" + bean.getName() + "\t" + bean.getPrivilege());
+					names.add(bean.getName());
+					privileges.add(bean.getPrivilege());
 				}
+				Vector<Vector<String>> table = new Vector<Vector<String>>();
+				table.add(names);
+				table.add(privileges);
+				writeTable(table, 2, result.size()+1, header);
  			}
  		}
  		catch (RemoteException e)

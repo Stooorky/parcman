@@ -214,27 +214,28 @@ public class PShell
 		}
 		catch (SecurityException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (0)");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (NullPointerException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (1)");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (NoSuchMethodException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (2)");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (InvocationTargetException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			e.printStackTrace();
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (3)");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (IllegalAccessException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto.");
+			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (4)");
 			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 	}

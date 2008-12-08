@@ -26,6 +26,7 @@ G_CODEBASE_FILES=(	parcmanserver/RemoteParcmanServer.class \
 			indexingserver/RemoteIndexingServer.class \
 			indexingserver/RemoteIndexingServerAgent.class \
 			database/beans/*.class \
+			database/exceptions/*.class \
 			logserver/*.class \
 			plog/PLog.class )
 
@@ -37,6 +38,8 @@ G_CODEBASE_FILES=(	parcmanserver/RemoteParcmanServer.class \
 . ../bash/loglib.sh 2> /dev/null
 [[ $? -gt 0 ]] && echo $E_MC_INLCUDE_LOGLIB_MSG && exit $E_MC_INLCUDE_LOGLIB
 
+
+bt_info "rm -rf $G_PUBLIC_HTML/*" "RMIC CLEANING" $G_LOGPOS
 
 bt_info_inline "RMIC COMPILING" $G_LOGPOS
 echo 

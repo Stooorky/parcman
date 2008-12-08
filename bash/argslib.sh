@@ -33,7 +33,7 @@ function argslib_usage()
 	size=${#OPTIONS[*]}
 	for (( i=0; i<${#OPTIONS[*]}; i++ )); do
 		echo -n "  $i) ${OPTIONS[$i]}: ${HELPS[$i]}."
-		[[ ! -z ${DEFAULTS[$i]} ]] && echo " [${DEFAULTS[$i]}]"
+		if [ ! -z ${DEFAULTS[$i]} ];then echo " [${DEFAULTS[$i]}]"; else echo; fi
 	done
 	echo 
 }

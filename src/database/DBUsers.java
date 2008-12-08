@@ -97,6 +97,7 @@ public class DBUsers
 			parser = XMLReaderFactory.createXMLReader();
 			parser.setContentHandler(new UserContentHandler(this.users));
 			parser.parse(dbFile);
+			PLog.debug("DBUsers.load", "Caricamento DBUsers completato.");
 		}
 		catch (SAXException e)
 		{

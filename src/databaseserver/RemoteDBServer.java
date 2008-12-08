@@ -133,6 +133,26 @@ public interface RemoteDBServer
 		RemoteException;
 
 	/**
+	* Aggiorna il database degli utenti.
+	*
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws RemoteException Eccezione remota
+	*/
+	public void reloadUsers() throws
+		ParcmanDBServerErrorRemoteException,
+		RemoteException;
+
+	/**
+	* Aggiorna il database dei file condivisi.
+	*
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws RemoteException Eccezione remota
+	*/
+	public void reloadShares() throws
+		ParcmanDBServerErrorRemoteException,
+		RemoteException;
+
+	/**
 	* Ritorna la lista degli utenti registrati nel database.
 	*
 	* @throws ParcmanDBServerErrorRemoteException Errore interno al database

@@ -21,7 +21,7 @@ function argslib_get_short_option()
 
 function argslib_get_long_option()
 {
-	ARGSLIB_OPT_VALUE=$(echo $1 | sed 's/--[a-zA-Z0-9.-_]*=//')
+	ARGSLIB_OPT_VALUE=$(echo $1 | sed 's/--[-a-zA-Z0-9._]*=//')
 }
 
 function argslib_usage()
@@ -34,7 +34,7 @@ function argslib_usage()
 	size=${#OPTIONS[*]}
 	for (( i=0; i<${#OPTIONS[*]}; i++ )); do
 		echo -n "  $i) ${OPTIONS[$i]}: ${HELPS[$i]}."
-		[[ ! -z ${DEFAULTS[$i]} ]] && echo " [${DEFAULTS[$i]}]"
+		if [ ! -z ${DEFAULTS[$i]} ];then echo " [${DEFAULTS[$i]}]"; else echo; fi
 	done
 	echo 
 }

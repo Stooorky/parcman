@@ -57,6 +57,11 @@ for i in $@; do
 	esac
 done
 
+bt_info_inline "lancio il client con i seguenti parametri:" $G_LOGPOS
+bt_info_inline " 0) -Dremoteclient.loginserveradress=//$P_ADDRESS:1098/LoginServer" $G_LOGPOS
+bt_info_inline " 1) -Djava.security.policy=$P_POLICY " $G_LOGPOS
+bt_info_inline " 2) -Djava.rmi.dgc.leaseValue=30000" $G_LOGPOS
+bt_info_inline " 3) clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH remoteclient.RemoteClientUser" $G_LOGPOS
 bt_info_nl "java -Xdebug \
 -Dremoteclient.loginserveradress=//$P_ADDRESS:1098/LoginServer \
 -Djava.security.policy=$P_POLICY \

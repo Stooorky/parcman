@@ -102,6 +102,7 @@ public class DBSharings
 			this.sharings.clear();
 			parser.setContentHandler(new ShareContentHandler(this.sharings));
 			parser.parse(dbFile);
+			PLog.debug("DBSharings.load", "Caricamento DBSharings completato.");
 		}
 		catch (SAXException e)
 		{
