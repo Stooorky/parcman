@@ -253,17 +253,11 @@ function bt_info_on_list_exec()
 {
 	# $1=list, $2=command, $3=message, $4=message-element, $5=position, $6=noerror
 	local list
-	echo "$1"
-	a="$1"
-	list=( `echo "$a"` )
-
-	echo "list: ${list[@]}"
-	echo "count: ${#list[*]}"
+	list=( `echo "$1"` )
 
 	[[ "${list[@]}" == "" ]] && bt_info_inline "$E_NOTHING_TO_DO_MSG" "$5" && return $E_NOTHING_TO_DO
 	bt_info_inline "$3" "$5"
 	for el in ${list[@]}; do
-		echo $el
 		bt_info "$2 $el" "$4 '$(basename $el)'" "$5" $6
 	done
 	# $1=type, $2=exit_status, $3=param
@@ -273,9 +267,9 @@ function bt_info_on_list_exec_oneshot()
 {
 	# $1=list-command, $2=command, $3=message, $4=position, $5=noerror
 	[[ "$1" == "" ]] && bt_info_inline "$E_NOTHING_TO_DO_MSG" "$4" && return $E_NOTHING_TO_DO
-	echo $1
-	list=$1
-	echo ${#list[*]}
+
+	local list
+	list=( `echo "$1"` )
 
 	bt_info "$2 $1" "$3" "$4" $5
 }

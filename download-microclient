@@ -10,9 +10,9 @@ P_SVN_PATH_BASH="bash"
 P_SAVE_PATH="$(pwd)"
 P_COMPILE="true"
 
-OPTIONS=( --svn-cmd --svn-url --svn-path --save-path-mc --svn-path-bash --compile --svn-cmd --java-compiler --svn-cmd --help )
-HELPS=( "svn command" "svn url" "svn path for micro client" "svn path for bash scripting" "local path where saving the micro client" "compile the micro-client" "svn command path" "java compiler path" "java command path" "prints help page" )
-DEFAULTS=( $P_SVN_CMD $P_SVN_URL $P_SVN_PATH_MC $SVN_PATH_BASH $P_SAVE_PATH $P_COMPILE $P_SVN_CMD $P_JAVA_COMPILER $P_JAVA_EXEC "" )
+OPTIONS=( --svn-cmd --svn-url --svn-path-mc --save-path --svn-path-bash --compile --java-compiler --java-command --help )
+HELPS=( "svn command" "svn url" "svn path for micro client" "local path where saving the micro client" "svn path for bash scripting" "compile the micro-client" "java compiler path" "java command path" "prints help page" )
+DEFAULTS=( "$P_SVN_CMD" "$P_SVN_URL" "$P_SVN_PATH_MC" "$P_SAVE_PATH" "$P_SVN_PATH_BASH" "$P_COMPILE" "$P_JAVA_COMPILER" "$P_JAVA_EXEC" "" )
 
 for i in $@; do
 	case $i in 
@@ -46,6 +46,16 @@ for i in $@; do
 		shift
 		P_COMPILE="$ARGSLIB_OPT_VALUE"
 		;;
+	--java-compiler=*)
+		argslib_get_long_option $i
+		shift
+		P_JAVA_COMPILER="$ARGSLIB_OPT_VALUE"
+		;;
+	--java-command=*)
+		argslib_get_long_option $i
+		shift
+		P_JAVA_EXEC="$ARGSLIB_OPT_VALUE"
+		;;
 	--help)
 		argslib_usage
 		shift
@@ -71,19 +81,23 @@ cd "$P_SVN_PATH_MC"
 if [ "$P_COMPILE" == "true" ]; then
 	./compile.sh
 fi
+
+cd ../
 P_TAR_MC=microclient.tar
 function mk_tar()
 {
-	files=(	microclient/clientbootstrap/ClientBootstrap.class \
-			microclient/plog/PLog.class \
-			policy \
-			client-start )
+	files=(	micro-client/microclient/clientbootstrap/ClientBootstrap.class \
+		micro-client/microclient/plog/PLog.class \
+		micro-client/policy \
+		micro-client/client-start \
+		bash/loglib.sh \
+		bash/argslib.sh )
 	tar cfp "$1" ${files[@]}
 }
 
 bt_info "mk_tar $P_TAR_MC" "creo l'archivio $P_TAR_MC" $LOG_POSITION
 bt_info "mv $P_TAR_MC $P_SAVE_PATH" "salvo il micro client in $P_SAVE_PATH" $LOG_POSITION
-cd ../..
+cd ../
 bt_info "rm -rf $P_TMP_DIR" "pulisco l'ambiente ($P_TMP_DIR)" $LOG_POSITION
 cd $P_ACTUAL_DIR
 bt_info "tar xf $P_TAR_MC" "estraggo il micro client" $LOG_POSITION
