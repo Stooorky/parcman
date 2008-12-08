@@ -11,6 +11,7 @@ import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
+import database.beans.UserBean;
 
 public class ShellDataAdmin extends ShellData
 {
@@ -176,42 +177,46 @@ public class ShellDataAdmin extends ShellData
 		}
 	}
 
-// 	/**
-// 	 * Metodo per il comando di shell blacklist.
-// 	 *
-// 	 */
-// 	@PShellDataAnnotation(
-// 			method = "commandBlacklist",
-// 			name = "blacklist",
-// 			info = "Mostra la lista blacklist.",
-// 			help = "\tMosta la lista blacklist.\n\tuse: blacklist"
-// 			)
-// 	public void commandBlacklist(String param)
-// 	{
-// 		try
-// 		{
-// 			out.print("Inviata la richiesta...");
-// 			Vector<String> result = parcmanServerStub.blacklist(parcmanClient.getStub(), userName);
-// 			out.println("Done.");
-// 
-// 			if (result == null || result.size() == 0)
-// 			{
-// 				out.println("Nessun utente in blacklist.");
-// 			}
-// 			else 
-// 			{
-// 				out.println("Blacklist: ");
-// 				for (int i=0; i<result.size(); i++)
-// 					out.println(result.get(i));
-// 			}
-// 		}
-// 		catch (RemoteException e)
-// 		{
-// 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
-// 		}
-// 	}
-// 
-// 
+ 	/**
+ 	 * Metodo per il comando di shell blacklist.
+ 	 *
+ 	 */
+ 	@PShellDataAnnotation(
+ 			method = "commandBlacklist",
+ 			name = "blacklist",
+ 			info = "Mostra la lista blacklist.",
+ 			help = "\tMosta la lista blacklist.\n\tuse: blacklist"
+ 			)
+ 	public void commandBlacklist(String param)
+ 	{
+ 		try
+ 		{
+ 			out.print("Inviata la richiesta...");
+ 			Vector<UserBean> result = parcmanServerStub.blacklist(parcmanClient.getStub(), userName);
+ 			out.println("Done.");
+ 
+ 			if (result == null || result.size() == 0)
+ 			{
+ 				out.println("Nessun utente in blacklist.");
+ 			}
+ 			else 
+ 			{
+ 				out.println("Blacklist: ");
+				out.println("\tUSERNAME\tPRIVILEGES");
+ 				for (int i=0; i<result.size(); i++)
+				{
+					UserBean bean = result.get(i);
+					out.println(i + ")\t" + bean.getName() + "\t" + bean.getPrivilege());
+				}
+ 			}
+ 		}
+ 		catch (RemoteException e)
+ 		{
+ 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+ 		}
+ 	}
+ 
+ 
 
 
 }

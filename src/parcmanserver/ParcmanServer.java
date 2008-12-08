@@ -754,6 +754,46 @@ public class ParcmanServer
 		//}
 	}
 
+
+	/**
+	 * Ritorna la lista degli utenti in blacklist.
+	 *
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @return Vettore di <tt>UserBean</tt>.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public Vector<UserBean> blacklist(RemoteParcmanClient parcmanClientStub, String userName) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException
+	{
+		checkHacking(parcmanClientStub, userName);
+		checkAdminPrivileges(connectUsers.get(userName));
+
+		Vector<UserBean> users = null;
+		try
+		{
+			users = dbServer.getUsers();
+			for (int i=0; i<users.size(); i++)
+			{
+				if (!"BLACKLIST".equals(users.get(i).getStatus()))
+					users.remove(i);
+			}
+		}
+		catch (ArrayIndexOutOfBoundsException e)
+		{
+			PLog.err("ParcmanServer.blacklist", "Errore durante la selezione degli utenti in blacklist.");
+			throw new ParcmanServerRequestErrorRemoteException();
+		}
+
+		return users;
+	}
+
 	/**
 	 * Metodo ping.
 	 *

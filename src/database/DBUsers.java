@@ -262,13 +262,13 @@ public class DBUsers
 	}
 
 	/**
-	 * Restituisce la lista degli utenti nel database.
+	 * Restituisce una copia della lista degli utenti nel database.
 	 *
 	 * @return Vector di UserBean contenente la lista utenti.
 	 */
 	public Vector<UserBean> getUsers()
 	{
-		return this.users;
+		return new Vector<UserBean>(this.users);
 	}
 }
 

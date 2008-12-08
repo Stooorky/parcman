@@ -133,6 +133,17 @@ public interface RemoteDBServer
 		RemoteException;
 
 	/**
+	* Ritorna la lista degli utenti registrati nel database.
+	*
+	* @throws ParcmanDBServerErrorRemoteException Errore interno al database
+	* @throws RemoteException Eccezione remota
+	* @return un vettore di <tt>UserBean</tt> che rappresenta la lista degli utenti registrati sul database.
+	*/
+	public Vector<UserBean> getUsers() throws
+		ParcmanDBServerErrorRemoteException,
+		RemoteException;
+
+	/**
 	 * Ping.
 	 *
 	 * @throws RemoteException Eccezione Remota

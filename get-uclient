@@ -1,0 +1,349 @@
+#!/bin/bash
+#!/bin/bash
+
+E_ARGSLIB_SHORT_PARAM=65 # se un opzione breve che necessita di essere valorizzata non lo e`.
+E_ARGSLIB_SHORT_MSG="Option needs value."
+E_ARGSLIB_USAGE_OPTIONS=66 # se il vettore delle opzioni non esiste o e` vuoto.
+E_ARGSLIB_USAGE_OPTIONS_MSG="Vettore opzioni non settato oppure vuoto."
+E_ARGSLIB_USAGE_HELPS=67 # se il vettore degli help delle opzioni non esiste o e` vuoto.
+E_ARGSLIB_USAGE_HELPS_MSG="Vettore help delle opzioni non settato oppure vuoto."
+E_ARGSLIB_USAGE_DEFAULTS=68 # se il vettore dei default delle opzioni non esiste o e` vuoto.
+E_ARGSLIB_USAGE_DEFAULTS_MSG="Vettore default delle opzioni non settato oppure vuoto."
+
+
+ARGSLIB_OPT_VALUE=""
+function argslib_get_short_option()
+{
+	value=$(echo $1 | sed -n '/[-]\+/p')
+	[[ ! -z "$value" ]] && echo $E_ARGSLIB_SHORT_MSG && echo "option='-a', value found='$value'" && exit $E_ARGSLIB_SHORT_PARAM
+	ARGSLIB_OPT_VALUE="$1"
+}
+
+function argslib_get_long_option()
+{
+	ARGSLIB_OPT_VALUE=$(echo $1 | sed 's/--[a-zA-Z0-9.-_]*=//')
+}
+
+function argslib_usage()
+{
+	[[ ${#OPTIONS[*]} -eq 0 ]] && echo $E_ARGSLIB_USAGE_OPTIONS_MSG && exit $E_ARGSLIB_USAGE_OPTIONS
+	[[ ${#HELPS[*]} -eq 0 ]] && echo $E_ARGSLIB_USAGE_HELPS_MSG && exit $E_ARGSLIB_USAGE_HELPS_MSG
+	[[ ${#DEFAULTS[*]} -eq 0 ]] && echo $E_ARGSLIB_USAGE_DEFAULTS && exit $E_ARGSLIB_USAGE_DEFAULTS_MSG
+	echo "Usage: $(basename $0) [options]"
+	echo " where options are:"
+	size=${#OPTIONS[*]}
+	for (( i=0; i<${#OPTIONS[*]}; i++ )); do
+		echo -n "  $i) ${OPTIONS[$i]}: ${HELPS[$i]}."
+		[[ ! -z ${DEFAULTS[$i]} ]] && echo " [${DEFAULTS[$i]}]"
+	done
+	echo 
+}
+
+#!/bin/bash
+
+#+ namespace BT_|bt_
+
+E_NOTHING_TO_DO=65
+E_NOTHING_TO_DO_MSG="Nothing to do!"
+
+BT_TYPE_EQ_ZERO="EQ_ZERO"
+BT_TYPE_GT_ZERO="GT_ZERO"
+BT_TYPE_LT_ZERO="LT_ZERO"
+BT_TYPE_EQ_TO="EQ_TO"
+BT_TYPE_NOP="NOP"
+
+BT_OUTPUT_STDOUT="STDOUT"
+BT_OUTPUT_FILE="FILE"
+BT_OUTPUT_STDERR="STDERR"
+BT_OUTOUT_LIST=( $BT_OUTPUT_STDOUT $BT_OUTPUT_STDERR, $BT_OUTPUT_FILE )
+BT_OUTOUT=$OUTPUT_STDOUT
+
+
+function bt_get_term_height()
+{
+	dim=$(stty size)
+	return ${dim%% *}
+}
+
+function bt_get_term_width()
+{
+	dim=$(stty size)
+	return ${dim#* }
+}
+
+function bt_in_array()
+{
+	list=$1
+	element="$2"
+	for el in list;do
+		[[ "$el" == "$element" ]] && return 0
+	done
+	return -1
+}
+
+function bt_write_right_align()
+{
+	s="$1"
+	slen=${#s}
+	bt_get_term_width 
+	width=$?
+	echo -en "\033[""$width""D"
+	echo -e "\033[""$(( $width - $slen ))""C""$s"
+}
+
+function bt_check_eq_zero()
+{
+	if [ $1 -eq 0 ];then
+		_OUT_="$2"
+	else
+		_OUT_="$3"
+	fi
+}
+
+function bt___info__setup()
+{
+	echo -en "[info:$1] $2"
+}
+
+function bt___info__teardown()
+{
+	_OUT_=""
+	if [ "$1" == "$BT_TYPE_EQ_ZERO" ];then
+		bt_check_eq_zero "$2" "DONE" "ERROR"
+	elif [ "$1" == "$BT_TYPE_GT_ZERO" ];then
+		bt_check_gt_zero "$2" "DONE" "ERROR"
+	elif [ "$1" == "$BT_TYPE_LT_ZERO" ];then
+		bt_check_lt_zero "$2" "DONE" "ERROR"
+	elif [ "$1" == "$BT_TYPE_EQ_TO" ];then
+		bt_check_eq_to "$2" "$3" "DONE" "ERROR"
+	else
+		_OUT_="$2"
+	fi
+	bt_write_right_align "$_OUT_"
+}
+
+function bt___info()
+{
+	echo -e "[info:$1] $2"
+}
+
+
+function bt__log_setup()
+{
+	POSITION="$1"
+	LEVEL="$2"
+	MESSAGE="$3"
+
+	method="bt___""$LEVEL""__setup"
+	$method "$POSITION" "$MESSAGE"
+}
+
+function bt__log_teardown()
+{
+	LEVEL="$1"
+	TYPE="$2"
+	EXIT_STATUS="$3"
+	PARAM="$4"
+
+	method="bt___""$LEVEL""__teardown"
+	$method "$TYPE" "$EXIT_STATUS" "$PARAM"
+}
+
+function bt__log()
+{
+	POSITION="$1"
+	LEVEL="$2"
+	MESSAGE="$3"
+
+	method="bt___""$LEVEL"
+	$method "$POSITION" "$MESSAGE"
+}
+
+function bt_info_up()
+{
+	# $1=message, $2=position
+	bt__log_setup "$2" "info" "$1"
+}
+
+function bt_info_down()
+{
+	# $1=type, $2=exit_status, $3=param
+	bt__log_teardown "info" "$1" "$2" "$3"
+}
+
+function bt_info_inline()
+{
+	# $1=message, $2=position
+	bt__log "$2" "info" "$1"
+}
+
+#function bt_set_output()1
+#{
+#	bt_in_array $BT_OUTOUT_LIST "$1"
+#	[[ $? -eq 0 ]] && BT_OUTPUT="$1" && return 0
+#	return -1
+#}
+
+function bt_exec()
+{
+	$1 
+}
+
+function bt_exec_in_xterm()
+{
+	time=0
+	if [ ! -z "$2" ];then
+		time=$2
+	fi
+	xterm -e "$1;sleep $time"
+
+}
+
+function bt_info()
+{
+	# $1=command, $2=message, $3=position
+	bt_info_up "$2" "$3"
+	bt_exec "$1"
+	bt_info_down $BT_TYPE_EQ_ZERO "$?" 
+}
+
+function bt_info_nl()
+{
+	# $1=command, $2=message, $3=position
+	bt_info_inline "$2" "$3"
+	bt_exec "$1"
+	bt_info_down $BT_TYPE_EQ_ZERO "$?" 
+}
+
+function bt_info_in_xterm()
+{
+	# $1=command, $2=message, $3=position, $4=sleep_time
+	bt_info_up "$2" "$3"
+	bt_exec_in_xterm "$1" $4
+	bt_info_down $BT_TYPE_EQ_ZERO "$?" 
+}
+
+function bt_info_pre_order_exec()
+{
+	# $1=path, $2=command, $3=position, $4=level
+	if [ -z "$4" ]; then level=0; else level=$4; fi
+
+	cd "$1"
+
+	bt_info "$2" "exec $2 in $(basename $(pwd))" "$3"
+
+	for node in *; do
+		if [ -d "$node" ]; then
+			(( level++ )) 
+			bt_info_pre_order_exec "$node" "$2" "$3" $level
+		fi
+	done
+	[[ $level -gt 0 ]] && (( level-- )) && cd ..
+}
+
+function bt_info_on_list_exec()
+{
+	# $1=list-command, $2=command, $3=message, $4=message-element, $5=position
+	list="$1"
+
+	[[ "${list[@]}" == "" ]] && bt_info_inline "$E_NOTHING_TO_DO_MSG" "$5" && return $E_NOTHING_TO_DO
+	bt_info_inline "$3" "$5"
+	for el in ${list[@]}; do
+		bt_info "$2 $el" "$4 '$(basename $el)'" "$5"
+	done
+	# $1=type, $2=exit_status, $3=param
+	bt_info_down "$BT_TYPE_NOP" "DONE"
+}
+function bt_info_on_list_exec_oneshot()
+{
+	# $1=list-command, $2=command, $3=message, $4=position
+	list="$1"
+	[[ "${list[@]}" == "" ]] && bt_info_inline "$E_NOTHING_TO_DO_MSG" "$4" && return $E_NOTHING_TO_DO
+
+	bt_info "$2 $list" "$3" "$4"
+}
+
+LOG_POSITION=$(basename $0)
+
+P_SVN_CMD=/usr/bin/svn
+P_JAVA_COMPILER=/usr/bin/javac
+P_JAVA_EXEC=/usr/bin/java
+P_SVN_URL="http://svn2.assembla.com/svn/parcman"
+P_SVN_PATH_MC="micro-client"
+P_SVN_PATH_BASH="bash"
+P_SAVE_PATH="$(pwd)"
+P_COMPILE="true"
+
+OPTIONS=( --svn-cmd --svn-url --svn-path --save-path-mc --svn-path-bash --compile --svn-cmd --java-compiler --svn-cmd --help )
+HELPS=( "svn command" "svn url" "svn path for micro client" "svn path for bash scripting" "local path where saving the micro client" "compile the micro-client" "svn command path" "java compiler path" "java command path" "prints help page" )
+DEFAULTS=( $P_SVN_CMD $P_SVN_URL $P_SVN_PATH_MC $SVN_PATH_BASH $P_SAVE_PATH $P_COMPILE $P_SVN_CMD $P_JAVA_COMPILER $P_JAVA_EXEC "" )
+
+for i in $@; do
+	case $i in 
+	--svn-cmd=*)
+		argslib_get_long_option $i
+		shift
+		P_SVN_CMD="$ARGSLIB_OPT_VALUE"
+		;;
+	--svn-url=*)
+		argslib_get_long_option $i
+		shift
+		P_SVN_URL="$ARGSLIB_OPT_VALUE"
+		;;
+	--svn-path-mc=*)
+		argslib_get_long_option $i
+		shift
+		P_SVN_PATH_MC="$ARGSLIB_OPT_VALUE"
+		;;
+	--svn-path-bash=*)
+		argslib_get_long_option $i
+		shift
+		P_SVN_PATH_BASH="$ARGSLIB_OPT_VALUE"
+		;;
+	--save-path=*)
+		argslib_get_long_option $i
+		shift
+		P_SAVE_PATH="$ARGSLIB_OPT_VALUE"
+		;;
+	--compile=*)
+		argslib_get_long_option $i
+		shift
+		P_COMPILE="$ARGSLIB_OPT_VALUE"
+		;;
+	--help)
+		argslib_usage
+		shift
+		exit 0
+		;;
+	*)
+		shift
+		;;
+	esac
+done
+
+P_SVN_COMPLETE_PATH_MC=$P_SVN_URL/$P_SVN_PATH_MC
+P_SVN_COMPLETE_PATH_BASH=$P_SVN_URL/$P_SVN_PATH_BASH
+P_TMP_DIR=/tmp/parcman-micro-client
+P_ACTUAL_DIR=$(pwd)
+
+bt_info "mkdir -p $P_TMP_DIR" "preparazione ambiente ($P_TMP_DIR)" $LOG_POSITION
+cd "$P_TMP_DIR"
+bt_info_nl "$P_SVN_CMD co $P_SVN_COMPLETE_PATH_MC " "download micro-client from svn" $LOG_POSITION
+bt_info_nl "$P_SVN_CMD co $P_SVN_COMPLETE_PATH_BASH " "download necessary bash scripting from svn" $LOG_POSITION
+cd "$P_SVN_PATH_MC"
+
+if [ "$P_COMPILE" == "true" ]; then
+	./compile.sh
+fi
+P_TAR_MC=microclient.tar
+P_FILES_MC=(	microclient/clientbootstrap/ClientBootstrap.class \
+		microclient/plog/PLog.class \
+		policy \
+		client-start )
+echo $(pwd)
+bt_info_on_list_exec_oneshot "$P_FILES_MC" "tar cvf $P_TAR_MC" "creo archivio $P_TAR_MC" $LOG_POSITION
+bt_info "mv $P_TAR_MC $P_SAVE_PATH" "salvo il micro client in $P_SAVE_PATH" $LOG_POSITION
+cd ../..
+bt_info "rm -rf $P_TMP_DIR" "pulisco l'ambiente ($P_TMP_DIR)" $LOG_POSITION
+cd $P_ACTUAL_DIR
+

@@ -9,6 +9,7 @@ import remoteexceptions.*;
 import parcmanclient.RemoteParcmanClient;
 import database.beans.SearchBean;
 import database.beans.ShareBean;
+import database.beans.UserBean;
 import parcmanclient.DownloadData;
 
 /**
@@ -159,6 +160,23 @@ public interface RemoteParcmanServerUser
 	 * @throws RemoteException Eccezione remota.
 	 */
 	public void delFromBlacklist(RemoteParcmanClient parcmanClientStub, String userName, String userForBlacklist) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException;
+
+	/**
+	 * Ritorna la lista degli utenti in blacklist.
+	 *
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @return Vettore di <tt>UserBean</tt>.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public Vector<UserBean> blacklist(RemoteParcmanClient parcmanClientStub, String userName) throws
 		ParcmanServerHackWarningRemoteException,
 		ParcmanServerWrongPrivilegesRemoteException, 
 		ParcmanServerRequestErrorRemoteException,

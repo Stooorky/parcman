@@ -1,7 +1,5 @@
 #!/bin/bash
 
-## buildutils.sh
-#+ buildutils.sh makes easy your build process. 
 #+ namespace BT_|bt_
 
 E_NOTHING_TO_DO=65
@@ -214,4 +212,12 @@ function bt_info_on_list_exec()
 	done
 	# $1=type, $2=exit_status, $3=param
 	bt_info_down "$BT_TYPE_NOP" "DONE"
+}
+function bt_info_on_list_exec_oneshot()
+{
+	# $1=list-command, $2=command, $3=message, $4=position
+	list="$1"
+	[[ "${list[@]}" == "" ]] && bt_info_inline "$E_NOTHING_TO_DO_MSG" "$4" && return $E_NOTHING_TO_DO
+
+	bt_info "$2 $list" "$3" "$4"
 }

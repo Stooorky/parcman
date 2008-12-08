@@ -38,30 +38,3 @@ function argslib_usage()
 	echo 
 }
 
-### for i in $@; do
-### 	echo "param da analizzare: $i"
-### 	case $i in 
-### 	-a)
-### 		shift
-### 		argslib_get_short_option $1
-### 		OPT_A="$ARGSLIB_OPT_VALUE"
-### 		;;
-### 	-b)
-### 		shift
-### 		argslib_get_short_option $1
-### 		OPT_B="$ARGSLIB_OPT_VALUE"
-### 		;;
-### 	--aaa=*)
-### 		argslib_get_long_option $i
-### 		OPT_AAA="$ARGSLIB_OPT_VALUE"
-### 		shift
-### 		;;
-### 	*)
-### 		shift
-### 		;;
-### 	esac
-### done
-### 
-### echo $OPT_A
-### echo $OPT_B
-### echo $OPT_AAA

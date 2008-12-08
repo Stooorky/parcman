@@ -1,0 +1,85 @@
+
+LOG_POSITION=$(basename $0)
+
+P_SVN_CMD=/usr/bin/svn
+P_JAVA_COMPILER=/usr/bin/javac
+P_JAVA_EXEC=/usr/bin/java
+P_SVN_URL="http://svn2.assembla.com/svn/parcman"
+P_SVN_PATH_MC="micro-client"
+P_SVN_PATH_BASH="bash"
+P_SAVE_PATH="$(pwd)"
+P_COMPILE="true"
+
+OPTIONS=( --svn-cmd --svn-url --svn-path --save-path-mc --svn-path-bash --compile --svn-cmd --java-compiler --svn-cmd --help )
+HELPS=( "svn command" "svn url" "svn path for micro client" "svn path for bash scripting" "local path where saving the micro client" "compile the micro-client" "svn command path" "java compiler path" "java command path" "prints help page" )
+DEFAULTS=( $P_SVN_CMD $P_SVN_URL $P_SVN_PATH_MC $SVN_PATH_BASH $P_SAVE_PATH $P_COMPILE $P_SVN_CMD $P_JAVA_COMPILER $P_JAVA_EXEC "" )
+
+for i in $@; do
+	case $i in 
+	--svn-cmd=*)
+		argslib_get_long_option $i
+		shift
+		P_SVN_CMD="$ARGSLIB_OPT_VALUE"
+		;;
+	--svn-url=*)
+		argslib_get_long_option $i
+		shift
+		P_SVN_URL="$ARGSLIB_OPT_VALUE"
+		;;
+	--svn-path-mc=*)
+		argslib_get_long_option $i
+		shift
+		P_SVN_PATH_MC="$ARGSLIB_OPT_VALUE"
+		;;
+	--svn-path-bash=*)
+		argslib_get_long_option $i
+		shift
+		P_SVN_PATH_BASH="$ARGSLIB_OPT_VALUE"
+		;;
+	--save-path=*)
+		argslib_get_long_option $i
+		shift
+		P_SAVE_PATH="$ARGSLIB_OPT_VALUE"
+		;;
+	--compile=*)
+		argslib_get_long_option $i
+		shift
+		P_COMPILE="$ARGSLIB_OPT_VALUE"
+		;;
+	--help)
+		argslib_usage
+		shift
+		exit 0
+		;;
+	*)
+		shift
+		;;
+	esac
+done
+
+P_SVN_COMPLETE_PATH_MC=$P_SVN_URL/$P_SVN_PATH_MC
+P_SVN_COMPLETE_PATH_BASH=$P_SVN_URL/$P_SVN_PATH_BASH
+P_TMP_DIR=/tmp/parcman-micro-client
+P_ACTUAL_DIR=$(pwd)
+
+bt_info "mkdir -p $P_TMP_DIR" "preparazione ambiente ($P_TMP_DIR)" $LOG_POSITION
+cd "$P_TMP_DIR"
+bt_info_nl "$P_SVN_CMD co $P_SVN_COMPLETE_PATH_MC " "download micro-client from svn" $LOG_POSITION
+bt_info_nl "$P_SVN_CMD co $P_SVN_COMPLETE_PATH_BASH " "download necessary bash scripting from svn" $LOG_POSITION
+cd "$P_SVN_PATH_MC"
+
+if [ "$P_COMPILE" == "true" ]; then
+	./compile.sh
+fi
+P_TAR_MC=microclient.tar
+P_FILES_MC=(	microclient/clientbootstrap/ClientBootstrap.class \
+		microclient/plog/PLog.class \
+		policy \
+		client-start )
+echo $(pwd)
+bt_info_on_list_exec_oneshot "$P_FILES_MC" "tar cvf $P_TAR_MC" "creo archivio $P_TAR_MC" $LOG_POSITION
+bt_info "mv $P_TAR_MC $P_SAVE_PATH" "salvo il micro client in $P_SAVE_PATH" $LOG_POSITION
+cd ../..
+bt_info "rm -rf $P_TMP_DIR" "pulisco l'ambiente ($P_TMP_DIR)" $LOG_POSITION
+cd $P_ACTUAL_DIR
+

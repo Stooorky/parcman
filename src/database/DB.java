@@ -147,7 +147,7 @@ public class DB
 		{
 			// Utente gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBUserNotExistException)
-					throw (ParcmanDBUserNotExistException) e.getTargetException();
+				throw (ParcmanDBUserNotExistException) e.getTargetException();
 
 			throw new ParcmanDBErrorException();
 		}
@@ -200,10 +200,29 @@ public class DB
 	}
 
 	/**
+	 * Ritorna la lista degli utenti registrati nel database.
+	 *
+	 * @throws ParcmanDBErrorException Errore interno del database degli utenti. 
+	 * @return un vettore di <tt>UserBean</tt> che rappresenta la lista degli utenti registrati sul database.
+	 */
+	public Vector<UserBean> getUsers() throws
+		ParcmanDBErrorException	
+	{
+		try
+		{
+			Object[] args = new Object[] { };
+			return ((Vector<UserBean>) DBManager.getInstance().call("USERS", "getUsers", args));
+		} 
+		catch (Exception e)
+		{
+			throw new ParcmanDBErrorException();
+		}
+	}
+	/**
 	 * Rimuove un file condiviso dalla lista file.
 	 *
-     * @param id Id del file condiviso
-     * @param owner Proprietario del file
+	 * @param id Id del file condiviso
+	 * @param owner Proprietario del file
 	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
 	 * @throws ParcmanDBShareNotExistException File non presente nel database
 	 */
@@ -274,12 +293,12 @@ public class DB
 	}
 
 	/**
-	* Restituisce la lista Sharings di un utente.
-	*
-	* @param userName Nome utente
-	* @return Vettore di ShareBean contenente la lista dei file condivisi dell'utente
-	* @throws ParcmanDBErrorException Errore interno del database dei file condivisi
-	*/
+	 * Restituisce la lista Sharings di un utente.
+	 *
+	 * @param userName Nome utente
+	 * @return Vettore di ShareBean contenente la lista dei file condivisi dell'utente
+	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	 */
 	public Vector<ShareBean> getSharings(String userName) throws
 		ParcmanDBErrorException
 	{
@@ -305,12 +324,12 @@ public class DB
 	}
 
 	/**
-	* Esegue una ricerca di file sul database.
-	*
-	* @param keywords Keywords per la ricerca
-	* @return Vettore di SearchBean contenente il risultato della ricerca
-	* @throws ParcmanDBErrorException Errore interno del database dei file condivisi
-	*/
+	 * Esegue una ricerca di file sul database.
+	 *
+	 * @param keywords Keywords per la ricerca
+	 * @return Vettore di SearchBean contenente il risultato della ricerca
+	 * @throws ParcmanDBErrorException Errore interno del database dei file condivisi
+	 */
 	public Vector<SearchBean> searchFiles(String keywords) throws
 		ParcmanDBErrorException
 	{
