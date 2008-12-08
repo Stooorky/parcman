@@ -15,7 +15,7 @@ LOG_POSITION=$(basename $0)
 . ./bash/loglib.sh 2> /dev/null
 [[ $? -gt 0 ]] && echo $E_MC_INLCUDE_LOGLIB_MSG && exit $E_MC_INLCUDE_LOGLIB
 
-G_UCLIENT_NAME="get-uclient"
+G_UCLIENT_NAME="uclient/get-uclient"
 G_LOGPOS=$(basename $0)
 
 bt_info "touch $G_UCLIENT_NAME" "touch $G_UCLIENT_NAME" $G_LOGPOS
