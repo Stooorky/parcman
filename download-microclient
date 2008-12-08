@@ -72,15 +72,20 @@ if [ "$P_COMPILE" == "true" ]; then
 	./compile.sh
 fi
 P_TAR_MC=microclient.tar
-P_FILES_MC=(	microclient/clientbootstrap/ClientBootstrap.class \
-		microclient/plog/PLog.class \
-		policy \
-		client-start )
-echo $(pwd)
-bt_info_on_list_exec_oneshot "$P_FILES_MC" "tar cvf $P_TAR_MC" "creo archivio $P_TAR_MC" $LOG_POSITION
+function mk_tar()
+{
+	files=(	microclient/clientbootstrap/ClientBootstrap.class \
+			microclient/plog/PLog.class \
+			policy \
+			client-start )
+	tar cfp "$1" ${files[@]}
+}
+
+bt_info "mk_tar $P_TAR_MC" "creo l'archivio $P_TAR_MC" $LOG_POSITION
 bt_info "mv $P_TAR_MC $P_SAVE_PATH" "salvo il micro client in $P_SAVE_PATH" $LOG_POSITION
 cd ../..
 bt_info "rm -rf $P_TMP_DIR" "pulisco l'ambiente ($P_TMP_DIR)" $LOG_POSITION
 cd $P_ACTUAL_DIR
-bt_info "tar xvf $P_TAR_MC" "estraggo il micro client" $LOG_POSITION
+bt_info "tar xf $P_TAR_MC" "estraggo il micro client" $LOG_POSITION
 
+bt_info_inline "creazione micro client terminata" $LOG_POSITION
