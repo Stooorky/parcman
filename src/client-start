@@ -5,7 +5,7 @@ E_MC_INLCUDE_ARGSLIB_MSG="Impossibile includere argslib.sh"
 E_MC_INLCUDE_LOGLIB=66
 E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
 
-LOG_POSITION=$(basename $0)
+G_LOGPOS=$(basename $0)
 
 # include argslib.sh
 . ../bash/argslib.sh 2> /dev/null
@@ -57,9 +57,9 @@ for i in $@; do
 	esac
 done
 
-java -Xdebug \
+bt_info_nl "java -Xdebug \
 -Dremoteclient.loginserveradress=//$P_ADDRESS:1098/LoginServer \
 -Djava.security.policy=$P_POLICY \
 -Djava.rmi.dgc.leaseValue=30000 \
-clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH remoteclient.RemoteClientUser
+clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH remoteclient.RemoteClientUser" "run client" $G_LOGPOS
 

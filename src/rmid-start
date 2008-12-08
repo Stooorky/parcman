@@ -1,13 +1,25 @@
 #!/bin/bash
 
+E_MC_INLCUDE_ARGSLIB=65
+E_MC_INLCUDE_ARGSLIB_MSG="Impossibile includere argslib.sh"
+E_MC_INLCUDE_LOGLIB=66
+E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
+
 # include argslib.sh
-. ../bash/argslib.sh
+. ../bash/argslib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_ARGSLIB_MSG && exit $E_MC_INLCUDE_ARGSLIB
+
+# include loglib.sh
+. ../bash/loglib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_LOGLIB_MSG && exit $E_MC_INLCUDE_LOGLIB
 
 P_HOSTNAME=localhost
 P_PORT=8003
 P_CODEBASE_PATH=file://$HOME/public_html/common/
 P_POLICY=./policy
 P_LOG_RMID_PATH=$HOME/PAR/log-rmid
+
+G_LOGPOS=$(basename $0)
 
 OPTIONS=( --hostname --codebase-path --policy-file --log-rmid-path --help )
 HELPS=( "hostname" "codebase path" "policy file path" "log rmid path" "prints help page" )
@@ -46,13 +58,22 @@ for i in $@; do
 	esac
 done
 
-rmid -stop
-rm -rf "$P_LOG_RMID_PATH"/*
+function stop_rmid()
+{
+	echo 
+	rmid -stop &> /dev/null
+	killall -9 rmid &> /dev/null
+}
+
+bt_info "stop_rmid" "stop any active rmid server" $G_LOGPOS 
+bt_info "rm -rf $P_LOG_RMID_PATH/*" "clear rmid log dir" $G_LOGPOS $BT_OUT_TYPE_NOOUT
+
 sleep 1
 
+bt_info_inline "run the rmid server" $G_LOGPOS
 rmid -log "$P_LOG_RMID_PATH"/ \
 -J-Djava.rmi.server.codebase=$P_CODEBASE_PATH \
 -J-Djava.rmi.server.hostname=$P_HOSTNAME \
 -J-Djava.rmi.dgc.leaseValue=30000 \
--J-Djava.security.policy=$P_POLICY &
+-J-Djava.security.policy=$P_POLICY & 
 
