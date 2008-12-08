@@ -21,19 +21,19 @@ G_LOGPOS=$(basename $0)
 bt_info "touch $G_UCLIENT_NAME" "touch $G_UCLIENT_NAME" $G_LOGPOS
 
 bt_info_up "write headers to $G_UCLIENT_NAME" $G_LOGPOS
-echo '#!/bin/bash' > $G_UCLIENT_NAME
+echo '#!/bin/bash' > $G_UCLIENT_NAME 2> /dev/null
 bt_info_down $BT_TYPE_EQ_ZERO $? 
 
 bt_info_up "write argslib.sh to $G_UCLIENT_NAME" $G_LOGPOS
-cat ./bash/argslib.sh >> $G_UCLIENT_NAME 
+cat ./bash/argslib.sh >> $G_UCLIENT_NAME 2> /dev/null
 bt_info_down $BT_TYPE_EQ_ZERO $? 
 
 bt_info_up "write loglib.sh to $G_UCLIENT_NAME" $G_LOGPOS
-cat ./bash/loglib.sh >> $G_UCLIENT_NAME
+cat ./bash/loglib.sh >> $G_UCLIENT_NAME 2> /dev/null
 bt_info_down $BT_TYPE_EQ_ZERO $? 
 
 bt_info_up "write download-microclient code to $G_UCLIENT_NAME" $G_LOGPOS
-cat ./download-microclient >> $G_UCLIENT_NAME 
+cat ./download-microclient >> $G_UCLIENT_NAME 2> /dev/null
 bt_info_down $BT_TYPE_EQ_ZERO $? 
 
 bt_info "chmod +x $G_UCLIENT_NAME" "set permission to +x for $G_UCLIENT_NAME" $G_LOGPOS

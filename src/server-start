@@ -14,11 +14,11 @@ E_MC_INLCUDE_LOGLIB=66
 E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
 
 # include argslib.sh
-. ./bash/argslib.sh 2> /dev/null
+. ../bash/argslib.sh 2> /dev/null
 [[ $? -gt 0 ]] && echo $E_MC_INLCUDE_ARGSLIB_MSG && exit $E_MC_INLCUDE_ARGSLIB
 
 # include loglib.sh
-. ./bash/loglib.sh 2> /dev/null
+. ../bash/loglib.sh 2> /dev/null
 [[ $? -gt 0 ]] && echo $E_MC_INLCUDE_LOGLIB_MSG && exit $E_MC_INLCUDE_LOGLIB
 
 OPTIONS=( --address --hostname --port --remote-path --policy-file --policy-group --database-dir --impl-codebase-path --help )
@@ -80,7 +80,7 @@ for i in $@; do
 done
 
 
-bt_info "java -classpath :. \
+bt_info_nl "java -classpath :. \
 -Djava.rmi.server.codebase=http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH \
 -Djava.security.policy="$P_POLICY" \
 -Djava.rmi.server.hostname=$P_HOSTNAME \

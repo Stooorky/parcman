@@ -17,6 +17,22 @@ BT_OUTPUT_STDERR="STDERR"
 BT_OUTOUT_LIST=( $BT_OUTPUT_STDOUT $BT_OUTPUT_STDERR, $BT_OUTPUT_FILE )
 BT_OUTOUT=$OUTPUT_STDOUT
 
+BT_NO_COLOR="\033[0m"
+BT_RED="\033[1;31m"
+BT_GREEN="\033[1;32m"
+BT_BLUE="\033[1;34m"
+BT_WHITE="\033[1;37m"
+BT_NO_COLOR_SCARTO=7
+BT_COLOR_SCARTO=10
+
+BT_OUT_DONE="$BT_NO_COLOR[$BT_GREEN DONE $BT_NO_COLOR]"
+BT_OUT_FAILED="$BT_NO_COLOR[$BT_RED FAILED $BT_NO_COLOR]"
+BT_OUT_SCARTO=$(( $BT_NO_COLOR_SCARTO + $BT_NO_COLOR_SCARTO + $BT_COLOR_SCARTO ))
+
+BT_LEVEL_INFO=$BT_BLUE"info"$BT_NO_COLOR
+BT_LEVEL_INFO_SCARTO=$(( $BT_COLOR_SCARTO + $BT_NO_COLOR_SCARTO ))
+
+BT_WRITE_INFO_SCARTO=$(( $BT_OUT_SCARTO + $BT_LEVEL_INFO_SCARTO ))
 
 function bt_get_term_height()
 {
@@ -43,9 +59,10 @@ function bt_in_array()
 function bt_write_right_align()
 {
 	s="$1"
-	slen=${#s}
+	slen=$(( ${#s} - $2 ))
 	bt_get_term_width 
 	width=$?
+	#echo "$s, $2, $slen, $width"
 	echo -en "\033[""$width""D"
 	echo -e "\033[""$(( $width - $slen ))""C""$s"
 }
@@ -61,29 +78,29 @@ function bt_check_eq_zero()
 
 function bt___info__setup()
 {
-	echo -en "[info:$1] $2"
+	echo -en "$BT_WHITE[$BT_LEVEL_INFO:$BT_WHITE$1]$BT_NO_COLOR $2"
 }
 
 function bt___info__teardown()
 {
 	_OUT_=""
 	if [ "$1" == "$BT_TYPE_EQ_ZERO" ];then
-		bt_check_eq_zero "$2" "DONE" "ERROR"
+		bt_check_eq_zero "$2" "$BT_OUT_DONE" "$BT_OUT_FAILED"
 	elif [ "$1" == "$BT_TYPE_GT_ZERO" ];then
-		bt_check_gt_zero "$2" "DONE" "ERROR"
+		bt_check_gt_zero "$2" "$BT_OUT_DONE" "$BT_OUT_FAILED"
 	elif [ "$1" == "$BT_TYPE_LT_ZERO" ];then
-		bt_check_lt_zero "$2" "DONE" "ERROR"
+		bt_check_lt_zero "$2" "$BT_OUT_DONE" "$BT_OUT_FAILED"
 	elif [ "$1" == "$BT_TYPE_EQ_TO" ];then
-		bt_check_eq_to "$2" "$3" "DONE" "ERROR"
+		bt_check_eq_to "$2" "$3" "$BT_OUT_DONE" "$BT_OUT_FAILED"
 	else
 		_OUT_="$2"
 	fi
-	bt_write_right_align "$_OUT_"
+	bt_write_right_align "$_OUT_" $BT_OUT_SCARTO
 }
 
 function bt___info()
 {
-	echo -e "[info:$1] $2"
+	echo -e "$BT_WHITE[$BT_LEVEL_INFO:$BT_WHITE$1]$BT_NO_COLOR $2"
 }
 
 

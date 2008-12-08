@@ -1,33 +1,53 @@
-#rmic -d ~/public_html/common/ databaseserver.DBServer
-rmic -d ~/public_html/common/ parcmanserver.ParcmanServer
-rmic -d ~/public_html/common/ loginserver.LoginServer
-#rmic -d ~/public_hmtl/common/ indexingserver.IndexingServer
-#rmic -d ~/public_hmtl/common/ parcmanclient.ParcmanClient
+#!/bin/bash 
 
-#cp databaseserver/RemoteDBServer.class ~/public_html/common/databaseserver/
-mkdir ~/public_html/common/parcmanserver/ 2> /dev/null
-cp parcmanserver/RemoteParcmanServer.class ~/public_html/common/parcmanserver/
-cp parcmanserver/RemoteParcmanServerUser.class ~/public_html/common/parcmanserver/
-cp loginserver/RemoteLoginServer.class ~/public_html/common/loginserver/
-mkdir ~/public_html/common/remoteexceptions/ 2> /dev/null
-cp remoteexceptions/*.class ~/public_html/common/remoteexceptions/
-mkdir ~/public_html/common/parcmanclient/ 2> /dev/null
-cp parcmanclient/*.class ~/public_html/common/parcmanclient/
-mkdir ~/public_html/common/remoteclient/ 2> /dev/null
-cp remoteclient/*.class ~/public_html/common/remoteclient/
-mkdir ~/public_html/common/parcmanagent/ 2> /dev/null
-cp parcmanagent/*.class ~/public_html/common/parcmanagent/
-mkdir ~/public_html/common/parcmanagent/exceptions/ 2> /dev/null
-cp parcmanagent/exceptions/*.class ~/public_html/common/parcmanagent/exceptions/
-mkdir ~/public_html/common/pshell/ 2> /dev/null
-cp pshell/*.class ~/public_html/common/pshell/
-mkdir ~/public_html/common/indexingserver/ 2> /dev/null
-cp indexingserver/RemoteIndexingServer.class ~/public_html/common/indexingserver/
-cp indexingserver/RemoteIndexingServerAgent.class ~/public_html/common/indexingserver/
-mkdir ~/public_html/common/database/ 2> /dev/null
-mkdir ~/public_html/common/database/beans/ 2> /dev/null
-cp database/beans/*.class ~/public_html/common/database/beans/
-mkdir ~/public_html/common/logserver/ 2> /dev/null
-cp logserver/RemoteLogServer.class ~/public_html/common/logserver/
-mkdir ~/public_html/common/plog/ 2> /dev/null
-cp plog/PLog.class ~/public_html/common/plog/
+E_MC_INLCUDE_ARGSLIB=65
+E_MC_INLCUDE_ARGSLIB_MSG="Impossibile includere argslib.sh"
+E_MC_INLCUDE_LOGLIB=66
+E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
+
+G_LOGPOS=$(basename $0)
+#G_RMIC_FILES=( 	database.DBServer \
+#		parcmanserver.ParcmanServer \
+#		loginserver.LoginServer \
+#		indexingserver.IndexingServer \
+#		parcmanclient.ParcmanClient )
+G_RMIC_FILES=(	parcmanserver.ParcmanServer \
+		loginserver.LoginServer )
+G_PUBLIC_HTML=$HOME/public_html/common/
+G_CODEBASE_FILES=(	parcmanserver/RemoteParcmanServer.class \
+			parcmanserver/RemoteParcmanServerUser.class \
+			loginserver/RemoteLoginServer.class \
+			remoteexceptions/*.class \
+			parcmanclient/*.class \
+			remoteclient/*.class \
+			parcmanagent/*.class \
+			pshell/*.class \
+			indexingserver/RemoteIndexingServer.class \
+			indexingserver/RemoteIndexingServerAgent.class \
+			database/beans/*.class \
+			logserver/*.class \
+			plog/PLog.class )
+
+# include argslib.sh
+. ../bash/argslib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_ARGSLIB_MSG && exit $E_MC_INLCUDE_ARGSLIB
+
+# include loglib.sh
+. ../bash/loglib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_LOGLIB_MSG && exit $E_MC_INLCUDE_LOGLIB
+
+
+bt_info_inline "RMIC COMPILING" $G_LOGPOS
+echo 
+for f in ${G_RMIC_FILES[@]}; do
+	bt_info "rmic -d $G_PUBLIC_HTML $f" "compile '$f'" $G_LOGPOS
+done
+
+echo 
+
+bt_info_inline "MOVING CLASS FILES TO CODEBASE" $G_LOGPOS
+echo 
+for f in ${G_CODEBASE_FILES[@]}; do
+	[[ ! -d $G_PUBLIC_HTML$(dirname $f) ]] && bt_info "mkdir -p $G_PUBLIC_HTML$(dirname $f)" "mkdir '$G_PUBLIC_HTML$(dirname $f)'" $G_LOGPOS 
+	bt_info "cp $f $G_PUBLIC_HTML$(dirname $f)/" "copy '$f'" $G_LOGPOS
+done

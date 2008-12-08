@@ -1,7 +1,19 @@
 #!/bin/bash
 
+E_MC_INLCUDE_ARGSLIB=65
+E_MC_INLCUDE_ARGSLIB_MSG="Impossibile includere argslib.sh"
+E_MC_INLCUDE_LOGLIB=66
+E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
+
+LOG_POSITION=$(basename $0)
+
 # include argslib.sh
-. ../bash/argslib.sh
+. ../bash/argslib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_ARGSLIB_MSG && exit $E_MC_INLCUDE_ARGSLIB
+
+# include loglib.sh
+. ../bash/loglib.sh 2> /dev/null
+[[ $? -gt 0 ]] && echo $E_MC_INLCUDE_LOGLIB_MSG && exit $E_MC_INLCUDE_LOGLIB
 
 P_ADDRESS=localhost
 P_PORT=8003
