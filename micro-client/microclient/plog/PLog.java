@@ -1,4 +1,4 @@
-package plog;
+package microclient.plog;
 
 /**
  * Gestore messaggi di errore e di debug.
