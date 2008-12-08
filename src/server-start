@@ -1,9 +1,9 @@
 #!/bin/bash
-P_ADDRESS=127.0.0.1
+P_ADDRESS=localhost
 P_HOSTNAME=localhost
 P_PORT=8003
-P_REMOTE_PATH="~sirio/common/"
-P_IMPL_CODEBASE_PATH=file://$HOME/programming/parcman/src/
+P_REMOTE_PATH="~sarimisar/common/"
+P_IMPL_CODEBASE_PATH=file://$HOME/PAR/parcman/src/
 P_POLICY="policy"
 P_POLICY_GROUP="setup/policy"
 P_DATABASE_DIR="$HOME/PAR/parcman/dbDirectory"
@@ -27,7 +27,7 @@ DEFAULTS=( $P_ADDRESS $P_HOSTNAME $P_PORT $P_REMOTE_PATH $P_POLICY $P_POLICY_GRO
 
 G_LOGPOS=$(basename $0)
 # catturo CTRL-C per terminare senza dare errori
-trap 'bt_info_inline "Disconnessione server in corso... " $G_LOGPOS' TERM INT
+trap 'rmid -stop; bt_info_inline "Disconnessione server in corso... " $G_LOGPOS' TERM INT
 
 for i in $@; do
 	case $i in 
