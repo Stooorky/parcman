@@ -20,7 +20,7 @@ function argslib_get_short_option()
 
 function argslib_get_long_option()
 {
-	ARGSLIB_OPT_VALUE=$(echo $1 | sed 's/--[a-zA-Z0-9.-_]*=//')
+	ARGSLIB_OPT_VALUE=$(echo $1 | sed 's/--[a-zA-Z0-9.-~_]*=//')
 }
 
 function argslib_usage()
