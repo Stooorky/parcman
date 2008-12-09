@@ -183,6 +183,40 @@ public interface RemoteParcmanServerUser
 		RemoteException;
 
 	/**
+	 * Rimuove un utente dalla lista di waiting e lo attiva.
+	 * 
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @param userForBlacklist La stringa che rappresenta il nome del client che si vuole togliere dalla lista di waiting.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public void delFromWaiting(RemoteParcmanClient parcmanClientStub, String userName, String userStillWaiting) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException;
+
+	/**
+	 * Ritorna la lista degli utenti in stato di waiting
+	 *
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @return Vettore di <tt>UserBean</tt>.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public Vector<UserBean> waitinglist(RemoteParcmanClient parcmanClientStub, String userName) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException;
+
+	/**
 	* Ping.
 	*
 	* @throws RemoteException Eccezione Remota

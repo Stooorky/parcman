@@ -195,11 +195,6 @@ public class ShellDataAdmin extends ShellData
  			Vector<UserBean> result = parcmanServerStub.blacklist(parcmanClient.getStub(), userName);
  			out.println("Done.");
  
-			Vector<String> names = new Vector<String>();
-			Vector<String> privileges = new Vector<String>();
-			names.add("NOME UTENTE");
-			privileges.add("PRIVILEGI");
-			String header = "Blacklist:";
 
  			if (result == null || result.size() == 0)
  			{
@@ -207,6 +202,11 @@ public class ShellDataAdmin extends ShellData
  			}
  			else 
  			{
+				Vector<String> names = new Vector<String>();
+				Vector<String> privileges = new Vector<String>();
+				names.add("NOME UTENTE");
+				privileges.add("PRIVILEGI");
+				String header = "Blacklist:";
  				for (int i=0; i<result.size(); i++)
 				{
 					UserBean bean = result.get(i);
@@ -225,7 +225,75 @@ public class ShellDataAdmin extends ShellData
  		}
  	}
  
+ 	/**
+ 	 * Metodo per il comando di shell waitinglist.
+ 	 *
+ 	 */
+ 	@PShellDataAnnotation(
+ 			method = "commandWaitinglist",
+ 			name = "waitinglist",
+ 			info = "Mostra la lista waiting.",
+ 			help = "\tMosta la lista waiting.\n\tuse: waitinglist"
+ 			)
+ 	public void commandWaitinglist(String param)
+ 	{
+ 		try
+ 		{
+ 			out.print("Inviata la richiesta...");
+ 			Vector<UserBean> result = parcmanServerStub.waitinglist(parcmanClient.getStub(), userName);
+ 			out.println("Done.");
  
 
+ 			if (result == null || result.size() == 0)
+ 			{
+ 				out.println("Nessun utente in waiting list.");
+ 			}
+ 			else 
+ 			{
+				Vector<String> names = new Vector<String>();
+				Vector<String> privileges = new Vector<String>();
+				names.add("NOME UTENTE");
+				privileges.add("PRIVILEGI");
+				String header = "Waiting list:";
+ 				for (int i=0; i<result.size(); i++)
+				{
+					UserBean bean = result.get(i);
+					names.add(bean.getName());
+					privileges.add(bean.getPrivilege());
+				}
+				Vector<Vector<String>> table = new Vector<Vector<String>>();
+				table.add(names);
+				table.add(privileges);
+				writeTable(table, 2, result.size()+1, header);
+ 			}
+ 		}
+ 		catch (RemoteException e)
+ 		{
+ 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+ 		}
+ 	}
 
+ 	/**
+ 	 * Metodo per il comando di shell delfromwaiting.
+ 	 *
+ 	 */
+ 	@PShellDataAnnotation(
+ 			method = "commandDelFromWaiting",
+ 			name = "delfromwaiting",
+ 			info = "Toglie un utente dalla lista di waiting e lo attiva.",
+ 			help = "\tToglie un utente dalla lista di waiting e lo attiva.\n\tuse: delfromwaiting"
+ 			)
+ 	public void commandDelFromWaiting(String param)
+ 	{
+		try
+		{
+			out.println("Inviata la richiesta...");
+			parcmanServerStub.delFromWaiting(parcmanClient.getStub(), userName, param);
+			out.println("Rimosso utente '" + param + "' dalla lista di waiting.");
+		}
+		catch (RemoteException e)
+		{
+			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+		}
+ 	}
 }

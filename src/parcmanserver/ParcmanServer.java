@@ -3,6 +3,8 @@ package parcmanserver;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 import java.rmi.*;
 import java.io.EOFException;
 
@@ -719,7 +721,7 @@ public class ParcmanServer
 		ParcmanServerRequestErrorRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.putInBlacklist", "Richiesta di togliere dalla blacklist '"+ userForBlacklist +"' da parte di '" + userName + "'.");
+		PLog.debug("ParcmanServer.delFromBlacklist", "Richiesta di togliere dalla blacklist '"+ userForBlacklist +"' da parte di '" + userName + "'.");
 
 		checkHacking(parcmanClientStub, userName);
 		checkAdminPrivileges(connectUsers.get(userName));
@@ -734,18 +736,18 @@ public class ParcmanServer
 			} 
 			catch (ParcmanDBUserInvalidStatusException e)
 			{
-				PLog.err("ParcmanServer.putInBlacklist", "Stato utente non valido");
+				PLog.err("ParcmanServer.delFromBlacklist", "Stato utente non valido");
 			}
 			dbServer.updateUsers(); // aggiorna il database.
 		}
 		catch (ParcmanDBServerErrorRemoteException e)
 		{
-			PLog.err(e, "ParcmanServer.putInBlacklist", "Errore interno al database.");
+			PLog.err(e, "ParcmanServer.delFromBlacklist", "Errore interno al database.");
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		catch (ParcmanDBServerUserNotExistRemoteException e)
 		{
-			PLog.err(e, "ParcmanServer,putInBlacklist", "L'utente '" + userForBlacklist + "' non e` presente sul database.");
+			PLog.err(e, "ParcmanServer.delFromBlacklist", "L'utente '" + userForBlacklist + "' non e` presente sul database.");
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		//catch (RemoteException e) 
@@ -754,6 +756,58 @@ public class ParcmanServer
 		//}
 	}
 
+
+	/**
+	 * Rimuove un utente dalla lista di waiting e lo attiva.
+	 * 
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @param userForBlacklist La stringa che rappresenta il nome del client che si vuole togliere dalla lista di waiting.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public void delFromWaiting(RemoteParcmanClient parcmanClientStub, String userName, String userStillWaiting) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException
+	{
+		PLog.debug("ParcmanServer.delFromWaiting", "Richiesta di togliere dalla lista di waiting '"+ userStillWaiting+"' da parte di '" + userName + "'.");
+
+		checkHacking(parcmanClientStub, userName);
+		checkAdminPrivileges(connectUsers.get(userName));
+
+		// imposto comunque il flag sul database. 
+		try
+		{
+			UserBean userbean = dbServer.getUser(userStillWaiting);
+			try
+			{
+				userbean.setStatus("READY");
+			} 
+			catch (ParcmanDBUserInvalidStatusException e)
+			{
+				PLog.err("ParcmanServer.delFromWaiting", "Stato utente non valido");
+			}
+			dbServer.updateUsers(); // aggiorna il database.
+		}
+		catch (ParcmanDBServerErrorRemoteException e)
+		{
+			PLog.err(e, "ParcmanServer.delFromWaiting", "Errore interno al database.");
+			throw new ParcmanServerRequestErrorRemoteException();
+		}
+		catch (ParcmanDBServerUserNotExistRemoteException e)
+		{
+			PLog.err(e, "ParcmanServer.delFromWaiting", "L'utente '" + userStillWaiting+ "' non e` presente sul database.");
+			throw new ParcmanServerRequestErrorRemoteException();
+		}
+		//catch (RemoteException e) 
+		//{
+		//	PLog.err(e, "ParcmanServer.putInBlacklist", "Si sono verificati problemi di rete.");
+		//}
+	}
 
 	/**
 	 * Ritorna la lista degli utenti in blacklist.
@@ -780,17 +834,59 @@ public class ParcmanServer
 		{
 			dbServer.reloadUsers();
 			users = dbServer.getUsers();
-			for (int i=0; i<users.size(); i++)
+			Iterator<UserBean> i = users.iterator();
+			
+			while (i.hasNext())
 			{
-				if (!"BLACKLIST".equals(users.get(i).getStatus()))
-				{
-					users.remove(i);
-				}
+				if (!"BLACKLIST".equals(i.next().getStatus()))
+					i.remove();
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e)
 		{
 			PLog.err("ParcmanServer.blacklist", "Errore durante la selezione degli utenti in blacklist.");
+			throw new ParcmanServerRequestErrorRemoteException();
+		}
+
+		return users;
+	}
+
+	/**
+	 * Ritorna la lista degli utenti in stato di waiting
+	 *
+	 * @param parcmanClientStub Lo stub del <tt>ParcmanClient</tt>. 
+	 * @param userName La stringa che rappresenta il nome del client che ha fatto la richiesta.
+	 * @return Vettore di <tt>UserBean</tt>.
+	 * @throws ParcmanServerWrongPrivilegesRemoteException Privilegi errati.
+	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
+	 * @throws ParcmanServerRequestErrorRemoteException si e` verificato un errore nella procedura.
+	 * @throws RemoteException Eccezione remota.
+	 */
+	public Vector<UserBean> waitinglist(RemoteParcmanClient parcmanClientStub, String userName) throws
+		ParcmanServerHackWarningRemoteException,
+		ParcmanServerWrongPrivilegesRemoteException, 
+		ParcmanServerRequestErrorRemoteException,
+		RemoteException
+	{
+		checkHacking(parcmanClientStub, userName);
+		checkAdminPrivileges(connectUsers.get(userName));
+
+		Vector<UserBean> users = null;
+		try
+		{
+			dbServer.reloadUsers();
+			users = dbServer.getUsers();
+			Iterator<UserBean> i = users.iterator();
+
+			while (i.hasNext())
+			{
+				if (!"WAITING".equals(i.next().getStatus()))
+					i.remove();
+			}
+		}
+		catch (ArrayIndexOutOfBoundsException e)
+		{
+			PLog.err("ParcmanServer.waitinglist", "Errore durante la selezione degli utenti in waiting.");
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 
