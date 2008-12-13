@@ -1,5 +1,6 @@
 package parcmanclient;
 
+import java.util.Vector;
 import java.util.*;
 import java.lang.*;
 import java.io.*;
@@ -9,6 +10,7 @@ import pshell.*;
 import plog.*;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
+import parcmanserver.ClientDataUser;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
 import database.beans.UserBean;
@@ -55,12 +57,12 @@ public class ShellDataAdmin extends ShellData
 			info = "Fornisce la lista dei client connessi alla rete parcman",
 			help = "\tFornisce la lista dei client connessi alla rete parcman.\n\tuse: connectusers"
 			)
-	public void commandGetConnectUsersList (String param)
+	public void commandGetConnectUsersList(String param)
 	{
 		try
 		{
-			out.print("Inviata la richiesta...");
-			Vector<String> result = parcmanServerStub.getConnectUsersList(this.parcmanClient.getStub(), this.userName);
+			out.print("Inviata la richiesta... ");
+			Vector<ClientDataUser> result = parcmanServerStub.getConnectUsersList(this.parcmanClient.getStub(), this.userName);
 			out.print("done.\n");
 
 			if (result == null || result.size() == 0)
@@ -68,16 +70,44 @@ public class ShellDataAdmin extends ShellData
 				out.println("Nessun utente connesso.");
 				return;
 			}
-
-			out.println("Lista degli utenti connessi:");
-			for (int i=0; i<result.size(); i++)
-				this.out.println(result.get(i));
-
+			else
+			{
+				Vector<String> names = new Vector<String>();
+				Vector<String> isAdmin = new Vector<String>();
+				Vector<String> hosts= new Vector<String>();
+				names.add("NOME UTENTE");
+				isAdmin.add("ADMIN");
+				hosts.add("ADDRESS");
+				String header = "Utenti Connessi:";
+				out.println("init ok");
+ 				for (int i=0; i<result.size(); i++)
+				{
+					ClientDataUser data = result.get(i);
+					out.println("client " +data.getName() +".");
+					names.add(data.getName());
+					out.println("1");
+					isAdmin.add(Boolean.toString(data.isAdmin()));
+					out.println("2");
+					hosts.add(data.getHost());
+					out.println("3");
+				}
+				Vector<Vector<String>> table = new Vector<Vector<String>>();
+				table.add(names);
+				table.add(isAdmin);
+				table.add(hosts);
+				out.println("table ok");
+				writeTable(table, 3, result.size()+1, header);
+				out.println("print ok");
+			}
 		}
 		catch (RemoteException e)
 		{
 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 			return;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 

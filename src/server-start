@@ -2,7 +2,7 @@
 P_ADDRESS=localhost
 P_HOSTNAME=localhost
 P_PORT=8003
-P_REMOTE_PATH="~sarimisar/common/"
+P_REMOTE_PATH="~$USER/common/"
 P_IMPL_CODEBASE_PATH=file://$HOME/PAR/parcman/src/
 P_POLICY="policy"
 P_POLICY_GROUP="setup/policy"
@@ -82,6 +82,16 @@ for i in $@; do
 	esac
 done
 
+bt_info_inline "parametri java:" $G_LOGPOS
+bt_info_inline " -classpath :." $G_LOGPOS
+bt_info_inline " -Djava.rmi.server.codebase=http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH" $G_LOGPOS
+bt_info_inline " -Djava.security.policy="$P_POLICY"" $G_LOGPOS
+bt_info_inline " -Djava.rmi.server.hostname=$P_HOSTNAME" $G_LOGPOS
+bt_info_inline " -Dsetup.implCodebase="$P_IMPL_CODEBASE_PATH"" $G_LOGPOS
+bt_info_inline " -Dsetup.loginServerClass=loginserver.LoginServer" $G_LOGPOS
+bt_info_inline " -Dsetup.policyGroup="$P_POLICY_GROUP"" $G_LOGPOS
+bt_info_inline " -Dsetup.dbDirectory="$P_DATABASE_DIR"" $G_LOGPOS
+bt_info_inline " setup.Setup" $G_LOGPOS
 
 bt_info_nl "java -classpath :. \
 -Djava.rmi.server.codebase=http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH \

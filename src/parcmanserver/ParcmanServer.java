@@ -494,7 +494,7 @@ public class ParcmanServer
 	 * @throws ParcmanServerHackWarningRemoteException si sta verificando un probabile attacco.
 	 * @throws RemoteException Eccezione remota.
 	 */
-	public Vector<String> getConnectUsersList(RemoteParcmanClient parcmanClientStub, String userName)  throws
+	public Vector<ClientDataUser> getConnectUsersList(RemoteParcmanClient parcmanClientStub, String userName)  throws
 		ParcmanServerWrongPrivilegesRemoteException,
 		ParcmanServerHackWarningRemoteException,
 		RemoteException
@@ -503,7 +503,31 @@ public class ParcmanServer
 
 		checkHacking(parcmanClientStub, userName);
 		checkAdminPrivileges(connectUsers.get(userName));
-		return new Vector<String>(this.connectUsers.keySet());
+
+		Vector<ClientDataUser> data = new Vector<ClientDataUser>();
+		try 
+		{
+			Vector<ClientData> tmp = new Vector<ClientData>(this.connectUsers.values());
+			//Iterator<ClientData> i = tmp.iterator();
+			//while (i.hasNext())
+			for (int i=0; i<tmp.size(); i++)
+			{
+			//	ClientData cd = i.next();
+				ClientData cd = tmp.get(i);
+				ClientDataUser cdu = new ClientDataUser(cd.getHost(), cd.getName(), cd.getVersion(), cd.isAdmin());
+
+			 	data.addElement(cdu);
+			}
+			PLog.debug("ParcmanServer.getConnectUsersList", "estrazione terminata");
+			PLog.debug("ParcmanServer.getConnectUsersList", ""+data.getClass());
+			PLog.debug("ParcmanServer.getConnectUsersList", ""+data.size());
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return data;
 	}
 
 	/**

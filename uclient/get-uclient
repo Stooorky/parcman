@@ -132,7 +132,7 @@ function bt_check_eq_to()
 
 function bt___info__setup()
 {
-	echo -en "$BT_WHITE[$BT_LEVEL_INFO:$BT_WHITE$1]$BT_NO_COLOR $2"
+	echo -en "$BT_WHITE[$BT_LEVEL_INFO:$BT_WHITE$0]$BT_NO_COLOR $2"
 }
 
 function bt___info__teardown()
