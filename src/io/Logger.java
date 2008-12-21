@@ -35,6 +35,7 @@ public class Logger implements Serializable
 
 	protected Logger(Properties prop)
 	{
+		System.out.println(prop);
 		this._enable_ = "true".equals(prop.getProperty(LoggerProperties.ENABLE)) ? true : false;
 		setActiveLevels(prop.getProperty(LoggerProperties.LEVEL));
 		this.prop = prop;

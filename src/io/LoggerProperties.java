@@ -90,7 +90,7 @@ public class LoggerProperties implements Serializable
 		Properties p = new Properties();
 		p.setProperty(LoggerProperties.ACTIVE_CHANNELS, "");
 		p.setProperty(LoggerProperties.ACTIVE_LEVELS, "ERROR,WARNING,DEBUG,INFO,LOG");
-		p.setProperty(LoggerProperties.LEVEL, "0");
+		p.setProperty(LoggerProperties.LEVEL, "31");
 		p.setProperty(LoggerProperties.ENABLE, "true");
 		p.setProperty(LoggerProperties.FILE_ENABLE, "false");
 		p.setProperty(LoggerProperties.FILE_OUTPUT, "");

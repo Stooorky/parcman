@@ -30,7 +30,7 @@ public class ParcmanClient
 	/**
 	 * Logger
 	 */
-	private Logger logger = Logger.getLogger("client-side", PropertyManager.getInstance().get("logger"));
+	private Logger logger;
 
 	/**
 	 * Stub del ParcmanServer.
@@ -105,6 +105,7 @@ public class ParcmanClient
 	public ParcmanClient(RemoteParcmanServerUser parcmanServerStub, String userName, boolean isAdmin) throws
 		RemoteException
 	{
+		this.logger = Logger.getLogger("client-side", PropertyManager.getInstance().get("logger"));
 		this.parcmanServerStub = parcmanServerStub;
 		this.userName = userName;
 		this.sharesServer = new Vector<ShareBean>();
