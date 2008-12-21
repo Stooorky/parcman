@@ -1,8 +1,9 @@
 package io;
 
 import java.util.Properties;
+import java.io.Serializable;
 
-public class IOProperties
+public class IOProperties implements Serializable 
 {
 	public static final String PROP_TAB_SPACE = "tab-space";
 	public static final String PROP_COLOR_DEFAULT = "color-default";

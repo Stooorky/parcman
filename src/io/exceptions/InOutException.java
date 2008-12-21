@@ -1,12 +1,15 @@
 package io.exceptions;
 
+import java.io.Serializable;
+
 /**
  * Eccezione generica di input/output.
  * 
  * @author Parcman Tm
  */
-public class InOutException
+public class InOutException 
 	extends Exception
+	implements Serializable
 {
 	private static final long serialVersionUID = 42L;
 

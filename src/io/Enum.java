@@ -1,8 +1,9 @@
 package io;
 
 import java.lang.reflect.Method;
+import java.io.Serializable;
 
-public class Enum
+public class Enum implements Serializable
 {
 	public static void main(String[] args)
 	{

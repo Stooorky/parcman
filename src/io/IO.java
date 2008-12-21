@@ -12,8 +12,9 @@ import java.util.Iterator;
 import java.io.IOException;
 import java.util.regex.PatternSyntaxException;
 import prova.exceptions.*;
+import java.io.Serializable;
 
-public class IO 
+public class IO implements Serializable
 {
 	private BufferedReader in;
 	private PrintWriter out;

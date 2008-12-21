@@ -1,5 +1,7 @@
 package io.exceptions;
 
+import java.io.Serializable;
+
 /**
  * La lista e` vuota.
  * 
@@ -7,6 +9,7 @@ package io.exceptions;
  */
 public class ListIsEmptyException
 	extends InOutException
+	implements Serializable
 {
 	private static final long serialVersionUID = 42L;
 

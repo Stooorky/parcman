@@ -1,6 +1,8 @@
 package io;
 
-class Pair<E,F>
+import java.io.Serializable;
+
+class Pair<E,F> implements Serializable
 {
 	protected E first;
 	protected F second;

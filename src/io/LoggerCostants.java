@@ -1,6 +1,8 @@
 package io;
 
-public class LoggerCostants
+import java.io.Serializable;
+
+public class LoggerCostants implements Serializable
 {
 	public static final int LEVELS = 5;
 
