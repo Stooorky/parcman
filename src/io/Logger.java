@@ -145,6 +145,20 @@ public class Logger implements Serializable
 		return color;
 	}
 
+	public void makeLog(String level, String[] msg, Throwable e)
+	{
+		if (!isActive(level)) return;
+		Throwable t = new Throwable();
+		long time = System.currentTimeMillis();
+		StackTraceElement[] stack = t.getStackTrace();
+		String out = format(stack[2], time, level, msg[0], prop.getProperty(LoggerProperties.FORMAT_ERROR), e);
+		for (int i=1; i<msg.length; i++)
+		{
+			out += "\t" + msg[i];
+		}
+		System.out.println(out);
+	}
+
 	public void makeLog(String level, String msg, Throwable e)
 	{
 		if (!isActive(level)) return;
@@ -201,6 +215,56 @@ public class Logger implements Serializable
 	}
 
 	public void log(String msg, Throwable e)
+	{
+		makeLog(LoggerCostants.LEVEL_LOG, msg, e);
+	}
+
+	public void error(String[] msg)
+	{
+		makeLog(LoggerCostants.LEVEL_ERROR, msg, null);
+	}
+
+	public void warning(String[] msg)
+	{
+		makeLog(LoggerCostants.LEVEL_WARNING, msg, null);
+	}
+
+	public void debug(String[] msg)
+	{
+		makeLog(LoggerCostants.LEVEL_DEBUG, msg, null);
+	}
+
+	public void info(String[] msg)
+	{
+		makeLog(LoggerCostants.LEVEL_INFO, msg, null);
+	}
+
+	public void log(String[] msg)
+	{
+		makeLog(LoggerCostants.LEVEL_LOG, msg, null);
+	}
+
+	public void error(String[] msg, Throwable e)
+	{
+		makeLog(LoggerCostants.LEVEL_ERROR, msg, e);
+	}
+
+	public void warning(String[] msg, Throwable e)
+	{
+		makeLog(LoggerCostants.LEVEL_WARNING, msg, e);
+	}
+
+	public void debug(String[] msg, Throwable e)
+	{
+		makeLog(LoggerCostants.LEVEL_DEBUG, msg, e);
+	}
+
+	public void info(String[] msg, Throwable e)
+	{
+		makeLog(LoggerCostants.LEVEL_INFO, msg, e);
+	}
+
+	public void log(String[] msg, Throwable e)
 	{
 		makeLog(LoggerCostants.LEVEL_LOG, msg, e);
 	}

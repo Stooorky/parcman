@@ -153,15 +153,13 @@ public class ParcmanClient
 			this.sharesAgent = null;
 			this.sharesAgentUpdateList = null;
 			this.versionAgent = -1;
-			PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 			logger.debug("Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 			return false;
 		}
 		else if (!ready)
 			return false;
 
-		PLog.debug("ParcmanClient.haveAnUpdate", "Codice di versione errato (" + version + ")");
-		logger.debug("Codice di versione errato (" + version + ")");
+		logger.error("Codice di versione errato (" + version + ")");
 		this.exit();
 		return false;
 	}
@@ -184,8 +182,7 @@ public class ParcmanClient
 		}
 		catch (RemoteException e)
 		{
-			PLog.debug("ParcmanClient.transferAgent", "Eccezione remota nella chiamta al metodo run() del ParcmanAgent");
-			logger.debug("Eccezione remota nella chiamta al metodo run() del ParcmanAgent");
+			logger.error("Eccezione remota nella chiamta al metodo run() del ParcmanAgent");
 			return;
 		}
 	}
@@ -198,10 +195,7 @@ public class ParcmanClient
 	public void disconnect(String message) throws 
 		RemoteException
 	{
-		PLog.debug("ParcmanClient.disconnect", "Sei stato inserito in blacklist.");
-		logger.debug("Sei stato inserito in blacklist.");
-		PLog.debug("ParcmanClient.disconnect", "Disconessione in corso...");
-		logger.debug("Disconessione in corso...");
+		logger.info(new String[] { "Sei stato inserito in blacklist.", "Disconessione in corso..." });
 		this.parcmanServerStub = null;
 		System.exit(0);
 	}
