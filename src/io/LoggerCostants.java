@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class LoggerCostants implements Serializable
 {
+	private static final long serialVersionUID = 42L;
+
 	public static final int LEVELS = 5;
 
 	public static final String LEVEL_ERROR 		= "ERROR";

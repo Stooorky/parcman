@@ -15,6 +15,8 @@ import java.lang.reflect.Field;
 
 public class Logger implements Serializable
 {
+	private static final long serialVersionUID = 42L;
+
 	private static Hashtable<String, Logger> map;
 
 	private Properties prop;

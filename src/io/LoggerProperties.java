@@ -5,6 +5,8 @@ import java.io.Serializable;
 
 public class LoggerProperties implements Serializable
 {
+	private static final long serialVersionUID = 42L;
+
 	public static final String ACTIVE_CHANNELS = "logger-active-channels"; // list: [channels of your log]
 	public static final String ACTIVE_LEVELS = "logger-active-levels"; // list: [ERROR|WARNING|DEBUG|INFO|LOG]
 	// come per i permessi unix. es: LEVEL=31 => ERROR+WARNING+DEBUG+INFO+LOG

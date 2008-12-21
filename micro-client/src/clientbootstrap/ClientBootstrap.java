@@ -44,18 +44,18 @@ public class ClientBootstrap
 		}
 		catch(MalformedURLException e)
 		{
-			logger.error("ClientBootstrap", "L'URL fornita non e' corretta.", e);
+			logger.error("L'URL fornita non e' corretta.", e);
 			PLog.err(e, "ClientBootstrap", "L'URL fornita non e' corretta.");
 		}
 		catch(ClassNotFoundException e)
 		{
-			logger.error("ClientBootstrap", "Caricamento della classe remota fallito.", e);
+			logger.error("Caricamento della classe remota fallito.", e);
 			PLog.err(e, "ClientBootstrap", "Caricamento della classe remota fallito.");
 		}
 		catch(Exception e)
 		{
 			// Aggiungere eventualmente la gestione delle eccezioni per Class.newInstance
-			logger.error("ClientBootstrap", "Impossibile eseguire il BootStrap del Client", e);
+			logger.error("Impossibile eseguire il BootStrap del Client", e);
 			PLog.err(e, "ClientBootstrap", "Impossibile eseguire il BootStrap del Client");
 		}
 	}

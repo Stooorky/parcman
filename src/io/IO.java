@@ -16,6 +16,8 @@ import java.io.Serializable;
 
 public class IO implements Serializable
 {
+	private static final long serialVersionUID = 42L;
+
 	private BufferedReader in;
 	private PrintWriter out;
 	private Properties prop;

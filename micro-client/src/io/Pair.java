@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 class Pair<E,F> implements Serializable
 {
+	private static final long serialVersionUID = 42L;
+
 	protected E first;
 	protected F second;
 

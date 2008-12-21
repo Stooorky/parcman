@@ -5,6 +5,8 @@ import java.io.Serializable;
 
 public class Enum implements Serializable
 {
+	private static final long serialVersionUID = 42L;
+
 	public static void main(String[] args)
 	{
 		Enum e = new Enum();

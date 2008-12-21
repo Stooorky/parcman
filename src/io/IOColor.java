@@ -5,6 +5,8 @@ import java.io.Serializable;
 
 public class IOColor implements Serializable 
 {
+	private static final long serialVersionUID = 42L;
+
 	public static final String NOCOLOR =		"\033[0m";
 	public static final String BLACK =		"\033[30m";
 	public static final String RED =		"\033[31m";

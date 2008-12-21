@@ -5,6 +5,8 @@ import java.io.Serializable;
 
 public class IOProperties implements Serializable 
 {
+	private static final long serialVersionUID = 42L;
+
 	public static final String PROP_TAB_SPACE = "tab-space";
 	public static final String PROP_COLOR_DEFAULT = "color-default";
 	public static final String PROP_COLOR_INFO = "color-info";
