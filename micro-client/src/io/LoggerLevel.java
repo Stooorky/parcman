@@ -1,6 +1,8 @@
 package io;
 
-public enum LoggerLevel
+import java.io.Serializable;
+
+public enum LoggerLevel implements Serializable
 {
 	 ERROR (0, 1),
 	 WARNING (1, 2), 

@@ -1,5 +1,6 @@
 package io;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Arrays;
@@ -12,7 +13,7 @@ import java.util.regex.Matcher;
 import java.lang.StringBuffer;
 import java.lang.reflect.Field;
 
-public class Logger
+public class Logger implements Serializable
 {
 	private static Hashtable<String, Logger> map;
 

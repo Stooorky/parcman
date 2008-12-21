@@ -1,8 +1,9 @@
 package io;
 
 import java.lang.reflect.Field;
+import java.io.Serializable;
 
-public class IOColor
+public class IOColor implements Serializable 
 {
 	public static final String NOCOLOR =		"\033[0m";
 	public static final String BLACK =		"\033[30m";

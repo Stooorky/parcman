@@ -1,8 +1,9 @@
 package io;
 
 import java.util.Properties;
+import java.io.Serializable;
 
-public class LoggerProperties
+public class LoggerProperties implements Serializable
 {
 	public static final String ACTIVE_CHANNELS = "logger-active-channels"; // list: [channels of your log]
 	public static final String ACTIVE_LEVELS = "logger-active-levels"; // list: [ERROR|WARNING|DEBUG|INFO|LOG]
