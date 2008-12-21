@@ -508,19 +508,13 @@ public class ParcmanServer
 		try 
 		{
 			Vector<ClientData> tmp = new Vector<ClientData>(this.connectUsers.values());
-			//Iterator<ClientData> i = tmp.iterator();
-			//while (i.hasNext())
-			for (int i=0; i<tmp.size(); i++)
+			Iterator<ClientData> i = tmp.iterator();
+			while (i.hasNext())
 			{
-			//	ClientData cd = i.next();
-				ClientData cd = tmp.get(i);
-				ClientDataUser cdu = new ClientDataUser(cd.getHost(), cd.getName(), cd.getVersion(), cd.isAdmin());
-
-			 	data.addElement(cdu);
+				ClientData cd = i.next();
+			 	data.addElement(new ClientDataUser(cd.getHost(), cd.getName(), cd.getVersion(), cd.isAdmin()));
 			}
-			PLog.debug("ParcmanServer.getConnectUsersList", "estrazione terminata");
-			PLog.debug("ParcmanServer.getConnectUsersList", ""+data.getClass());
-			PLog.debug("ParcmanServer.getConnectUsersList", ""+data.size());
+			PLog.debug("ParcmanServer.getConnectUsersList", "estratti " + data.size() + " utenti.");
 		} 
 		catch (Exception e)
 		{

@@ -61,13 +61,13 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			out.print("Inviata la richiesta... ");
+			print("Richiesta inviata... ", COLOR_LIGHT_BLUE);
 			Vector<ClientDataUser> result = parcmanServerStub.getConnectUsersList(this.parcmanClient.getStub(), this.userName);
-			out.print("done.\n");
+			println("done.", COLOR_LIGHT_GREEN);
 
 			if (result == null || result.size() == 0)
 			{
-				out.println("Nessun utente connesso.");
+				println("Nessun utente connesso.", COLOR_LIGHT_BLUE);
 				return;
 			}
 			else
@@ -75,39 +75,28 @@ public class ShellDataAdmin extends ShellData
 				Vector<String> names = new Vector<String>();
 				Vector<String> isAdmin = new Vector<String>();
 				Vector<String> hosts= new Vector<String>();
-				names.add("NOME UTENTE");
-				isAdmin.add("ADMIN");
-				hosts.add("ADDRESS");
-				String header = "Utenti Connessi:";
-				out.println("init ok");
+				String[] headers = new String[] { "NOME UTENTE", "IS ADMIN", "ADDRESS" };
+				String caption = "Utenti Connessi";
+
  				for (int i=0; i<result.size(); i++)
 				{
 					ClientDataUser data = result.get(i);
-					out.println("client " +data.getName() +".");
 					names.add(data.getName());
-					out.println("1");
 					isAdmin.add(Boolean.toString(data.isAdmin()));
-					out.println("2");
 					hosts.add(data.getHost());
-					out.println("3");
 				}
 				Vector<Vector<String>> table = new Vector<Vector<String>>();
 				table.add(names);
 				table.add(isAdmin);
 				table.add(hosts);
-				out.println("table ok");
-				writeTable(table, 3, result.size()+1, header);
-				out.println("print ok");
+
+				writeTable(table, headers, caption, 3, result.size());
 			}
 		}
 		catch (RemoteException e)
 		{
-			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			println("Fallito. Si sono verificati degli errori di rete. Ritenta.", COLOR_LIGHT_RED);
 			return;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
 		}
 	}
 
@@ -232,21 +221,22 @@ public class ShellDataAdmin extends ShellData
  			}
  			else 
  			{
+				String caption = "Blacklist";
 				Vector<String> names = new Vector<String>();
 				Vector<String> privileges = new Vector<String>();
-				names.add("NOME UTENTE");
-				privileges.add("PRIVILEGI");
-				String header = "Blacklist:";
+				String[] headers = new String[] { "NOME UTENTE", "PRIVILEGI" };
+
  				for (int i=0; i<result.size(); i++)
 				{
 					UserBean bean = result.get(i);
 					names.add(bean.getName());
 					privileges.add(bean.getPrivilege());
 				}
+
 				Vector<Vector<String>> table = new Vector<Vector<String>>();
 				table.add(names);
 				table.add(privileges);
-				writeTable(table, 2, result.size()+1, header);
+				writeTable(table, headers, caption, 2, result.size());
  			}
  		}
  		catch (RemoteException e)
@@ -282,19 +272,21 @@ public class ShellDataAdmin extends ShellData
  			{
 				Vector<String> names = new Vector<String>();
 				Vector<String> privileges = new Vector<String>();
-				names.add("NOME UTENTE");
-				privileges.add("PRIVILEGI");
-				String header = "Waiting list:";
+				String[] headers = new String[]{ "NOME UTENTE", "PRIVILEGI" };
+
+				String caption = "Waiting list";
+
  				for (int i=0; i<result.size(); i++)
 				{
 					UserBean bean = result.get(i);
 					names.add(bean.getName());
 					privileges.add(bean.getPrivilege());
 				}
+
 				Vector<Vector<String>> table = new Vector<Vector<String>>();
 				table.add(names);
 				table.add(privileges);
-				writeTable(table, 2, result.size()+1, header);
+				writeTable(table, headers, caption,  2, result.size());
  			}
  		}
  		catch (RemoteException e)

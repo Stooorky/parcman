@@ -20,7 +20,8 @@ LOG_POSITION="micro-client.$(basename $0)"
 
 P_JAVAC=/usr/bin/javac
 P_CMD="compile"
-P_JAVAC_OPTS="-classpath $(pwd)"
+P_SRC_DIR="src"
+P_JAVAC_OPTS="-classpath $(pwd)/$P_SRC_DIR"
 
 OPTIONS=( --javac --javac-opts --command --help )
 HELPS=( "java compiler path" "options for java compiler" "command to do [compile|clean]" "prints help page" )

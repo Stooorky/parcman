@@ -13,6 +13,24 @@ import plog.*;
 */
 public abstract class PShellData
 {
+	public static final String COLOR_BLACK=		"\033[30m";
+	public static final String COLOR_RED=		"\033[31m";
+	public static final String COLOR_GREEN=		"\033[32m";
+	public static final String COLOR_BORWN=		"\033[33m";
+	public static final String COLOR_BLUE=		"\033[34m";
+	public static final String COLOR_PURPLE=	"\033[35m";
+	public static final String COLOR_CYAN=		"\033[36m";
+	public static final String COLOR_LIGHT_GREY=	"\033[37m";
+	public static final String COLOR_DARK_GREY=	"\033[30;1m";
+	public static final String COLOR_LIGHT_RED=	"\033[31;1m";
+	public static final String COLOR_LIGHT_GREEN=	"\033[32;1m";
+	public static final String COLOR_YELLOW=	"\033[33;1m";
+	public static final String COLOR_LIGHT_BLUE=	"\033[34;1m";
+	public static final String COLOR_LIGHT_PURPLE=	"\033[35;1m";
+	public static final String COLOR_LIGHT_CYAN=	"\033[36;1m";
+	public static final String COLOR_WHITE=		"\033[37;1m";
+	public static final String COLOR_NOCOLOR=	"\033[0m";
+
 	/**
 	* Input di Shell.
 	*/
@@ -36,11 +54,31 @@ public abstract class PShellData
 	}
 
 	/**
+	 * print message with color.
+	 *
+	 * @param color stringa che rappresenta il colore.
+	 */
+	public void println(String msg, String color)
+	{
+		out.println(color + msg + COLOR_NOCOLOR);
+	}
+
+	/**
+	 * print message inline with color.
+	 *
+	 * @param color stringa che rappresenta il colore.
+	 */
+	public void print(String msg, String color)
+	{
+		out.print(color + msg + COLOR_NOCOLOR);
+	}
+
+	/**
 	* Stampa il prompt della shell.
 	*/
 	public void writePrompt()
 	{
-	        out.print("\033[31;1m-->\033[0m ");
+	        //out.print("\033[31;1m-->\033[0m ");
 	}
 
 	/**
@@ -63,10 +101,12 @@ public abstract class PShellData
 		return out;
 	}
 
-	public void writeTable(Vector<Vector<String>> table, int cols, int rows, String header)
+	public void writeTable(Vector<Vector<String>> table, String[] headers, String caption, int cols, int rows)
 	{
 		out.println();
-		out.println(header);
+		println(":: " + caption + " [ " + rows + " ]: ", COLOR_LIGHT_CYAN);
+
+		// inizializzo la width delle colonne
 		int[] widths = new int[cols];
 		for (int i=0; i<widths.length; i++)
 			widths[i] = 0;
@@ -75,30 +115,51 @@ public abstract class PShellData
 		for (int c=0; c<table.size(); c++) // ciclo le colonne
 		{
 			Vector<String> col = table.get(c);
+			// aggiungo alla tabella gli headers
+			col.add(0, headers[c]);
 			for (int r=0; r<col.size(); r++) // ciclo le righe
 			{
 				String row = col.get(r);
 				if (row.length() > widths[c])
 					widths[c] = row.length();
 			}
+			// tolgo gli headers dalla tabella
+			col.remove(0);
 		}
-		
+
 
 		String row_separator = make_rowseparator(widths);
-		out.println(row_separator);
+
+		println(row_separator, COLOR_LIGHT_GREY);
+		String h = "|";
+		for (int i=0; i<cols; i++)
+		{
+			h += fill_cell(headers[i], widths[i], " ");
+			if (i < cols)
+				h += "|";
+		}
+		println(h, COLOR_LIGHT_GREY);
+		println(row_separator, COLOR_LIGHT_GREY);
 
 		for (int i=0; i<rows; i++)
 		{
-			String row = "|";
+			String color = COLOR_BLUE;
+			if ((i%2) == 0)
+			{
+				color = COLOR_GREEN;
+			} 
+
+			String row = color + "|"; // + COLOR_NOCOLOR;
+
 			for (int j=0; j<cols; j++)
 			{
 				Vector<String> col = table.get(j);
 				row += fill_cell(col.get(i), widths[j], " ");
 				if (j<cols)
-					row += "|";
+					row += color + "|"; // + COLOR_NOCOLOR;
 			}
 			out.println(row);
-			out.println(row_separator);
+			println(row_separator, color);
 		}
 	}
 

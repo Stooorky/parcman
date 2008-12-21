@@ -5,6 +5,38 @@ E_MC_INLCUDE_ARGSLIB_MSG="Impossibile includere argslib.sh"
 E_MC_INLCUDE_LOGLIB=66
 E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
 
+# FFC is for FILES_FOR_CLIENT
+FFC_BASEPATH=./src
+FFC_NEEDED_BASH=( bash/argslib.sh bash/loglib.sh )
+FFC_NEEDED_JAVA=( src/io/IOColor.java \
+	src/io/Logger.java \
+	src/io/LoggerCostants.java \
+	src/io/LoggerLevel.java \
+	src/io/LoggerProperties.java \
+	src/io/Pair.java \
+	src/io/PropertyManager.java \
+	src/io/exceptions/InOutException.java \
+	src/io/exceptions/ListIsEmptyException.java \
+	src/clientbootstrap/ClientBootstrap.java \
+	src/plog/PLog.java \
+	src/client-start \
+	src/policy )
+FFC_NEEDED_JAVA_BIN=( src/io/IOColor.class \
+	src/io/Logger.class \
+	src/io/LoggerCostants.class \
+	src/io/LoggerLevel.class \
+	src/io/LoggerProperties.class \
+	src/io/Pair.class \
+	src/io/PropertyManager.class \
+	src/io/exceptions/InOutException.class \
+	src/io/exceptions/ListIsEmptyException.class \
+	src/clientbootstrap/ClientBootstrap.class \
+	src/plog/PLog.class \
+	src/client-start \
+	src/policy )
+FFC_TAR=ffc-needed.tar
+FFC_PATH=micro-client
+
 LOG_POSITION=$(basename $0)
 
 # include argslib.sh
@@ -17,6 +49,26 @@ LOG_POSITION=$(basename $0)
 
 G_UCLIENT_NAME="uclient/get-uclient"
 G_LOGPOS=$(basename $0)
+
+function copy_needed_files_src()
+{
+	tar cfp $FFC_TAR ${FFC_NEEDED_JAVA[@]}
+	tar rfp $FFC_TAR ${FFC_NEEDED_BASH[@]}
+}
+
+function copy_needed_files_bin()
+{
+	tar cfp $FFC_TAR ${FFC_NEEDED_JAVA_BIN[@]}
+	tar rfp $FFC_TAR ${FFC_NEEDED_BASH[@]}
+}
+bt_info "copy_needed_files_src" "creo l'archivio $FFC_TAR" $G_LOGPOS
+bt_info "mkdir -p $FFC_PATH" "creo la directory $FFC_PATH" $G_LOGPOS
+bt_info "mv $FFC_TAR $FFC_PATH/" "sposto l'archivio $FFC_TAR" $G_LOGPOS
+cd $FFC_PATH
+bt_info "tar xf $FFC_TAR" "estraggo il microclient" $G_LOGPOS
+bt_info "rm -rf $FFC_TAR" "pulisco l'ambiente" $G_LOGPOS
+cd ..
+
 
 bt_info "touch $G_UCLIENT_NAME" "touch $G_UCLIENT_NAME" $G_LOGPOS
 

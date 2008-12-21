@@ -16,6 +16,7 @@ G_RMIC_FILES=(	parcmanserver.ParcmanServer \
 G_PUBLIC_HTML=$HOME/public_html/common/
 G_CODEBASE_FILES=(	parcmanserver/RemoteParcmanServer.class \
 			parcmanserver/RemoteParcmanServerUser.class \
+			parcmanserver/ClientDataUser.class \
 			loginserver/RemoteLoginServer.class \
 			remoteexceptions/*.class \
 			parcmanclient/*.class \
@@ -28,6 +29,15 @@ G_CODEBASE_FILES=(	parcmanserver/RemoteParcmanServer.class \
 			database/beans/*.class \
 			database/exceptions/*.class \
 			logserver/*.class \
+			io/IOColor.class \
+			io/Logger.class \ 
+			io/LoggerCostants.class \
+			io/LoggerLevel.class \
+			io/LoggerProperties.class \
+			io/Pair.class \ 
+			io/PropertyManager.class \
+			io/exceptions/InOutException.class \
+			io/exceptions/ListIsEmptyException.class \
 			plog/PLog.class )
 
 # include argslib.sh

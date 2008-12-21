@@ -236,7 +236,7 @@ public class ShellData extends PShellData
 	 */
 	public void writePrompt()
 	{
-		out.print(this.userName + "> ");
+		print(this.userName + "> ", COLOR_GREEN);
 	}
 
 	/**

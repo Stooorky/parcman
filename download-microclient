@@ -86,12 +86,21 @@ cd ../
 P_TAR_MC=microclient.tar
 function mk_tar()
 {
-	files=(	micro-client/clientbootstrap/ClientBootstrap.class \
-		micro-client/plog/PLog.class \
-		micro-client/policy \
-		micro-client/client-start \
-		bash/loglib.sh \
-		bash/argslib.sh )
+	files=( micro-client/src/io/IOColor.class \
+		micro-client/src/io/Logger.class \
+		micro-client/src/io/LoggerCostants.class \
+		micro-client/src/io/LoggerLevel.class \
+		micro-client/src/io/LoggerProperties.class \
+		micro-client/src/io/Pair.class \
+		micro-client/src/io/PropertyManager.class \
+		micro-client/src/io/exceptions/InOutException.class \
+		micro-client/src/io/exceptions/ListIsEmptyException.class \
+		micro-client/src/clientbootstrap/ClientBootstrap.class \
+		micro-client/src/plog/PLog.class \
+		micro-client/src/client-start \
+		micro-client/src/policy \
+		micro-client/bash/loglib.sh \
+		micro-client/bash/argslib.sh )
 	tar cfp "$1" ${files[@]}
 }
 
