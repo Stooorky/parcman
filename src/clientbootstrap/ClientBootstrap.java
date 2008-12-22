@@ -21,7 +21,7 @@ public class ClientBootstrap
 		Exception
 	{
 		PropertyManager.getInstance().register("io", "io.properties");
-		PropertyManager.getInstance().register("logger", "logger.properties");
+		PropertyManager.getInstance().register("logger", "logger-client.properties");
 		Logger logger = Logger.getLogger("client-side", PropertyManager.getInstance().get("logger"));
 		// Controllo la correttezza dei parametri da linea di comando
 		if (args.length != 2)

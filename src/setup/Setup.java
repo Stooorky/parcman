@@ -49,7 +49,7 @@ public final class Setup
 		try
 		{
 			PropertyManager.getInstance().register("io", "io.properties");
-			PropertyManager.getInstance().register("logger", "logger.properties");
+			PropertyManager.getInstance().register("logger", "logger-server.properties");
 			System.out.println(PropertyManager.getInstance().get("logger"));
 		}
 		catch (Exception e)
