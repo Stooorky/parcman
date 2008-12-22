@@ -8,7 +8,6 @@ import java.net.*;
 
 import io.PropertyManager;
 import io.Logger;
-import plog.*;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
 import pshell.*;
@@ -45,7 +44,7 @@ public class ParcmanClient
 	/**
 	 * SerialVersionUID.
 	 */
-	private static final long serialVersionUID = 4242L;
+	private static final long serialVersionUID = 42L;
 
 	/**
 	 * Vettore dei file condivisi sul server. 
@@ -128,7 +127,6 @@ public class ParcmanClient
 	{
 		if (version != this.versionServer && version != this.versionAgent)
 		{
-			PLog.debug("ParcmanClient.haveAnUpdate", "Codice di versione errato (" + version + ")");
 			logger.debug("Codice di versione errato (" + version + ")");
 			this.exit();
 			return false;
@@ -144,7 +142,6 @@ public class ParcmanClient
 			this.sharesAgent = null;
 			this.sharesAgentUpdateList = null;
 			this.versionAgent = -1;
-			PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 			logger.debug("Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 			return false;
 		}
@@ -208,7 +205,7 @@ public class ParcmanClient
 	public void reconnect() throws
 		RemoteException
 	{
-		System.out.println("\n\n----- Ricconnessione forzata in corso... -----");
+		logger.info("\n\n----- Ricconnessione forzata in corso... -----");
 
 		try
 		{
@@ -217,12 +214,11 @@ public class ParcmanClient
 		}
 		catch(RemoteException e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println("Autenticazione fallita.");
+			logger.error("Autenticazione fallita.", e);
 			System.exit(0);
 		}
 
-		System.out.println("Invio richiesta file condivisi.\n\n");
+		logger.debug("Invio richiesta file condivisi.\n\n");
 
 		try
 		{
@@ -235,12 +231,12 @@ public class ParcmanClient
 		}
 		catch(ParcmanServerRequestErrorRemoteException e)
 		{
-			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			logger.error("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
 			System.exit(0);
 		}
 		catch(RemoteException e)
 		{
-			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			logger.error("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
 			System.exit(0);
 		}
 	}
@@ -260,13 +256,12 @@ public class ParcmanClient
 		}
 		catch(RemoteException e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println("Autenticazione fallita.");
+			logger.error("Autenticazione fallita.", e);
 			System.exit(0);
 		}
 
-		System.out.println("Autenticazione in corso...");
-		System.out.println("Invio richiesta file condivisi.");
+		logger.info("Autenticazione in corso...");
+		logger.debug("Invio richiesta file condivisi.");
 
 		try
 		{
@@ -279,16 +274,16 @@ public class ParcmanClient
 		}
 		catch(ParcmanServerRequestErrorRemoteException e)
 		{
-			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			logger.error("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
 			System.exit(0);
 		}
 		catch(RemoteException e)
 		{
-			System.out.println("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			logger.debug("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
 			System.exit(0);
 		}
 
-		System.out.println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
+		logger.info("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
 
 		// Fixo e ricontrollo la directory di condivisione.
 		this.fixSharingDirectory();
@@ -322,8 +317,7 @@ public class ParcmanClient
 	 */
 	public void exit()
 	{
-		PLog.debug("ParcmanClient.exit", "Disconnessione in corso.");
-		logger.debug("Disconnessione in corso.");
+		logger.info("Disconnessione in corso.");
 
 		try
 		{
@@ -332,8 +326,7 @@ public class ParcmanClient
 		}
 		catch(RemoteException e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println("Disconnessione fallita. (force exit)");
+			logger.error("Disconnessione fallita. (force exit)", e);
 			System.exit(1);
 		}
 
@@ -392,8 +385,7 @@ public class ParcmanClient
 		}
 		catch (Exception e)
 		{
-			PLog.debug("ParcmanClient.getFile", "Impossibile trasmettere il file con id" + id);
-			logger.debug("Impossibile trasmettere il file con id" + id);
+			logger.error("Impossibile trasmettere il file con id" + id);
 			throw new ParcmanClientFileErrorRemoteException();
 		}
 	}
@@ -416,14 +408,13 @@ public class ParcmanClient
 	{
 		File mainDir = new File(this.getSharingDirectory());
 
-		PLog.debug("ParcmanClient.fixSharingDirectory", "Fix della directory dei file condivisi " + this.getSharingDirectory());
 		logger.debug("Fix della directory dei file condivisi " + this.getSharingDirectory());
 
 		mainDir.mkdirs();
 
 		if (!mainDir.isDirectory())
 		{
-			System.out.println("Attenzione. La direcotory " + this.getSharingDirectory() + " non puo' essere creata.");
+			logger.error("Attenzione. La direcotory " + this.getSharingDirectory() + " non puo' essere creata.");
 
 			this.exit();
 		}
@@ -512,7 +503,6 @@ public class ParcmanClient
 
 		if (sharesAgent != null && modifyAgent)
 		{
-			PLog.debug("ParcmanClient.scanSharingDirectory", "Aggiornata la versione Agent");
 			logger.debug("Aggiornata la versione Agent");
 			updateAgent.setVersion(this.versionAgent+1);
 			this.sharesAgentUpdateList = updateAgent;
@@ -522,7 +512,6 @@ public class ParcmanClient
 
 		if (modifyServer)
 		{
-			PLog.debug("ParcmanClient.scanSharingDirectory", "Aggiornata la versione Server");
 			logger.debug("Aggiornata la versione Server");
 			updateServer.setVersion(this.versionServer+1);
 			this.sharesServerUpdateList = updateServer;
@@ -581,15 +570,13 @@ public class ParcmanClient
 	{
 		if (version != versionServer && version != versionAgent)
 		{
-			PLog.debug("ParcmanClient.getUpdateList", "Codice di versione errato (" + version + ")");
-			logger.debug("Codice di versione errato (" + version + ")");
+			logger.error("Codice di versione errato (" + version + ")");
 			this.exit();
 			return null;
 		}
 
 		if (!ready)
 		{
-			PLog.debug("ParcmanClient.getUpdateList", "ParcmanClient non pronto");
 			logger.debug("ParcmanClient non pronto");
 			return null;
 		}
@@ -603,7 +590,6 @@ public class ParcmanClient
 				this.sharesAgentUpdateList = null;
 				UpdateList ret = this.sharesServerUpdateList;
 				this.sharesServerUpdateList = null;
-				PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 				logger.debug("Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 				return ret;
 			}
@@ -614,7 +600,6 @@ public class ParcmanClient
 				this.sharesAgent = this.sharesAgentUpdateList.getUpdatedSharesList(this.sharesAgent);
 				this.versionAgent = this.sharesAgentUpdateList.getVersion();
 				this.sharesServerUpdateList = null;
-				PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 				logger.debug("Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 				UpdateList ret = this.sharesAgentUpdateList;
 				this.sharesAgentUpdateList = null;
@@ -624,12 +609,10 @@ public class ParcmanClient
 			this.sharesAgentUpdateList = null;
 			this.sharesServerUpdateList = null;
 
-			PLog.debug("ParcmanClient.haveAnUpdate", "Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 			logger.debug("Codici di versione attuali Server:" + this.versionServer + ", Agent:" + this.versionAgent);
 		}
 		catch (UpdateSharesListErrorException e)
 		{
-			PLog.err(e, "ParcmanClient.getUpdateList", "Errore durante l'avanzamento di versione");
 			logger.error("Errore durante l'avanzamento di versione", e);
 			this.exit();
 			return null;
@@ -690,8 +673,7 @@ public class ParcmanClient
 				}
 				catch (MalformedURLException e)
 				{
-					PLog.debug("ParcmanClient.scanSharingDirectory", "URL del file " + content[i].getPath() + " errata");
-					logger.debug("URL del file " + content[i].getPath() + " errata");
+					logger.error("URL del file " + content[i].getPath() + " errata");
 					continue;
 				}
 
@@ -713,12 +695,10 @@ public class ParcmanClient
 	{
 		try
 		{
-			PLog.debug("ParcmanClient.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
 			logger.debug("E' stata ricevuta una richiesta di ping da " + this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
 		{
-			PLog.err(e, "ParcmanClient.ping", "Errore di rete, ClientHost irraggiungibile.");
 			logger.error("Errore di rete, ClientHost irraggiungibile.", e);
 		}
 	}

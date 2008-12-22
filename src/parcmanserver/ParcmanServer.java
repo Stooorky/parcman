@@ -8,7 +8,8 @@ import java.util.Vector;
 import java.rmi.*;
 import java.io.EOFException;
 
-import plog.*;
+import io.Logger;
+import io.PropertyManager;
 import remoteexceptions.*;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
@@ -30,6 +31,11 @@ public class ParcmanServer
 	extends UnicastRemoteObject
 	implements RemoteParcmanServer
 {
+	/**
+	 * Logger
+	 */
+	private Logger logger;
+
 	/**
 	 * Mappa degli utenti connessi.
 	 * Nome utente, Dati utente 
@@ -70,8 +76,9 @@ public class ParcmanServer
 		this.dbServer = dbServer;
 		this.connectUsers = new HashMap<String, ClientData>();
 		this.attempUsers = new HashMap<String, String>();
+		this.logger = Logger.getLogger("server-side", PropertyManager.getInstance().get("logger"));
 
-		PLog.debug("ParcmanServer", "Avvio ControlUsersTimerTask");
+		logger.debug("Avvio ControlUsersTimerTask");
 		Timer timer = new Timer();
 		timer.schedule(new ControlUsersTimerTask(this), 10000, 30000);
 	}
@@ -89,11 +96,11 @@ public class ParcmanServer
 		if (this.connectUsers.containsKey(username))
 		{
 			this.connectUsers.get(username).setVersion(version);
-			PLog.debug("ParcmanServer.setShareListVersionOfUser", "Modificata la versione dei file condivisi dell'utente " + username + " (Versione: " + version + ")");
+			logger.debug("Modificata la versione dei file condivisi dell'utente " + username + " (Versione: " + version + ")");
 			return;
 		}
 
-		PLog.err("ParcmanServer.setShareListVersionOfUser", "Impossibile modificare la versione dei file condivisi dell'utente " + username + " (Versione: " + version + ")");
+		logger.error("Impossibile modificare la versione dei file condivisi dell'utente " + username + " (Versione: " + version + ")");
 	}
 
 	/**
@@ -164,18 +171,18 @@ public class ParcmanServer
 				String host = user.getHost();
 				connectUsers.remove(userName);
 				this.connectAttemp(userName, host);
-				PLog.debug("ParcmanServer.forceUserToReconnect", "Riconnessione forzata di " + userName);
+				logger.debug("Riconnessione forzata di " + userName);
 				client.reconnect();
 			}
 			catch (RemoteException e)
 			{
-				PLog.err(e, "ParcmanServer.forceUserToReconnect", "Impossibile forzare la riconnessione di " + userName);
+				logger.error("Impossibile forzare la riconnessione di " + userName, e);
 				return;
 			}
 		}
 		else
 		{
-			PLog.debug("ParcmanServer.forceUserToReconnect", "Impossibile forzare la riconnessione di " + userName + ", utente non connesso");
+			logger.error("Impossibile forzare la riconnessione di " + userName + ", utente non connesso");
 			return;
 		}
 
@@ -195,7 +202,7 @@ public class ParcmanServer
 	{
 		if (this.attempUsers.containsKey(username))
 		{
-			PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " e' gia' nella lista di attemp.");
+			logger.debug("l'utente " + username + " e' gia' nella lista di attemp.");
 			throw new ParcmanServerUserIsConnectRemoteException("Esiste gia' un tentativo di connessione con questo nome utente");
 		}
 
@@ -213,20 +220,20 @@ public class ParcmanServer
 			catch (Exception e)
 			{
 				pingOk = false;
-				PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " non e' piu' raggiungibile... disconnessione effettuata.");
+				logger.error("l'utente " + username + " non e' piu' raggiungibile... disconnessione effettuata.");
 				this.connectUsers.remove(username);
 			}
 
 			if (pingOk)
 			{
-				PLog.debug("ParcmanServer.connectAttemp", "l'utente " + username + " e' gia' connesso alla rete.");
+				logger.error("l'utente " + username + " e' gia' connesso alla rete.");
 				throw new ParcmanServerUserIsConnectRemoteException("Utente gia' connesso alla rete");
 			}
 		}
 
 		// aggiungo l'host in attemp
 		attempUsers.put(username, host);
-		PLog.debug("ParcmanServer.connectAttemp", "Aggiunto l'utente " + username + " (" + host + ") nella lista di attemp.");
+		logger.info("Aggiunto l'utente " + username + " (" + host + ") nella lista di attemp.");
 	}
 
 
@@ -245,7 +252,7 @@ public class ParcmanServer
 	{
 		try
 		{
-			PLog.debug("ParcmanServer.connect", "Nuovo tentativo di connessione alla rete parcman.");
+			logger.info("Nuovo tentativo di connessione alla rete parcman.");
 
 			// Controllo che l'host sia nella lista di attemp
 			if (attempUsers.containsKey(userName))
@@ -254,11 +261,11 @@ public class ParcmanServer
 				String host = attempUsers.remove(userName);
 				if (!this.getClientHost().equals(host))
 				{
-					PLog.debug("ParcmanServer.connect", "Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
+					logger.debug("Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
 					throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo ost.");
 				}
 
-				PLog.debug("ParcmanServer.connect", "Rimosso " + userName + " (" + host + ") dalla lista di attemp.");
+				logger.debug("Rimosso " + userName + " (" + host + ") dalla lista di attemp.");
 
 				UserBean userBean;
 
@@ -268,7 +275,7 @@ public class ParcmanServer
 				}
 				catch(ParcmanDBServerUserNotExistRemoteException e)
 				{
-					PLog.debug("LoginServer.login", "Richiesta rifiutata, nome utente errato.");
+					logger.error("Richiesta rifiutata, nome utente errato.");
 					throw new ParcmanServerRequestErrorRemoteException("Errore interno del database");
 				}
 
@@ -276,17 +283,17 @@ public class ParcmanServer
 				ClientData user = new ClientData(host, userName, parcmanClientStub, userBean.getPrivilege().equals(Privilege.getAdminPrivilege()));
 				user.setVersion(0);
 				connectUsers.put(userName, user);
-				PLog.debug("ParcmanServer.connect", "Aggiunto " + userName + " (" + host + ") alla lista dei client connessi.");
+				logger.debug("Aggiunto " + userName + " (" + host + ") alla lista dei client connessi.");
 			}
 			else
 			{
-				PLog.debug("ParcmanServer.connect", "Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
+				logger.error("Tentativo di connessione non autorizzata dall'host " + this.getClientHost());
 				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
 			}
 		}
 		catch(ServerNotActiveException e)
 		{
-			PLog.err(e, "ParcmanServer.connect", "Errore di rete, ClientHost irraggiungibile.");
+			logger.error("Errore di rete, ClientHost irraggiungibile.", e);
 			throw new RemoteException();
 		}
 	}
@@ -298,9 +305,9 @@ public class ParcmanServer
 	 */
 	private void removeUserFromAttempList(String username) 
 	{
-		PLog.debug("ParcmanServer.disconnectUser", "Disconnessione di '" + username + "' in corso... ");
+		logger.debug("Disconnessione di '" + username + "' in corso... ");
 		this.attempUsers.remove(username);
-		PLog.debug("ParcmanServer.disconnectUser", "Done.");
+		logger.debug("Done.");
 	}
 
 	/**
@@ -310,10 +317,10 @@ public class ParcmanServer
 	 */
 	private void removeUserFromConnectList(String username) 
 	{
-		PLog.debug("ParcmanServer.disconnectUser", "Disconnessione di '" + username + "' in corso... ");
+		logger.debug("Disconnessione di '" + username + "' in corso... ");
 		this.connectUsers.get(username).setStub(null);
 		this.connectUsers.remove(username);
-		PLog.debug("ParcmanServer.disconnectUser", "Done.");
+		logger.debug("Done.");
 	}
 
 	/**
@@ -328,7 +335,7 @@ public class ParcmanServer
 		ParcmanServerHackWarningRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.disconnect", "Nuova richiesta di disconnessione.");
+		logger.info("Nuova richiesta di disconnessione.");
 
 		checkHacking(parcmanClientStub, userName);
 
@@ -337,11 +344,11 @@ public class ParcmanServer
 
 		try
 		{
-			PLog.debug("ParcmanServer.disconnect", "Rimosso " + userName + " (" + this.getClientHost() + ") dalla lista dei Client Connessi.");
+			logger.debug("Rimosso " + userName + " (" + this.getClientHost() + ") dalla lista dei Client Connessi.");
 		}
 		catch(ServerNotActiveException e)
 		{
-			PLog.err(e, "ParcmanServer.disconnet", "Errore di rete, ClientHost irraggiungibile.");
+			logger.error("Errore di rete, ClientHost irraggiungibile.", e);
 			throw new RemoteException();
 		}
 	}
@@ -361,28 +368,28 @@ public class ParcmanServer
 		ParcmanServerHackWarningRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.getSharings", "Richiesta la lista dei file condivisi dell'utente " + userName + ".");
+		logger.info("Richiesta la lista dei file condivisi dell'utente " + userName + ".");
 
 		checkHacking(parcmanClientStub, userName);
 		try
 		{
 			Vector<ShareBean> shares = dbServer.getSharings(userName);
-			PLog.debug("ParcmanServer.getSharings", "Spedita la lista file condivisi (" + shares.size() + " file)");
+			logger.debug("Spedita la lista file condivisi (" + shares.size() + " file)");
 			return shares;
 		}
 		catch (ParcmanDBServerErrorRemoteException e)
 		{
-			PLog.debug("ParcmanServer.getSharings", "Richiesta non esaudita, errore interno del database.");
+			logger.error("Richiesta non esaudita, errore interno del database.");
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		catch (ParcmanDBServerUserNotExistRemoteException e)
 		{
-			PLog.debug("ParcmanServer.getSharings", "Richiesta non esaudita, Nome utente non presente nel database.");
+			logger.error("Richiesta non esaudita, Nome utente non presente nel database.");
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		catch (RemoteException e)
 		{
-			PLog.debug("ParcmanServer.getSharings", "Richiesta non esaudita, errore interno del database.");
+			logger.error("Richiesta non esaudita, errore interno del database.");
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 	}
@@ -404,7 +411,7 @@ public class ParcmanServer
 		ParcmanServerHackWarningRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.getSharings", "Richiesto codice di versione della lista dei file condivisi dell'utente " + userName + ".");
+		logger.info("Richiesto codice di versione della lista dei file condivisi dell'utente " + userName + ".");
 		checkHacking(parcmanClientStub, userName);
 		return connectUsers.get(userName).getVersion();
 	}
@@ -437,23 +444,23 @@ public class ParcmanServer
 		ParcmanServerHackWarningRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.search", "Richiesta nuova ricerca " + userName + "@" + keywords);
+		logger.info("Richiesta nuova ricerca " + userName + "@" + keywords);
 		checkHacking(parcmanClientStub, userName);
 
 		try
 		{
 			Vector<SearchBean> searchList = dbServer.searchFiles(keywords);
-			PLog.debug("ParcmanServer.search", "Ricerca effettuata (" + searchList.size() + " file trovati)");
+			logger.debug("Ricerca effettuata (" + searchList.size() + " file trovati)");
 			return searchList;
 		}
 		catch (ParcmanDBServerErrorRemoteException e)
 		{
-			PLog.debug("ParcmanServer.search", "Richiesta non esaudita, errore interno del database.");
+			logger.error("Richiesta non esaudita, errore interno del database.");
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		catch (RemoteException e)
 		{
-			PLog.debug("ParcmanServer.search", "Richiesta non esaudita, errore interno del database.");
+			logger.error("Richiesta non esaudita, errore interno del database.");
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 	}
@@ -477,7 +484,7 @@ public class ParcmanServer
 			}
 			catch (Exception e)
 			{
-				PLog.debug("ParcmanServer.checkUsers", "l'utente " + name + " non e' piu' raggiungibile... disconnessione effettuata.");
+				logger.error("l'utente " + name + " non e' piu' raggiungibile... disconnessione effettuata.");
 				iter.remove();
 			}
 		}
@@ -499,7 +506,7 @@ public class ParcmanServer
 		ParcmanServerHackWarningRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.getConnectUsersList", "Richiesta la lista degli utenti connessi da parte di " + userName);
+		logger.info("Richiesta la lista degli utenti connessi da parte di " + userName);
 
 		checkHacking(parcmanClientStub, userName);
 		checkAdminPrivileges(connectUsers.get(userName));
@@ -514,7 +521,7 @@ public class ParcmanServer
 				ClientData cd = i.next();
 			 	data.addElement(new ClientDataUser(cd.getHost(), cd.getName(), cd.getVersion(), cd.isAdmin()));
 			}
-			PLog.debug("ParcmanServer.getConnectUsersList", "estratti " + data.size() + " utenti.");
+			logger.debug("Estratti " + data.size() + " utenti.");
 		} 
 		catch (Exception e)
 		{
@@ -535,7 +542,7 @@ public class ParcmanServer
 	{
 		if (!user.isAdmin())
 		{
-			PLog.debug("ParcmanServer.checkAdminPrivileges", "Impossibile esaudire la richiesta, privilegi non sufficienti");
+			logger.debug("Impossibile esaudire la richiesta, privilegi non sufficienti");
 			throw new ParcmanServerWrongPrivilegesRemoteException();
 		}
 	}
@@ -561,19 +568,19 @@ public class ParcmanServer
 
 				if (!this.getClientHost().equals(user.getHost()) || !user.getStub().equals(stub))
 				{
-					PLog.debug("ParcmanServer.checkHacking", "Richiesta non valida, host " + this.getClientHost());
+					logger.error("Richiesta non valida, host " + this.getClientHost());
 					throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
 				}
 			}
 			else
 			{
-				PLog.debug("ParcmanServer.checkHacking", "Richiesta di disconnessione non valida dall'host " + this.getClientHost());
+				logger.error("Richiesta di disconnessione non valida dall'host " + this.getClientHost());
 				throw new ParcmanServerHackWarningRemoteException("Il ParcmanServer ha rilevato un tentativo di Hacking proveniente da questo Host.");
 			}
 		}
 		catch(ServerNotActiveException e)
 		{
-			PLog.err(e, "ParcmanServer.checkHacking", "Errore di rete, ClientHost irraggiungibile.");
+			logger.error("Errore di rete, ClientHost irraggiungibile.", e);
 			throw new RemoteException();
 		}
 	}
@@ -594,7 +601,7 @@ public class ParcmanServer
 		ParcmanServerHackWarningRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.startDownload", "Richiesta di download da parte di " + userName + ".");
+		logger.info("Richiesta di download da parte di " + userName + ".");
 		checkHacking(parcmanClientStub, userName);
 
 		String owner = null;
@@ -609,26 +616,26 @@ public class ParcmanServer
 			throw new ParcmanServerRequestErrorRemoteException("I dati necessari per rintracciare il file non sono completi.");
 		}
 
-		PLog.debug("ParcmanServer.startDownload", "Dati download: owner='" + owner + "', id='" + id + "'.");
+		logger.debug("Dati download: owner='" + owner + "', id='" + id + "'.");
 
 		if (this.connectUsers.containsKey(owner))
 		{
 			RemoteParcmanClientUser rclient = this.connectUsers.get(owner).getStub();
-			PLog.debug("ParcmanServer.startDownload", "RemoteParcmanClientUser ottenuto");
+			logger.debug("RemoteParcmanClientUser ottenuto");
 			ShareBean bean = null;
 			try 
 			{
 				bean = this.dbServer.getShare(owner, id);
-				PLog.debug("ParcmanServer.startDownload", "ShareBean Ottenuto");
+				logger.debug("ShareBean Ottenuto");
 			} 
 			catch (ParcmanDBServerShareNotExistRemoteException e)
 			{
-				PLog.err(e, "ParcmanServer.startDownload", "Il file richiesto non e` esiste.");
+				logger.error("Il file richiesto non e` esiste.", e);
 				throw new ParcmanServerRequestErrorRemoteException();
 			}
 			catch (ParcmanDBServerErrorRemoteException e)
 			{
-				PLog.err(e, "ParcmanServer.startDownload", "Si e` verificato un errore interno.");
+				logger.error("Si e` verificato un errore interno.", e);
 				throw new ParcmanServerRequestErrorRemoteException();
 			}
 			DownloadData downData = new DownloadData(rclient, bean);
@@ -637,7 +644,7 @@ public class ParcmanServer
 		else
 		{
 			// TODO: Aggiungere eccezione dedicata.
-			PLog.err("ParcmanServer.startDownload", "Proprietario '" + owner + "' non connesso.");
+			logger.error("Proprietario '" + owner + "' non connesso.");
 			throw new ParcmanServerRequestErrorRemoteException("Proprietario '" + owner + "' non connesso.");
 		}
 	}
@@ -659,7 +666,7 @@ public class ParcmanServer
 		ParcmanServerRequestErrorRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.addToBlacklist", "Richiesta di inserire in blacklist '"+ userForBlacklist +"' da parte di '" + userName + "'.");
+		logger.info("Richiesta di inserire in blacklist '"+ userForBlacklist +"' da parte di '" + userName + "'.");
 
 		checkHacking(parcmanClientStub, userName);
 		checkAdminPrivileges(connectUsers.get(userName));
@@ -674,23 +681,23 @@ public class ParcmanServer
 			} 
 			catch (ParcmanDBUserInvalidStatusException e)
 			{
-				PLog.err("ParcmanServer.putInBlacklist", "Stato utente non valido");
+				logger.error("Stato utente non valido");
 			}
 			dbServer.updateUsers(); // aggiorna il database.
 		}
 		catch (ParcmanDBServerErrorRemoteException e)
 		{
-			PLog.err(e, "ParcmanServer.addToBlacklist", "Errore interno al database.");
+			logger.error("Errore interno al database.", e);
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		catch (ParcmanDBServerUserNotExistRemoteException e)
 		{
-			PLog.err(e, "ParcmanServer,addToBlacklist", "L'utente '" + userForBlacklist + "' non e` presente sul database.");
+			logger.error("L'utente '" + userForBlacklist + "' non e` presente sul database.", e);
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		//catch (RemoteException e) 
 		//{
-		//	PLog.err(e, "ParcmanServer.addToBlacklist", "Si sono verificati problemi di rete.");
+		//	logger.error("Si sono verificati problemi di rete.", e);
 		//}
 		
 		// se l'utente e` nella attemp list lo rimuovo.
@@ -710,13 +717,13 @@ public class ParcmanServer
 			catch (UnmarshalException e)
 			{
 				if (e.getCause() instanceof EOFException)
-					PLog.debug("ParcmanServer.addToBlacklist", "Client disconnesso.");
+					logger.info("Client disconnesso.");
 				else 
-					PLog.err(e, "ParcmanServer.addToBlacklist", "Probabilmente si sono verificati alcuni errori durante la disconnessione.");
+					logger.error("Probabilmente si sono verificati alcuni errori durante la disconnessione.", e);
 			}
 			catch (RemoteException e) 
 			{
-				PLog.err(e, "ParcmanServer.addToBlacklist", "Si sono verificati problemi di rete.");
+				logger.error("Si sono verificati problemi di rete.", e);
 			}
 			this.removeUserFromConnectList(userForBlacklist);
 		}
@@ -739,7 +746,7 @@ public class ParcmanServer
 		ParcmanServerRequestErrorRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.delFromBlacklist", "Richiesta di togliere dalla blacklist '"+ userForBlacklist +"' da parte di '" + userName + "'.");
+		logger.info("Richiesta di togliere dalla blacklist '"+ userForBlacklist +"' da parte di '" + userName + "'.");
 
 		checkHacking(parcmanClientStub, userName);
 		checkAdminPrivileges(connectUsers.get(userName));
@@ -754,23 +761,23 @@ public class ParcmanServer
 			} 
 			catch (ParcmanDBUserInvalidStatusException e)
 			{
-				PLog.err("ParcmanServer.delFromBlacklist", "Stato utente non valido");
+				logger.error("Stato utente non valido");
 			}
 			dbServer.updateUsers(); // aggiorna il database.
 		}
 		catch (ParcmanDBServerErrorRemoteException e)
 		{
-			PLog.err(e, "ParcmanServer.delFromBlacklist", "Errore interno al database.");
+			logger.error("Errore interno al database.", e);
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		catch (ParcmanDBServerUserNotExistRemoteException e)
 		{
-			PLog.err(e, "ParcmanServer.delFromBlacklist", "L'utente '" + userForBlacklist + "' non e` presente sul database.");
+			logger.error("L'utente '" + userForBlacklist + "' non e` presente sul database.", e);
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		//catch (RemoteException e) 
 		//{
-		//	PLog.err(e, "ParcmanServer.putInBlacklist", "Si sono verificati problemi di rete.");
+		//	logger.error("Si sono verificati problemi di rete.", e);
 		//}
 	}
 
@@ -792,7 +799,7 @@ public class ParcmanServer
 		ParcmanServerRequestErrorRemoteException,
 		RemoteException
 	{
-		PLog.debug("ParcmanServer.delFromWaiting", "Richiesta di togliere dalla lista di waiting '"+ userStillWaiting+"' da parte di '" + userName + "'.");
+		logger.info("Richiesta di togliere dalla lista di waiting '"+ userStillWaiting+"' da parte di '" + userName + "'.");
 
 		checkHacking(parcmanClientStub, userName);
 		checkAdminPrivileges(connectUsers.get(userName));
@@ -807,23 +814,23 @@ public class ParcmanServer
 			} 
 			catch (ParcmanDBUserInvalidStatusException e)
 			{
-				PLog.err("ParcmanServer.delFromWaiting", "Stato utente non valido");
+				logger.error("Stato utente non valido", e);
 			}
 			dbServer.updateUsers(); // aggiorna il database.
 		}
 		catch (ParcmanDBServerErrorRemoteException e)
 		{
-			PLog.err(e, "ParcmanServer.delFromWaiting", "Errore interno al database.");
+			logger.error("Errore interno al database.", e);
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		catch (ParcmanDBServerUserNotExistRemoteException e)
 		{
-			PLog.err(e, "ParcmanServer.delFromWaiting", "L'utente '" + userStillWaiting+ "' non e` presente sul database.");
+			logger.error("L'utente '" + userStillWaiting+ "' non e` presente sul database.", e);
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 		//catch (RemoteException e) 
 		//{
-		//	PLog.err(e, "ParcmanServer.putInBlacklist", "Si sono verificati problemi di rete.");
+		//	logger.error("Si sono verificati problemi di rete.", e);
 		//}
 	}
 
@@ -862,7 +869,7 @@ public class ParcmanServer
 		}
 		catch (ArrayIndexOutOfBoundsException e)
 		{
-			PLog.err("ParcmanServer.blacklist", "Errore durante la selezione degli utenti in blacklist.");
+			logger.error("Errore durante la selezione degli utenti in blacklist.", e);
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 
@@ -904,7 +911,7 @@ public class ParcmanServer
 		}
 		catch (ArrayIndexOutOfBoundsException e)
 		{
-			PLog.err("ParcmanServer.waitinglist", "Errore durante la selezione degli utenti in waiting.");
+			logger.error("Errore durante la selezione degli utenti in waiting.", e);
 			throw new ParcmanServerRequestErrorRemoteException();
 		}
 
@@ -921,11 +928,11 @@ public class ParcmanServer
 	{
 		try
 		{
-			PLog.debug("ParcmanServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+			logger.info("E' stata ricevuta una richiesta di ping da " + this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
 		{
-			PLog.err(e, "ParcmanServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+			logger.error("Errore di rete, ClientHost irraggiungibile.", e);
 		}
 	}
 }
