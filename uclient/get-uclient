@@ -395,7 +395,7 @@ bt_info_nl "$P_SVN_CMD co $P_SVN_COMPLETE_PATH_BASH " "download necessary bash s
 cd "$P_SVN_PATH_MC"
 
 if [ "$P_COMPILE" == "true" ]; then
-	./compile.sh
+	./compile.sh --javac="$P_JAVA_COMPILER" --command="$P_JAVA_EXEC"
 fi
 
 cd ../
