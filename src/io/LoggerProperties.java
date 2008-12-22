@@ -1,6 +1,7 @@
 package io;
 
 import java.util.Properties;
+import java.lang.reflect.Field;
 import java.io.Serializable;
 
 public class LoggerProperties implements Serializable
@@ -33,35 +34,35 @@ public class LoggerProperties implements Serializable
 
 	public static final String COLOR_LEVEL_GLOBAL		= "logger-color-level-global"; 	// string: [color name as in IOColor]
 	public static final String COLOR_LEVEL_ERROR 		= "logger-color-level-error";  	// string: [color name as in IOColor]
-	public static final String COLOR_LEVEL_WARNING 	= "logger-color-level-warning";  	// string: [color name as in IOColor]
+	public static final String COLOR_LEVEL_WARNING 		= "logger-color-level-warning";  	// string: [color name as in IOColor]
 	public static final String COLOR_LEVEL_DEBUG 		= "logger-color-level-debug";  	// string: [color name as in IOColor]
 	public static final String COLOR_LEVEL_INFO 		= "logger-color-level-info"; 		// string: [color name as in IOColor]
 	public static final String COLOR_LEVEL_LOG 		= "logger-color-level-log"; 		// string: [color name as in IOColor]
 
 	public static final String COLOR_DATE_GLOBAL		= "logger-color-date-global"; 	// string: [color name as in IOColor]
 	public static final String COLOR_DATE_ERROR 		= "logger-color-date-error";  	// string: [color name as in IOColor]
-	public static final String COLOR_DATE_WARNING 	= "logger-color-date-warning";  	// string: [color name as in IOColor]
+	public static final String COLOR_DATE_WARNING 		= "logger-color-date-warning";  	// string: [color name as in IOColor]
 	public static final String COLOR_DATE_DEBUG 		= "logger-color-date-debug";  	// string: [color name as in IOColor]
 	public static final String COLOR_DATE_INFO 		= "logger-color-date-info"; 		// string: [color name as in IOColor]
 	public static final String COLOR_DATE_LOG 		= "logger-color-date-log"; 		// string: [color name as in IOColor]
 
 	public static final String COLOR_FILE_GLOBAL		= "logger-color-file-global"; 	// string: [color name as in IOColor]
 	public static final String COLOR_FILE_ERROR 		= "logger-color-file-error";  	// string: [color name as in IOColor]
-	public static final String COLOR_FILE_WARNING 	= "logger-color-file-warning";  	// string: [color name as in IOColor]
+	public static final String COLOR_FILE_WARNING	 	= "logger-color-file-warning";  	// string: [color name as in IOColor]
 	public static final String COLOR_FILE_DEBUG 		= "logger-color-file-debug";  	// string: [color name as in IOColor]
 	public static final String COLOR_FILE_INFO 		= "logger-color-file-info"; 		// string: [color name as in IOColor]
 	public static final String COLOR_FILE_LOG 		= "logger-color-file-log"; 		// string: [color name as in IOColor]
 
 	public static final String COLOR_LINE_GLOBAL		= "logger-color-line-global"; 	// string: [color name as in IOColor]
 	public static final String COLOR_LINE_ERROR 		= "logger-color-line-error";  	// string: [color name as in IOColor]
-	public static final String COLOR_LINE_WARNING 	= "logger-color-line-warning";  	// string: [color name as in IOColor]
+	public static final String COLOR_LINE_WARNING 		= "logger-color-line-warning";  	// string: [color name as in IOColor]
 	public static final String COLOR_LINE_DEBUG 		= "logger-color-line-debug";  	// string: [color name as in IOColor]
 	public static final String COLOR_LINE_INFO 		= "logger-color-line-info"; 		// string: [color name as in IOColor]
 	public static final String COLOR_LINE_LOG 		= "logger-color-line-log"; 		// string: [color name as in IOColor]
 
 	public static final String COLOR_CLASS_GLOBAL		= "logger-color-class-global"; 	// string: [color name as in IOColor]
 	public static final String COLOR_CLASS_ERROR 		= "logger-color-class-error";  	// string: [color name as in IOColor]
-	public static final String COLOR_CLASS_WARNING 	= "logger-color-class-warning";  	// string: [color name as in IOColor]
+	public static final String COLOR_CLASS_WARNING 		= "logger-color-class-warning";  	// string: [color name as in IOColor]
 	public static final String COLOR_CLASS_DEBUG 		= "logger-color-class-debug";  	// string: [color name as in IOColor]
 	public static final String COLOR_CLASS_INFO 		= "logger-color-class-info"; 		// string: [color name as in IOColor]
 	public static final String COLOR_CLASS_LOG 		= "logger-color-class-log"; 		// string: [color name as in IOColor]
@@ -80,11 +81,11 @@ public class LoggerProperties implements Serializable
 	public static final String COLOR_MESSAGE_INFO 		= "logger-color-message-info"; 		// string: [color name as in IOColor]
 	public static final String COLOR_MESSAGE_LOG 		= "logger-color-message-log"; 		// string: [color name as in IOColor]
 
-	public static final String COLOR_EXCEPTION_GLOBAL		= "logger-color-exception-global"; 	// string: [color name as in IOColor]
-	public static final String COLOR_EXCEPTION_ERROR 		= "logger-color-exception-error";  	// string: [color name as in IOColor]
+	public static final String COLOR_EXCEPTION_GLOBAL	= "logger-color-exception-global"; 	// string: [color name as in IOColor]
+	public static final String COLOR_EXCEPTION_ERROR 	= "logger-color-exception-error";  	// string: [color name as in IOColor]
 	public static final String COLOR_EXCEPTION_WARNING 	= "logger-color-exception-warning";  	// string: [color name as in IOColor]
-	public static final String COLOR_EXCEPTION_DEBUG 		= "logger-color-exception-debug";  	// string: [color name as in IOColor]
-	public static final String COLOR_EXCEPTION_INFO 		= "logger-color-exception-info"; 		// string: [color name as in IOColor]
+	public static final String COLOR_EXCEPTION_DEBUG 	= "logger-color-exception-debug";  	// string: [color name as in IOColor]
+	public static final String COLOR_EXCEPTION_INFO 	= "logger-color-exception-info"; 		// string: [color name as in IOColor]
 	public static final String COLOR_EXCEPTION_LOG 		= "logger-color-exception-log"; 		// string: [color name as in IOColor]
 
 	public static Properties getDefaults()
@@ -162,5 +163,20 @@ public class LoggerProperties implements Serializable
 
 		return p;
 	}
+
+	public static String getPropertyName(String name)
+	{
+		try
+		{
+			Class<?> c = LoggerProperties.class;
+			Field constant = c.getDeclaredField(name);
+			return (String) constant.get(new LoggerProperties());
+		}
+		catch (Exception e)
+		{
+			return "";
+		}
+	}
+	
 
 }

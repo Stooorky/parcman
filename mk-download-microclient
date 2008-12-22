@@ -75,7 +75,7 @@ bt_info "mkdir -p $FFC_PATH" "creo la directory $FFC_PATH" $G_LOGPOS
 bt_info "mv $FFC_TAR $FFC_PATH/" "sposto l'archivio $FFC_TAR" $G_LOGPOS
 cd $FFC_PATH
 bt_info "tar xf $FFC_TAR" "estraggo il microclient" $G_LOGPOS
-bt_info "mv_common_files" "riorganizzo i files" $G_LOGPOS
+#bt_info "mv_common_files" "riorganizzo i files" $G_LOGPOS
 bt_info "rm -rf $FFC_TAR" "pulisco l'ambiente" $G_LOGPOS
 cd ..
 

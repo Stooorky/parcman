@@ -60,13 +60,17 @@ public class Logger implements Serializable
 		Logger log = null;
 		if (!map.containsKey(channel))
 		{
+			System.out.println("il channel " + channel + " non e` stato ancora registrato, REGISTRO");
 			if (prop == null)
 				prop = new LoggerProperties().getDefaults();
 			log = new Logger(prop);
 			map.put(channel, log);
 		}
 		else 
+		{
+			System.out.println("il channel " + channel + " e` gia` stato registrato, LEGGO");
 			log = map.get(channel);
+		}
 
 		return log;
 	}
@@ -167,7 +171,7 @@ public class Logger implements Serializable
 		Throwable t = new Throwable();
 		long time = System.currentTimeMillis();
 		StackTraceElement[] stack = t.getStackTrace();
-		String out = format(stack[2], time, level, msg, prop.getProperty(LoggerProperties.FORMAT_ERROR), e);
+		String out = format(stack[2], time, level, msg, prop.getProperty(LoggerProperties.getPropertyName("FORMAT_" + level)), e);
 		System.out.println(out);
 	}
 

@@ -3,11 +3,6 @@ package clientbootstrap;
 import java.net.*;
 import java.rmi.server.*;
 import java.rmi.RMISecurityManager;
-import java.util.Properties;
-
-import io.PropertyManager;
-import io.Logger;
-import plog.*;
 
 /**
  * Client Minimale per il BootStrap.
@@ -20,13 +15,9 @@ public class ClientBootstrap
 	public static void main(String[] args) throws 
 		Exception
 	{
-		PropertyManager.getInstance().register("io", "io.properties");
-		PropertyManager.getInstance().register("logger", "logger-client.properties");
-		Logger logger = Logger.getLogger("client-side", PropertyManager.getInstance().get("logger"));
 		// Controllo la correttezza dei parametri da linea di comando
 		if (args.length != 2)
 		{
-			logger.info("USE: ClientBootstrap <URL codebase> <client class>");
 			System.out.println("USE: ClientBootstrap <URL codebase> <client class>");
 			return;
 		}
@@ -44,19 +35,16 @@ public class ClientBootstrap
 		}
 		catch(MalformedURLException e)
 		{
-			logger.error("L'URL fornita non e' corretta.", e);
-			PLog.err(e, "ClientBootstrap", "L'URL fornita non e' corretta.");
+			System.out.println("L'URL fornita non e' corretta.");
 		}
 		catch(ClassNotFoundException e)
 		{
-			logger.error("Caricamento della classe remota fallito.", e);
-			PLog.err(e, "ClientBootstrap", "Caricamento della classe remota fallito.");
+			System.out.println("Caricamento della classe remota fallito.");
 		}
 		catch(Exception e)
 		{
 			// Aggiungere eventualmente la gestione delle eccezioni per Class.newInstance
-			logger.error("Impossibile eseguire il BootStrap del Client", e);
-			PLog.err(e, "ClientBootstrap", "Impossibile eseguire il BootStrap del Client");
+			System.out.println("Impossibile eseguire il BootStrap del Client");
 		}
 	}
 }

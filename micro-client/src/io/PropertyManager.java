@@ -41,6 +41,10 @@ public class PropertyManager
 			prop.load(new FileInputStream(p));
 			propertiesMap.put(keyPair, prop);
 		}
+		else
+		{
+			System.out.println("non trovo il file " + path);
+		}
 	}
 
 	public void unregister(String key)
