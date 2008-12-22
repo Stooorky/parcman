@@ -316,8 +316,10 @@ function bt_info_on_list_exec_oneshot()
 LOG_POSITION=$(basename $0)
 
 P_SVN_CMD=/usr/bin/svn
-P_JAVA_COMPILER=/usr/bin/javac
-P_JAVA_EXEC=/usr/bin/java
+#P_JAVA_COMPILER=/usr/bin/javac
+#P_JAVA_EXEC=/usr/bin/java
+P_JAVA_COMPILER=javac
+P_JAVA_EXEC=java
 P_SVN_URL="http://svn2.assembla.com/svn/parcman"
 P_SVN_PATH_MC="micro-client"
 P_SVN_PATH_BASH="bash"
