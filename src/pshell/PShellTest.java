@@ -3,6 +3,7 @@ package pshell;
 import java.lang.*;
 import java.io.*;
 import java.io.BufferedInputStream;
+import java.io.PrintWriter;
 
 import pshell.*;
 
@@ -19,7 +20,7 @@ class PShellTestClass extends PShellData
 {
     public PShellTestClass()
     {
-        super(System.out, new BufferedReader(new InputStreamReader(System.in)));
+        super(new BufferedReader(new InputStreamReader(System.in)), new PrintWriter(System.out));
     }
 
     @PShellDataAnnotation(
@@ -30,7 +31,7 @@ class PShellTestClass extends PShellData
     )
     public void commandYes (String param)
     {
-        out.println("yes"); 
+        io.println("yes"); 
     }
 
     @PShellDataAnnotation(
@@ -42,7 +43,7 @@ class PShellTestClass extends PShellData
     )
     public void commandHello (String param)
     {
-        out.println("hello " + param);
+        io.println("hello " + param);
     }
 }
 

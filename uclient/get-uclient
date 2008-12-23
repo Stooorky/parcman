@@ -404,11 +404,14 @@ function mk_tar()
 {
 	files=( micro-client/src/io/IOColor.class \
 		micro-client/src/io/Logger.class \
-		micro-client/src/io/LoggerCostants.class \
+		micro-client/src/io/LoggerConstants.class \
 		micro-client/src/io/LoggerLevel.class \
 		micro-client/src/io/LoggerProperties.class \
 		micro-client/src/io/Pair.class \
 		micro-client/src/io/PropertyManager.class \
+		micro-client/src/io/IO.class \
+		micro-client/src/io/IOConstants.class \
+		micro-client/src/io/IOProperties.class \
 		micro-client/src/io/exceptions/InOutException.class \
 		micro-client/src/io/exceptions/ListIsEmptyException.class \
 		micro-client/src/clientbootstrap/ClientBootstrap.class \

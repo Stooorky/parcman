@@ -5,6 +5,9 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import plog.*;
+import io.Logger;
+import io.IO;
+import io.PropertyManager;
 import pshell.*;
 
 
@@ -31,9 +34,14 @@ public class PShell
 	private BufferedReader in;
 
 	/**
-	* Output di Shell.
+	* input/output di Shell.
 	*/
-	private PrintStream out;
+	private IO io;
+
+	/**
+	 * Logger
+	 */
+	private Logger logger;
 
 	/**
 	* Messaggio "Comando non trovato"
@@ -48,13 +56,16 @@ public class PShell
 	public PShell(PShellData shell)
 	{
 		this.shell = shell;
-		this.out = shell.getOut();
-		this.in = shell.getIn();
+		//this.out = shell.getOut();
+		//this.in = shell.getIn();
+		this.io = shell.getIO();
 		this.commands = new Vector<CommandBean>();
+
+		this.logger = Logger.getLogger("client-side");
 
 		PShellDataAnnotation ant;
 
-		PLog.info("Pshell", "Avvio compilazione Shell...");
+		logger.info("Avvio compilazione Shell...");
 
 		boolean err = false;
 
@@ -67,7 +78,7 @@ public class PShell
 				{
 					ant = m.getAnnotation(PShellDataAnnotation.class);
 
-					PLog.debug("PShell", "Nuovo comando: " + ant.name());
+					logger.debug("Nuovo comando: " + ant.name());
 
 					CommandBean newc = new CommandBean();
 					newc.method = ant.method();
@@ -78,16 +89,16 @@ public class PShell
 				}
 				catch(NullPointerException e)
 				{
-					PLog.err(e, "PShell", "Impossibile aggiungere il comando per il metodo " + m.toString());
+					logger.error("Impossibile aggiungere il comando per il metodo " + m.toString(), e);
 					err = true;
 				}
 			}
 		}
 
 		if (!err)
-			PLog.info("Pshell", "Done.");
+			logger.info("Done.");
 		else
-			PLog.err("Pshell", "Si sono verificati errori durante la compilazione.");
+			logger.error("Si sono verificati errori durante la compilazione.");
 	}
 
 	/**
@@ -102,11 +113,11 @@ public class PShell
 			shell.writePrompt();
 			try
 			{
-				input = in.readLine();
+				input = io.readLine();
 			}
 			catch(IOException e)
 			{
-				PLog.err(e, "PShell.run", "Impossibile leggere dal BufferedReader");
+				logger.error("Impossibile leggere dal BufferedReader", e);
 			}
 
 			String[] inputsp = input.split(" ", 2);
@@ -124,7 +135,7 @@ public class PShell
 					else
 						this.runCommand(inputsp[0], "");
 				else if (!inputsp[0].equals(""))
-					out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + inputsp[0]);
+					io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + inputsp[0]);
 			}
 		}
 	}
@@ -164,20 +175,29 @@ public class PShell
 			for (int i=0; i<commands.size(); i++)
 				if (commands.get(i).name.equals(arg))
 				{
-					out.println("Help per il comando \"" + commands.get(i).name + "\"\n" +
+					io.println("Help per il comando \"" + commands.get(i).name + "\"\n" +
 							commands.get(i).help);
 					return;
 				}
 
-			out.println("Nessun help per " + arg);
+			io.println("Nessun help per " + arg);
 			return;
 		}
 
-		out.println("Elenco comandi:");
+		LinkedHashMap<String, Vector<String>> table = new LinkedHashMap<String, Vector<String>>();
+		Vector<String> cmdList = new Vector<String>();
+		Vector<String> descList = new Vector<String>();
 		for (int i=0; i<commands.size(); i++)
-		out.println("\t" + commands.get(i).name + "-> " + commands.get(i).info);
+		{
+			CommandBean c = commands.get(i);
+			descList.add(c.info);
+			cmdList.add(c.name);
+		}
+		table.put("NOME COMANDO", cmdList);
+		table.put("DESCRIZIONE", descList);
+		io.printTable(table, "Elenco comandi: ");
 
-		out.println("Per vedere l'help di un comando specifico digita \"help <nome comando>\"");
+		io.println("Per vedere l'help di un comando specifico digita \"help <nome comando>\"");
 	}
 
 	/**
@@ -200,8 +220,8 @@ public class PShell
 
 			if (method == null)
 			{
-				PLog.info("PShell.runCommand", "Comando non trovato");
-				out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+				logger.info("Comando non trovato");
+				io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 				return;
 			}
 
@@ -214,31 +234,32 @@ public class PShell
 		}
 		catch (SecurityException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (0)");
-			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			logger.error("Impossibile richiamare il metodo richiesto. (0)");
+			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (NullPointerException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (1)");
-			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			logger.error("Impossibile richiamare il metodo richiesto. (1)");
+			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (NoSuchMethodException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (2)");
-			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			logger.error("Impossibile richiamare il metodo richiesto. (2)");
+			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (InvocationTargetException e)
 		{
-			e.printStackTrace();
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (3)");
-			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			logger.error("Impossibile richiamare il metodo richiesto. (3)", e);
+			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (IllegalAccessException e)
 		{
-			PLog.debug("Shell.runCommand", "Impossibile richiamare il metodo richiesto. (4)");
-			out.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			logger.error("Impossibile richiamare il metodo richiesto. (4)");
+			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 	}
+
+
 }
 
 /**

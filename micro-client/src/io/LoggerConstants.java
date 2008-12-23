@@ -2,7 +2,7 @@ package io;
 
 import java.io.Serializable;
 
-public class LoggerCostants implements Serializable
+public class LoggerConstants implements Serializable
 {
 	private static final long serialVersionUID = 42L;
 

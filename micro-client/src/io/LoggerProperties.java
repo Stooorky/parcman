@@ -98,12 +98,12 @@ public class LoggerProperties implements Serializable
 		p.setProperty(LoggerProperties.FILE_ENABLE, "false");
 		p.setProperty(LoggerProperties.FILE_OUTPUT, "");
 		p.setProperty(LoggerProperties.DATE_FORMAT, "dd/MM/yyyy, HH:mm:ss:SSS");
-		p.setProperty(LoggerProperties.FORMAT_GLOBAL, "[%T] %D - %F:%L - %C.%M: ");
-		p.setProperty(LoggerProperties.FORMAT_ERROR, "[%T] %D - %F:%L - %C.%M: ");
-		p.setProperty(LoggerProperties.FORMAT_WARNING, "[%T] %D - %F:%L - %C.%M: ");
-		p.setProperty(LoggerProperties.FORMAT_DEBUG, "[%T] %D - %F:%L - %C.%M: ");
-		p.setProperty(LoggerProperties.FORMAT_INFO, "[%T] %D - %F:%L - %C.%M: ");
-		p.setProperty(LoggerProperties.FORMAT_LOG, "[%T] %D - %F:%L - %C.%M: ");
+		p.setProperty(LoggerProperties.FORMAT_GLOBAL, "[%T] %D - %F:%L - %C.%M: %$ %E");
+		p.setProperty(LoggerProperties.FORMAT_ERROR, "[%T] %D - %F:%L - %C.%M: %S %E");
+		p.setProperty(LoggerProperties.FORMAT_WARNING, "[%T] %D - %F:%L - %C.%M: %S %E");
+		p.setProperty(LoggerProperties.FORMAT_DEBUG, "[%T] %D - %F:%L - %C.%M: %S %E");
+		p.setProperty(LoggerProperties.FORMAT_INFO, "[%T] %D - %F:%L - %C.%M: %S %E");
+		p.setProperty(LoggerProperties.FORMAT_LOG, "[%T] %D - %F:%L - %C.%M: %S %E");
 
 		p.setProperty(LoggerProperties.COLOR_LEVEL_GLOBAL, "NOCOLOR");		
 		p.setProperty(LoggerProperties.COLOR_LEVEL_ERROR, "LIGHT_RED"); 		

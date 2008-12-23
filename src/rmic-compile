@@ -31,7 +31,7 @@ G_CODEBASE_FILES=(	parcmanserver/RemoteParcmanServer.class \
 			logserver/*.class \
 			io/IOColor.class \
 			io/Logger.class \ 
-			io/LoggerCostants.class \
+			io/LoggerConstants.class \
 			io/LoggerLevel.class \
 			io/LoggerProperties.class \
 			io/Pair.class \ 

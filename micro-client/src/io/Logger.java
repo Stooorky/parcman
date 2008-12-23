@@ -123,7 +123,7 @@ public class Logger implements Serializable
 	
 	protected void setActiveLevels(String level)
 	{
-		levels = new int[LoggerCostants.LEVELS];
+		levels = new int[LoggerConstants.LEVELS];
 		Arrays.fill(levels, 0);
 		int ll = Integer.parseInt(level);
 		for (LoggerLevel l : LoggerLevel.values())
@@ -180,102 +180,102 @@ public class Logger implements Serializable
 
 	public void error(String msg)
 	{
-		makeLog(LoggerCostants.LEVEL_ERROR, msg, null);
+		makeLog(LoggerConstants.LEVEL_ERROR, msg, null);
 	}
 
 	public void warning(String msg)
 	{
-		makeLog(LoggerCostants.LEVEL_WARNING, msg, null);
+		makeLog(LoggerConstants.LEVEL_WARNING, msg, null);
 	}
 
 	public void debug(String msg)
 	{
-		makeLog(LoggerCostants.LEVEL_DEBUG, msg, null);
+		makeLog(LoggerConstants.LEVEL_DEBUG, msg, null);
 	}
 
 	public void info(String msg)
 	{
-		makeLog(LoggerCostants.LEVEL_INFO, msg, null);
+		makeLog(LoggerConstants.LEVEL_INFO, msg, null);
 	}
 
 	public void log(String msg)
 	{
-		makeLog(LoggerCostants.LEVEL_LOG, msg, null);
+		makeLog(LoggerConstants.LEVEL_LOG, msg, null);
 	}
 
 	public void error(String msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_ERROR, msg, e);
+		makeLog(LoggerConstants.LEVEL_ERROR, msg, e);
 	}
 
 	public void warning(String msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_WARNING, msg, e);
+		makeLog(LoggerConstants.LEVEL_WARNING, msg, e);
 	}
 
 	public void debug(String msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_DEBUG, msg, e);
+		makeLog(LoggerConstants.LEVEL_DEBUG, msg, e);
 	}
 
 	public void info(String msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_INFO, msg, e);
+		makeLog(LoggerConstants.LEVEL_INFO, msg, e);
 	}
 
 	public void log(String msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_LOG, msg, e);
+		makeLog(LoggerConstants.LEVEL_LOG, msg, e);
 	}
 
 	public void error(String[] msg)
 	{
-		makeLog(LoggerCostants.LEVEL_ERROR, msg, null);
+		makeLog(LoggerConstants.LEVEL_ERROR, msg, null);
 	}
 
 	public void warning(String[] msg)
 	{
-		makeLog(LoggerCostants.LEVEL_WARNING, msg, null);
+		makeLog(LoggerConstants.LEVEL_WARNING, msg, null);
 	}
 
 	public void debug(String[] msg)
 	{
-		makeLog(LoggerCostants.LEVEL_DEBUG, msg, null);
+		makeLog(LoggerConstants.LEVEL_DEBUG, msg, null);
 	}
 
 	public void info(String[] msg)
 	{
-		makeLog(LoggerCostants.LEVEL_INFO, msg, null);
+		makeLog(LoggerConstants.LEVEL_INFO, msg, null);
 	}
 
 	public void log(String[] msg)
 	{
-		makeLog(LoggerCostants.LEVEL_LOG, msg, null);
+		makeLog(LoggerConstants.LEVEL_LOG, msg, null);
 	}
 
 	public void error(String[] msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_ERROR, msg, e);
+		makeLog(LoggerConstants.LEVEL_ERROR, msg, e);
 	}
 
 	public void warning(String[] msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_WARNING, msg, e);
+		makeLog(LoggerConstants.LEVEL_WARNING, msg, e);
 	}
 
 	public void debug(String[] msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_DEBUG, msg, e);
+		makeLog(LoggerConstants.LEVEL_DEBUG, msg, e);
 	}
 
 	public void info(String[] msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_INFO, msg, e);
+		makeLog(LoggerConstants.LEVEL_INFO, msg, e);
 	}
 
 	public void log(String[] msg, Throwable e)
 	{
-		makeLog(LoggerCostants.LEVEL_LOG, msg, e);
+		makeLog(LoggerConstants.LEVEL_LOG, msg, e);
 	}
 
 	public static void main(String[] args) throws 
@@ -284,18 +284,18 @@ public class Logger implements Serializable
 		PropertyManager.getInstance().register("logger", "logger.properties");
 		Logger log = Logger.getLogger("default", PropertyManager.getInstance().get("logger"));
 
-		log.error(LoggerCostants.LEVEL_ERROR);
-		log.warning(LoggerCostants.LEVEL_WARNING);
-		log.debug(LoggerCostants.LEVEL_DEBUG);
-		log.info(LoggerCostants.LEVEL_INFO);
-		log.log(LoggerCostants.LEVEL_LOG);
+		log.error(LoggerConstants.LEVEL_ERROR);
+		log.warning(LoggerConstants.LEVEL_WARNING);
+		log.debug(LoggerConstants.LEVEL_DEBUG);
+		log.info(LoggerConstants.LEVEL_INFO);
+		log.log(LoggerConstants.LEVEL_LOG);
 
 		Throwable e = new Exception();
-		log.error(LoggerCostants.LEVEL_ERROR, e);
-		log.warning(LoggerCostants.LEVEL_WARNING, e);
-		log.debug(LoggerCostants.LEVEL_DEBUG, e);
-		log.info(LoggerCostants.LEVEL_INFO, e);
-		log.log(LoggerCostants.LEVEL_LOG, e);
+		log.error(LoggerConstants.LEVEL_ERROR, e);
+		log.warning(LoggerConstants.LEVEL_WARNING, e);
+		log.debug(LoggerConstants.LEVEL_DEBUG, e);
+		log.info(LoggerConstants.LEVEL_INFO, e);
+		log.log(LoggerConstants.LEVEL_LOG, e);
 
 	}
 }

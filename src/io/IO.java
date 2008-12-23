@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.Iterator;
 import java.io.IOException;
 import java.util.regex.PatternSyntaxException;
-import prova.exceptions.*;
+import io.exceptions.*;
 import java.io.Serializable;
 
 public class IO implements Serializable
@@ -74,7 +74,7 @@ public class IO implements Serializable
 		return in.readLine();
 	}
 
-	public void printList(	Vector<String> list, String caption, String type) throws
+	public void printList(Vector<String> list, String caption, String type) throws
 		InOutException 
 	{
 		try

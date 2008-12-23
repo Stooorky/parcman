@@ -14,22 +14,28 @@ FFC_NEEDED_COMMON=( src/io.properties \
 	src/policy )
 FFC_NEEDED_JAVA=( src/io/IOColor.java \
 	src/io/Logger.java \
-	src/io/LoggerCostants.java \
+	src/io/LoggerConstants.java \
 	src/io/LoggerLevel.java \
 	src/io/LoggerProperties.java \
 	src/io/Pair.java \
 	src/io/PropertyManager.java \
+	src/io/IO.java \
+	src/io/IOProperties.java \
+	src/io/IOConstants.java \
 	src/io/exceptions/InOutException.java \
 	src/io/exceptions/ListIsEmptyException.java \
 	src/clientbootstrap/ClientBootstrap.java \
 	src/plog/PLog.java )
 FFC_NEEDED_JAVA_BIN=( src/io/IOColor.class \
 	src/io/Logger.class \
-	src/io/LoggerCostants.class \
+	src/io/LoggerConstants.class \
 	src/io/LoggerLevel.class \
 	src/io/LoggerProperties.class \
 	src/io/Pair.class \
 	src/io/PropertyManager.class \
+	src/io/IO.java \
+	src/io/IOProperties.java \
+	src/io/IOConstants.java \
 	src/io/exceptions/InOutException.class \
 	src/io/exceptions/ListIsEmptyException.class \
 	src/clientbootstrap/ClientBootstrap.class \

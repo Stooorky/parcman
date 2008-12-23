@@ -3,14 +3,15 @@
 sourcefile=(Enum.java \
 		IO.java \
 		IOColor.java \
-		IOCostants.java \
+		IOConstants.java \
 		IOProperties.java \
 		Logger.java \
-		LoggerCostants.java \
+		LoggerConstants.java \
 		LoggerLevel.java \ 
 		LoggerProperties.java \ 
 		Pair.java \
 		PropertyManager.java \
+		LoggerTest.java \
 		)
 		#exceptions/InOutException.java \
 		#exceptions/ListIsEmptyException.java \

@@ -1,11 +1,13 @@
 package parcmanclient;
 
 import java.util.Vector;
-import java.util.*;
+import java.util.LinkedHashMap;
 import java.lang.*;
 import java.io.*;
 import java.rmi.*;
 
+import io.IOColor;
+import io.IO;
 import pshell.*;
 import plog.*;
 import remoteexceptions.*;
@@ -17,6 +19,11 @@ import database.beans.UserBean;
 
 public class ShellDataAdmin extends ShellData
 {
+	/**
+	 * Utility di input/output
+	 */
+	private IO io;
+
 	/**
 	 * Stub del ParcmanServer.
 	 */
@@ -44,6 +51,7 @@ public class ShellDataAdmin extends ShellData
 			String userName)
 	{
 		super(parcmanServerStub, parcmanClient, userName);
+		this.io = getIO();
 	}
 
 	/**
@@ -61,22 +69,21 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			print("Richiesta inviata... ", COLOR_LIGHT_BLUE);
+			io.print("Richiesta inviata... ", IOColor.LIGHT_BLUE);
 			Vector<ClientDataUser> result = parcmanServerStub.getConnectUsersList(this.parcmanClient.getStub(), this.userName);
-			println("done.", COLOR_LIGHT_GREEN);
+			io.println("done.", IOColor.LIGHT_GREEN);
 
 			if (result == null || result.size() == 0)
 			{
-				println("Nessun utente connesso.", COLOR_LIGHT_BLUE);
+				io.println("Nessun utente connesso.", IOColor.LIGHT_BLUE);
 				return;
 			}
 			else
 			{
+				LinkedHashMap<String, Vector<String>> table = new LinkedHashMap<String, Vector<String>>();
 				Vector<String> names = new Vector<String>();
 				Vector<String> isAdmin = new Vector<String>();
 				Vector<String> hosts= new Vector<String>();
-				String[] headers = new String[] { "NOME UTENTE", "IS ADMIN", "ADDRESS" };
-				String caption = "Utenti Connessi";
 
  				for (int i=0; i<result.size(); i++)
 				{
@@ -85,17 +92,17 @@ public class ShellDataAdmin extends ShellData
 					isAdmin.add(Boolean.toString(data.isAdmin()));
 					hosts.add(data.getHost());
 				}
-				Vector<Vector<String>> table = new Vector<Vector<String>>();
-				table.add(names);
-				table.add(isAdmin);
-				table.add(hosts);
 
-				writeTable(table, headers, caption, 3, result.size());
+				table.put("NOME UTENTE", names);
+				table.put("IS ADMIN", isAdmin);
+				table.put("ADDRESS", hosts);
+
+				io.printTable(table, "Utenti connessi");
 			}
 		}
 		catch (RemoteException e)
 		{
-			println("Fallito. Si sono verificati degli errori di rete. Ritenta.", COLOR_LIGHT_RED);
+			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.", IOColor.LIGHT_RED);
 			return;
 		}
 	}
@@ -114,13 +121,13 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			out.print("Inviata la richiesta...");
+			io.print("Inviata la richiesta...");
 			parcmanServerStub.setAgentSystemStatus(parcmanClient.getStub(), userName, true);
-			out.println("Sistema degli agenti remoti attivato.");
+			io.println("Sistema degli agenti remoti attivato.");
 		}
 		catch (RemoteException e)
 		{
-			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 		}
 	}
 
@@ -138,13 +145,13 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			out.print("Inviata la richiesta...");
+			io.print("Inviata la richiesta...");
 			parcmanServerStub.setAgentSystemStatus(parcmanClient.getStub(), userName, false);
-			out.println("Sistema degli agenti remoti disattivato.");
+			io.println("Sistema degli agenti remoti disattivato.");
 		}
 		catch (RemoteException e)
 		{
-			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 		}
 	}
 
@@ -162,13 +169,13 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			out.print("Inviata la richiesta...");
+			io.print("Inviata la richiesta...");
 			parcmanServerStub.addToBlacklist(parcmanClient.getStub(), userName, param);
-			out.println("Aggiunto utente '" + param + "' alla blacklist.");
+			io.println("Aggiunto utente '" + param + "' alla blacklist.");
 		}
 		catch (RemoteException e)
 		{
-			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 		}
 	}
 
@@ -186,13 +193,13 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			out.println("Inviata la richiesta...");
+			io.println("Inviata la richiesta...");
 			parcmanServerStub.delFromBlacklist(parcmanClient.getStub(), userName, param);
-			out.println("Rimosso utente '" + param + "' alla blacklist.");
+			io.println("Rimosso utente '" + param + "' alla blacklist.");
 		}
 		catch (RemoteException e)
 		{
-			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 		}
 	}
 
@@ -210,38 +217,37 @@ public class ShellDataAdmin extends ShellData
  	{
  		try
  		{
- 			out.print("Inviata la richiesta...");
+ 			io.print("Inviata la richiesta...");
  			Vector<UserBean> result = parcmanServerStub.blacklist(parcmanClient.getStub(), userName);
- 			out.println("Done.");
+ 			io.println("Done.");
  
 
  			if (result == null || result.size() == 0)
  			{
- 				out.println("Nessun utente in blacklist.");
+ 				io.println("Nessun utente in blacklist.");
  			}
  			else 
  			{
-				String caption = "Blacklist";
+				LinkedHashMap<String, Vector<String>> table = new LinkedHashMap<String, Vector<String>>();
 				Vector<String> names = new Vector<String>();
 				Vector<String> privileges = new Vector<String>();
-				String[] headers = new String[] { "NOME UTENTE", "PRIVILEGI" };
 
  				for (int i=0; i<result.size(); i++)
 				{
 					UserBean bean = result.get(i);
-					names.add(bean.getName());
-					privileges.add(bean.getPrivilege());
+					names.add(bean.getPrivilege());
+					privileges.add(bean.getName());
 				}
 
-				Vector<Vector<String>> table = new Vector<Vector<String>>();
-				table.add(names);
-				table.add(privileges);
-				writeTable(table, headers, caption, 2, result.size());
+				table.put("NOME UTENTE", names);
+				table.put("PRIVILEGI", privileges);
+
+				io.printTable(table, "Waiting list");
  			}
  		}
  		catch (RemoteException e)
  		{
- 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+ 			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
  		}
  	}
  
@@ -259,39 +265,37 @@ public class ShellDataAdmin extends ShellData
  	{
  		try
  		{
- 			out.print("Inviata la richiesta...");
+ 			io.print("Inviata la richiesta...");
  			Vector<UserBean> result = parcmanServerStub.waitinglist(parcmanClient.getStub(), userName);
- 			out.println("Done.");
+ 			io.println("Done.");
  
 
  			if (result == null || result.size() == 0)
  			{
- 				out.println("Nessun utente in waiting list.");
+ 				io.println("Nessun utente in waiting list.");
  			}
  			else 
  			{
+				LinkedHashMap<String, Vector<String>> table = new LinkedHashMap<String, Vector<String>>();
 				Vector<String> names = new Vector<String>();
 				Vector<String> privileges = new Vector<String>();
-				String[] headers = new String[]{ "NOME UTENTE", "PRIVILEGI" };
-
-				String caption = "Waiting list";
 
  				for (int i=0; i<result.size(); i++)
 				{
 					UserBean bean = result.get(i);
-					names.add(bean.getName());
-					privileges.add(bean.getPrivilege());
+					names.add(bean.getPrivilege());
+					privileges.add(bean.getName());
 				}
 
-				Vector<Vector<String>> table = new Vector<Vector<String>>();
-				table.add(names);
-				table.add(privileges);
-				writeTable(table, headers, caption,  2, result.size());
+				table.put("NOME UTENTE", names);
+				table.put("PRIVILEGI", privileges);
+
+				io.printTable(table, "Waiting list");
  			}
  		}
  		catch (RemoteException e)
  		{
- 			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+ 			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
  		}
  	}
 
@@ -309,13 +313,13 @@ public class ShellDataAdmin extends ShellData
  	{
 		try
 		{
-			out.println("Inviata la richiesta...");
+			io.println("Inviata la richiesta...");
 			parcmanServerStub.delFromWaiting(parcmanClient.getStub(), userName, param);
-			out.println("Rimosso utente '" + param + "' dalla lista di waiting.");
+			io.println("Rimosso utente '" + param + "' dalla lista di waiting.");
 		}
 		catch (RemoteException e)
 		{
-			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 		}
  	}
 }

@@ -3,6 +3,7 @@ package parcmanclient;
 import java.util.*;
 import java.lang.*;
 import java.io.*;
+import java.io.PrintWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
@@ -17,6 +18,8 @@ import java.lang.System;
 import pshell.*;
 import io.Logger;
 import io.PropertyManager;
+import io.IO;
+import io.IOColor;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
 import database.beans.ShareBean;
@@ -50,7 +53,7 @@ public class ShellData extends PShellData
 			ParcmanClient parcmanClient,
 			String userName)
 	{
-		super(System.out, new BufferedReader(new InputStreamReader(System.in)));
+		super(new BufferedReader(new InputStreamReader(System.in)), new PrintWriter(System.out));
 
 		this.parcmanServerStub = parcmanServerStub;
 		this.parcmanClient = parcmanClient;
@@ -73,11 +76,11 @@ public class ShellData extends PShellData
 		try
 		{
 			parcmanServerStub.ping();
-			out.println("Il MainServer della rete Parcman ha risposto con successo");
+			io.println("Il MainServer della rete Parcman ha risposto con successo");
 		}
 		catch (RemoteException e)
 		{
-			out.println("Impossibile eseguire il ping al MainServer");
+			io.println("Impossibile eseguire il ping al MainServer", IOColor.RED);
 			return;
 		}
 	}
@@ -117,10 +120,10 @@ public class ShellData extends PShellData
 		try
 		{
 			if (shares.size()==0)
-				out.println("Nessun file condiviso.");
+				io.println("Nessun file condiviso.");
 			else
 			{
-				out.println("Lista dei file condivisi:");
+				io.println("Lista dei file condivisi:");
 				for (int i=0; i<shares.size(); i++)
 					this.writeShare(i+1, shares.elementAt(i));
 			}
@@ -146,24 +149,24 @@ public class ShellData extends PShellData
 	{
 		try
 		{
-			out.print("Inviata la richiesta di ricerca, attendere...");
+			io.print("Inviata la richiesta di ricerca, attendere... ");
 			Vector<SearchBean> result = parcmanServerStub.search(this.parcmanClient.getStub(), this.userName, param);
-			out.println("done.");
+			io.println("done.");
 
 			if (result == null || result.size() == 0)
 			{
-				out.println("La ricerca non ha prodotto risultati.");
+				io.println("La ricerca non ha prodotto risultati.");
 				return;
 			}
 
-			out.println("Risultato della ricerca:");
+			io.println("Risultato della ricerca:");
 			for (int i=0; i<result.size(); i++)
 				this.writeSearch(result.elementAt(i));
 
 		}
 		catch (RemoteException e)
 		{
-			out.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.", IOColor.RED);
 			return;
 		}
 	}
@@ -181,9 +184,9 @@ public class ShellData extends PShellData
 			)
 	public void commandScanCollection (String param)
 	{
-		out.println("Avvio la scansione della Directory dei file condivisi...");
+		io.print("Avvio la scansione della Directory dei file condivisi... ");
 		this.parcmanClient.scanSharingDirectory();
-		out.print("Done.");
+		io.println("Done.");
 	}
 
 	/**
@@ -194,7 +197,7 @@ public class ShellData extends PShellData
 	 */
 	private void writeShare(int index, ShareBean share)
 	{
-		out.println(index + ") " + share.getName() +
+		io.println(index + ") " + share.getName() +
 				"\n\tID: " + share.getId() +
 				"\n\tURL: " + share.getUrl() +
 				"\n\tProprietario: " + share.getOwner() +
@@ -209,7 +212,7 @@ public class ShellData extends PShellData
 	 */
 	private void writeSearch(SearchBean search)
 	{
-		out.println("ID:" + search.getId() +
+		io.println("ID:" + search.getId() +
 				" Proprietario: " + search.getOwner() +
 				"\n\tNome: " + search.getName() +
 				" Keywords: " + search.getKeywordsToString());
@@ -229,7 +232,7 @@ public class ShellData extends PShellData
 	public void commandScanInfo (String param)
 	{
 		Date date = new Date(this.parcmanClient.getScanDirectoryTimerTask().scheduledExecutionTime());
-		out.println("Ultima scansione effettuata: " + date.toString());
+		io.println("Ultima scansione effettuata: " + date.toString());
 	}
 
 	/**
@@ -237,7 +240,7 @@ public class ShellData extends PShellData
 	 */
 	public void writePrompt()
 	{
-		print(this.userName + "> ", COLOR_GREEN);
+		io.print(this.userName + ">> ", IOColor.GREEN);
 	}
 
 	/**
@@ -260,15 +263,15 @@ public class ShellData extends PShellData
 		}
 		catch (Exception e)
 		{
-			out.println("Fallito. '" + param + "' non e` valido.");
+			io.println("Fallito. '" + param + "' non e` valido.", IOColor.RED);
 			return; 
 		}
 
-		out.println("Inviata la richiesta di download, attendere...");
-		out.print("Download of file with ID '" + params[1] + "' from user '" + params[0] + "' in corso.");
+		io.println("Inviata la richiesta di download, attendere...");
+		io.print("Download of file with ID '" + params[1] + "' from user '" + params[0] + "' in corso.");
 
 		Timer timer = new Timer();
-		timer.schedule(new DownloadTimerTask(out, this.parcmanServerStub, this.parcmanClient, this.userName, params), 0);
+		timer.schedule(new DownloadTimerTask(io, this.parcmanServerStub, this.parcmanClient, this.userName, params), 0);
 	}
 
 }
@@ -279,11 +282,11 @@ class DownloadTimerTask extends TimerTask
 	private ParcmanClient client;
 	private String username;
 	private String[] data;
-	private PrintStream shellOutput;
+	private IO io;
 
-	public DownloadTimerTask(PrintStream shellOutput, RemoteParcmanServerUser server, ParcmanClient client, String username, String[] data)
+	public DownloadTimerTask(IO io, RemoteParcmanServerUser server, ParcmanClient client, String username, String[] data)
 	{
-		this.shellOutput = shellOutput;
+		this.io= io;
 		this.server = server;
 		this.client = client;
 		this.username = username;
@@ -295,28 +298,28 @@ class DownloadTimerTask extends TimerTask
 		try 
 		{
 			DownloadData downData = server.startDownload(client.getStub(), username, data);
-			shellOutput.println("Richiesta di download inviata al server...");
+			io.println("Richiesta di download inviata al server...");
 			RemoteParcmanClientUser remoteClient = downData.getStub();
 			byte[] bytes = remoteClient.getFile(downData.getShareBean().getId());
 			saveFile(downData.getShareBean().getName(), client.getSharingDirectory(), bytes);
-			shellOutput.println("Download terminato con successo.");
+			io.println("Download terminato con successo.");
 
 		}
 		catch (ParcmanServerRequestErrorRemoteException e)
 		{
-			shellOutput.println("Download fallito. " + e.getCause().getMessage());
+			io.println("Download fallito. " + e.getCause().getMessage(), IOColor.RED);
 		}
 		catch (RemoteException e)
 		{
-			shellOutput.println("Download fallito. Si sono verificati degli errori di rete. Ritenta.");
+			io.println("Download fallito. Si sono verificati degli errori di rete. Ritenta.", IOColor.RED);
 		}
 		catch (FileNotFoundException e)
 		{
-			shellOutput.println("Download fallito. Non e` stato possibile creare il file. Constrollare di avere i persmessi necessari sulla propria cartella di condivisione.");
+			io.println("Download fallito. Non e` stato possibile creare il file. Constrollare di avere i persmessi necessari sulla propria cartella di condivisione.", IOColor.RED);
 		}
 		catch (IOException e)
 		{
-			shellOutput.println("Download fallito. Si e` verificato un errore durante la fase di scrittura su disco.");
+			io.println("Download fallito. Si e` verificato un errore durante la fase di scrittura su disco.", IOColor.RED);
 		}
 	}
 
