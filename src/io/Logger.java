@@ -104,10 +104,13 @@ public class Logger implements Serializable
 				sbst.append("\n\t" + ename + "\n");
 				for (int i=0; i<st.length; i++)
 				{
-					sbst.append("\t\t" + st[i]);
+					sbst.append("\t\t" + st[i] + "\n");
 				}
 				sbst.append("\n");
+				System.out.println("fine string buffer");
+				System.out.println(sbst.toString());
 				m.appendReplacement(sb, getColor(level, "EXCEPTION") + sbst.toString() + IOColor.NOCOLOR);
+				System.out.println("append finito");
 			}
 			else 
 			{
