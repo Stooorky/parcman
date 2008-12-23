@@ -57,6 +57,7 @@ done
 
 function compile()
 {
+	echo "$P_JAVAC $P_JAVAC_OPTS"
 	bt_info_on_list_exec "$(find . | grep .java | grep -v .svn)" "$P_JAVAC $P_JAVAC_OPTS" "compile micro-client" "compile" $LOG_POSITION 
 }
 
