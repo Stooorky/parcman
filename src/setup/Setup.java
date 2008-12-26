@@ -48,7 +48,7 @@ public final class Setup
 		// Inizializzo le properties
 		try
 		{
-			PropertyManager.getInstance().register("io", "io.properties");
+			PropertyManager.getInstance().register("io", "io-server.properties");
 			PropertyManager.getInstance().register("logger", "logger-server.properties");
 			System.out.println(PropertyManager.getInstance().get("logger"));
 		}

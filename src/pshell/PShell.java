@@ -8,6 +8,8 @@ import plog.*;
 import io.Logger;
 import io.IO;
 import io.PropertyManager;
+import io.IOProperties;
+import io.IOColor;
 import pshell.*;
 
 
@@ -135,7 +137,7 @@ public class PShell
 					else
 						this.runCommand(inputsp[0], "");
 				else if (!inputsp[0].equals(""))
-					io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + inputsp[0]);
+					error(MESSAGE_COMMAND_NOT_FOUND + ": " + inputsp[0]);
 			}
 		}
 	}
@@ -175,12 +177,13 @@ public class PShell
 			for (int i=0; i<commands.size(); i++)
 				if (commands.get(i).name.equals(arg))
 				{
-					io.println("Help per il comando \"" + commands.get(i).name + "\"\n" +
-							commands.get(i).help);
+					println("Help per il comando \"" 
+						+ commands.get(i).name + "\"\n" 
+						+ commands.get(i).help);
 					return;
 				}
 
-			io.println("Nessun help per " + arg);
+			println("Nessun help per " + arg);
 			return;
 		}
 
@@ -197,7 +200,7 @@ public class PShell
 		table.put("DESCRIZIONE", descList);
 		io.printTable(table, "Elenco comandi: ");
 
-		io.println("Per vedere l'help di un comando specifico digita \"help <nome comando>\"");
+		println("Per vedere l'help di un comando specifico digita \"help <nome comando>\"");
 	}
 
 	/**
@@ -221,7 +224,7 @@ public class PShell
 			if (method == null)
 			{
 				logger.info("Comando non trovato");
-				io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+				error(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 				return;
 			}
 
@@ -235,28 +238,54 @@ public class PShell
 		catch (SecurityException e)
 		{
 			logger.error("Impossibile richiamare il metodo richiesto. (0)");
-			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			error(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (NullPointerException e)
 		{
 			logger.error("Impossibile richiamare il metodo richiesto. (1)");
-			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			error(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (NoSuchMethodException e)
 		{
 			logger.error("Impossibile richiamare il metodo richiesto. (2)");
-			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			error(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (InvocationTargetException e)
 		{
 			logger.error("Impossibile richiamare il metodo richiesto. (3)", e);
-			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			error(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
 		catch (IllegalAccessException e)
 		{
 			logger.error("Impossibile richiamare il metodo richiesto. (4)");
-			io.println(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
+			error(MESSAGE_COMMAND_NOT_FOUND + ": " + c);
 		}
+	}
+
+	/**
+	 * Wrapper per il metodo print
+	 */
+	protected void print(String msg)
+	{
+		io.print(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
+	}
+
+	/** 
+	 * Wrapper per il metodo println
+	 */
+	protected void println(String msg)
+	{
+		io.println(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
+	}
+
+	/**
+	 * Wrapper per stampare un errore.
+	 */
+	protected void error(String msg)
+	{
+		io.println(	PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) 
+				+ msg, 
+				IOColor.getColor(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_COLOR_ERROR)));
 	}
 
 

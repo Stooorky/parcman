@@ -6,6 +6,8 @@ import java.rmi.server.*;
 
 import io.Logger;
 import io.PropertyManager;
+import io.IO;
+import io.IOProperties;
 import loginserver.RemoteLoginServer;
 import parcmanclient.RemoteParcmanClient;
 import remoteexceptions.*;
@@ -24,6 +26,11 @@ public class RemoteClientUser
 	private static final long serialVersionUID = 42L;
 
 	/**
+	 * Utility input/output
+	 */
+	private IO io;
+
+	/**
 	 * Logger 
 	 */
 	private Logger logger;
@@ -35,46 +42,48 @@ public class RemoteClientUser
 	{
 		try 
 		{
-			PropertyManager.getInstance().register("io", "io.properties");
+			PropertyManager.getInstance().register("io", "io-client.properties");
 			PropertyManager.getInstance().register("logger", "logger-client.properties");
 		}
 		catch (Exception e)
 		{}
 
+		io = new IO(new BufferedReader(new InputStreamReader(System.in)), new PrintWriter(System.out), PropertyManager.getInstance().get("io"));
 		logger = Logger.getLogger("client-side", PropertyManager.getInstance().get("logger"));
 		System.out.println("registro il logger client-side");
 
-		InputStreamReader input = new InputStreamReader(System.in);
-		BufferedReader myInput = new BufferedReader(input);
+		//InputStreamReader input = new InputStreamReader(System.in);
+		//BufferedReader myInput = new BufferedReader(input);
 		String userName = null;
 		String password = null;
 
 		String loginServerAdress = System.getProperty("remoteclient.loginserveradress");
 
-		logger.log("Parcman, The Italian Arcade Network v1.0.");
-		logger.log("Bootstrap del Client avvenuto correttamente. LoginServerAdress: " + loginServerAdress);
+		println("Parcman, The Italian Arcade Network v1.0.");
+		logger.debug("Bootstrap del Client avvenuto correttamente. LoginServerAdress: " + loginServerAdress);
 
 		try
 		{
 			// Inserimento del nome utente
-			logger.log("\tInserisci il nome utente (Oppure NUOVO per creare un nuovo account): ");
-			userName = new String(myInput.readLine());
+			print("Inserisci il nome utente (Oppure NUOVO per creare un nuovo account): ");
+			userName = new String(io.readLine());
 
 			if (userName.equals("NUOVO"))
 			{
-				logger.log("\tInserisci il nome utente per il nuovo account: ");
-				String newUserName = new String(myInput.readLine());
+				print("Inserisci il nome utente per il nuovo account: ");
+				String newUserName = new String(io.readLine());
 
-				logger.log("\tInserisci la password: ");
+				print("Inserisci la password: ");
 				this.echo(false);
-				String newPassword = new String(myInput.readLine());
+				String newPassword = new String(io.readLine());
 				this.echo(true);
+				println("");
 
-				logger.log("\n\tReinserisci la password per conferma: ");
+				print("Reinserisci la password per conferma: ");
 				this.echo(false);
-				String newPasswordR = new String(myInput.readLine());
+				String newPasswordR = new String(io.readLine());
 				this.echo(true);
-				logger.log("\n");
+				println("");
 
 				if (!newPassword.equals(newPasswordR))
 				{
@@ -89,7 +98,7 @@ public class RemoteClientUser
 
 					loginServer.createAccount(newUserName, newPassword);
 
-					logger.log("Account creato con successo, verra' attivato quanto prima.");
+					println("Account creato con successo, verra' attivato quanto prima.");
 					return;
 				}
 				catch(ParcmanDBServerUserExistRemoteException e)
@@ -111,10 +120,10 @@ public class RemoteClientUser
 			{
 				this.echo(false); 
 				// Inserimento della password
-				logger.log("\tInserisci la password: ");
-				password = new String(myInput.readLine());
+				print("Inserisci la password: ");
+				password = new String(io.readLine());
 				this.echo(true);
-				logger.log("\n");
+				println("");
 			}
 		}
 		catch(IOException e)
@@ -204,6 +213,22 @@ public class RemoteClientUser
 		{
 			logger.error("Impossibile disattivare l'echo.");
 		}
+	}
+
+	/**
+	 * Wrapper per il metodo print
+	 */
+	protected void print(String msg)
+	{
+		io.print(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
+	}
+
+	/** 
+	 * Wrapper per il metodo println
+	 */
+	protected void println(String msg)
+	{
+		io.println(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
 	}
 }
 

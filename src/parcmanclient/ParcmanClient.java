@@ -4,10 +4,16 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
 import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.*;
 
 import io.PropertyManager;
 import io.Logger;
+import io.IO;
+import io.IOColor;
+import io.IOProperties;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
 import pshell.*;
@@ -30,6 +36,11 @@ public class ParcmanClient
 	 * Logger
 	 */
 	private Logger logger;
+
+	/**
+	 * Utility per input/output.
+	 */
+	private IO io;
 
 	/**
 	 * Stub del ParcmanServer.
@@ -250,6 +261,7 @@ public class ParcmanClient
 	{
 		// recupero il logger lato client
 		this.logger = Logger.getLogger("client-side");
+		this.io = new IO(new BufferedReader(new InputStreamReader(System.in)), new PrintWriter(System.out), PropertyManager.getInstance().get("io"));
 		try
 		{
 			// Spedisco lo stub del ParcmanClient al ParcmanServer
@@ -258,6 +270,7 @@ public class ParcmanClient
 		catch(RemoteException e)
 		{
 			logger.error("Autenticazione fallita.", e);
+			println("Autenticazione fallita.");
 			System.exit(0);
 		}
 
@@ -276,24 +289,26 @@ public class ParcmanClient
 		catch(ParcmanServerRequestErrorRemoteException e)
 		{
 			logger.error("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			println("Autenticazione fallita.");
 			System.exit(0);
 		}
 		catch(RemoteException e)
 		{
-			logger.debug("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			logger.error("Il server non e' in grado di esaudire la richiesta. Connessione terminata.");
+			println("Autenticazione fallita.");
 			System.exit(0);
 		}
 
-		logger.info("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto!.");
+		println("Autenticazione alla rete Parcman avvenuta con successo. Benvenuto " + userName + "!.");
 
 		// Fixo e ricontrollo la directory di condivisione.
 		this.fixSharingDirectory();
 
-		//Timer timer = new Timer();
-		//this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
+		Timer timer = new Timer();
+		this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
 		// La scansione della directory condivisa viene effettuata ogni 60 secondi
 		// con una attesa iniziale di 10 secondi.
-		//timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
+		timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
 
 		ready = true;
 
@@ -328,9 +343,11 @@ public class ParcmanClient
 		catch(RemoteException e)
 		{
 			logger.error("Disconnessione fallita. (force exit)", e);
+			println("Disconnessione fallita. Uscita forzata!");
 			System.exit(1);
 		}
 
+		println("Bye bye!");
 		System.exit(0);
 	}
 
@@ -702,6 +719,22 @@ public class ParcmanClient
 		{
 			logger.error("Errore di rete, ClientHost irraggiungibile.", e);
 		}
+	}
+
+	/**
+	 * Wrapper per il metodo print
+	 */
+	protected void print(String msg)
+	{
+		io.print(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
+	}
+
+	/** 
+	 * Wrapper per il metodo println
+	 */
+	protected void println(String msg)
+	{
+		io.println(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
 	}
 }
 

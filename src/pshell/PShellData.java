@@ -6,6 +6,9 @@ import java.util.Vector;
 
 import io.IO;
 import io.PropertyManager;
+import io.IOProperties;
+import io.IOColor;
+import io.Logger;
 import plog.*;
 
 /**
@@ -15,28 +18,20 @@ import plog.*;
 */
 public abstract class PShellData
 {
-//	public static final String COLOR_BLACK=		"\033[30m";
-//	public static final String COLOR_RED=		"\033[31m";
-//	public static final String COLOR_GREEN=		"\033[32m";
-//	public static final String COLOR_BORWN=		"\033[33m";
-//	public static final String COLOR_BLUE=		"\033[34m";
-//	public static final String COLOR_PURPLE=	"\033[35m";
-//	public static final String COLOR_CYAN=		"\033[36m";
-//	public static final String COLOR_LIGHT_GREY=	"\033[37m";
-//	public static final String COLOR_DARK_GREY=	"\033[30;1m";
-//	public static final String COLOR_LIGHT_RED=	"\033[31;1m";
-//	public static final String COLOR_LIGHT_GREEN=	"\033[32;1m";
-//	public static final String COLOR_YELLOW=	"\033[33;1m";
-//	public static final String COLOR_LIGHT_BLUE=	"\033[34;1m";
-//	public static final String COLOR_LIGHT_PURPLE=	"\033[35;1m";
-//	public static final String COLOR_LIGHT_CYAN=	"\033[36;1m";
-//	public static final String COLOR_WHITE=		"\033[37;1m";
-//	public static final String COLOR_NOCOLOR=	"\033[0m";
+	public static final String REQUEST_LOCAL_SENT = "Richiesta locale inviata... ";
+	public static final String REQUEST_REMOTE_SENT = "Richiesta remota inviata... ";
+	public static final String REQUEST_DONE = "DONE";
+	public static final String REQUEST_FAILED = "FAILED";
 
 	/**
 	* Oggetto per gestione input/output.
 	*/
 	protected IO io;
+
+	/**
+	 * Logger
+	 */
+	protected Logger logger;
 
 	/**
 	* Costruttore.
@@ -47,6 +42,7 @@ public abstract class PShellData
 	public PShellData(BufferedReader in, PrintWriter out)
 	{
 		this.io = new IO(in, out, PropertyManager.getInstance().get("io"));
+		this.logger = Logger.getLogger("client-side");
 	}
 
 	/**
@@ -85,6 +81,32 @@ public abstract class PShellData
 	public void writePrompt()
 	{
 		io.print(">> ");
+	}
+
+	/**
+	 * Wrapper per il metodo print
+	 */
+	protected void print(String msg)
+	{
+		io.print(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
+	}
+
+	/** 
+	 * Wrapper per il metodo println
+	 */
+	protected void println(String msg)
+	{
+		io.println(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
+	}
+
+	/**
+	 * Wrapper per stampare un errore.
+	 */
+	protected void error(String msg)
+	{
+		io.println(	PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) 
+				+ msg, 
+				IOColor.getColor(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_COLOR_ERROR)));
 	}
 
 //	/**

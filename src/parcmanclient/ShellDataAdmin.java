@@ -69,13 +69,13 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			io.print("Richiesta inviata... ", IOColor.LIGHT_BLUE);
+			logger.debug(REQUEST_REMOTE_SENT);
 			Vector<ClientDataUser> result = parcmanServerStub.getConnectUsersList(this.parcmanClient.getStub(), this.userName);
-			io.println("done.", IOColor.LIGHT_GREEN);
+			logger.debug(REQUEST_DONE);
 
 			if (result == null || result.size() == 0)
 			{
-				io.println("Nessun utente connesso.", IOColor.LIGHT_BLUE);
+				println("Nessun utente connesso.");
 				return;
 			}
 			else
@@ -102,7 +102,9 @@ public class ShellDataAdmin extends ShellData
 		}
 		catch (RemoteException e)
 		{
-			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.", IOColor.LIGHT_RED);
+			logger.debug(REQUEST_FAILED);
+			logger.error(NETWORK_ERROR);
+			error(NETWORK_ERROR);
 			return;
 		}
 	}
@@ -121,13 +123,17 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			io.print("Inviata la richiesta...");
+			logger.debug(REQUEST_REMOTE_SENT);
 			parcmanServerStub.setAgentSystemStatus(parcmanClient.getStub(), userName, true);
-			io.println("Sistema degli agenti remoti attivato.");
+			logger.debug(REQUEST_DONE);
+			println("Sistema degli agenti remoti attivato.");
 		}
 		catch (RemoteException e)
 		{
-			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			logger.debug(REQUEST_FAILED);
+			logger.error(NETWORK_ERROR);
+			error(NETWORK_ERROR);
+			return;
 		}
 	}
 
@@ -145,13 +151,17 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			io.print("Inviata la richiesta...");
+			logger.debug(REQUEST_REMOTE_SENT);
 			parcmanServerStub.setAgentSystemStatus(parcmanClient.getStub(), userName, false);
-			io.println("Sistema degli agenti remoti disattivato.");
+			logger.debug(REQUEST_DONE);
+			println("Sistema degli agenti remoti disattivato.");
 		}
 		catch (RemoteException e)
 		{
-			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			logger.debug(REQUEST_FAILED);
+			logger.error(NETWORK_ERROR);
+			error(NETWORK_ERROR);
+			return;
 		}
 	}
 
@@ -169,13 +179,17 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			io.print("Inviata la richiesta...");
+			logger.debug(REQUEST_REMOTE_SENT);
 			parcmanServerStub.addToBlacklist(parcmanClient.getStub(), userName, param);
-			io.println("Aggiunto utente '" + param + "' alla blacklist.");
+			logger.debug(REQUEST_DONE);
+			println("Aggiunto utente '" + param + "' alla blacklist.");
 		}
 		catch (RemoteException e)
 		{
-			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			logger.debug(REQUEST_FAILED);
+			logger.error(NETWORK_ERROR);
+			error(NETWORK_ERROR);
+			return;
 		}
 	}
 
@@ -193,13 +207,17 @@ public class ShellDataAdmin extends ShellData
 	{
 		try
 		{
-			io.println("Inviata la richiesta...");
+			logger.debug(REQUEST_REMOTE_SENT);
 			parcmanServerStub.delFromBlacklist(parcmanClient.getStub(), userName, param);
-			io.println("Rimosso utente '" + param + "' alla blacklist.");
+			logger.debug(REQUEST_DONE);
+			println("Rimosso utente '" + param + "' alla blacklist.");
 		}
 		catch (RemoteException e)
 		{
-			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			logger.debug(REQUEST_FAILED);
+			logger.error(NETWORK_ERROR);
+			error(NETWORK_ERROR);
+			return;
 		}
 	}
 
@@ -217,14 +235,13 @@ public class ShellDataAdmin extends ShellData
  	{
  		try
  		{
- 			io.print("Inviata la richiesta...");
+			logger.debug(REQUEST_REMOTE_SENT);
  			Vector<UserBean> result = parcmanServerStub.blacklist(parcmanClient.getStub(), userName);
- 			io.println("Done.");
- 
+			logger.debug(REQUEST_DONE);
 
  			if (result == null || result.size() == 0)
  			{
- 				io.println("Nessun utente in blacklist.");
+ 				println("Nessun utente in blacklist.");
  			}
  			else 
  			{
@@ -235,8 +252,8 @@ public class ShellDataAdmin extends ShellData
  				for (int i=0; i<result.size(); i++)
 				{
 					UserBean bean = result.get(i);
-					names.add(bean.getPrivilege());
-					privileges.add(bean.getName());
+					names.add(bean.getName());
+					privileges.add(bean.getPrivilege());
 				}
 
 				table.put("NOME UTENTE", names);
@@ -247,7 +264,10 @@ public class ShellDataAdmin extends ShellData
  		}
  		catch (RemoteException e)
  		{
- 			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			logger.debug(REQUEST_FAILED);
+			logger.error(NETWORK_ERROR);
+			error(NETWORK_ERROR);
+			return;
  		}
  	}
  
@@ -265,10 +285,9 @@ public class ShellDataAdmin extends ShellData
  	{
  		try
  		{
- 			io.print("Inviata la richiesta...");
+			logger.debug(REQUEST_REMOTE_SENT);
  			Vector<UserBean> result = parcmanServerStub.waitinglist(parcmanClient.getStub(), userName);
- 			io.println("Done.");
- 
+			logger.debug(REQUEST_DONE);
 
  			if (result == null || result.size() == 0)
  			{
@@ -283,8 +302,8 @@ public class ShellDataAdmin extends ShellData
  				for (int i=0; i<result.size(); i++)
 				{
 					UserBean bean = result.get(i);
-					names.add(bean.getPrivilege());
-					privileges.add(bean.getName());
+					names.add(bean.getName());
+					privileges.add(bean.getPrivilege());
 				}
 
 				table.put("NOME UTENTE", names);
@@ -295,7 +314,10 @@ public class ShellDataAdmin extends ShellData
  		}
  		catch (RemoteException e)
  		{
- 			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			logger.debug(REQUEST_FAILED);
+			logger.error(NETWORK_ERROR);
+			error(NETWORK_ERROR);
+			return;
  		}
  	}
 
@@ -313,13 +335,17 @@ public class ShellDataAdmin extends ShellData
  	{
 		try
 		{
-			io.println("Inviata la richiesta...");
+			logger.debug(REQUEST_REMOTE_SENT);
 			parcmanServerStub.delFromWaiting(parcmanClient.getStub(), userName, param);
-			io.println("Rimosso utente '" + param + "' dalla lista di waiting.");
+			logger.debug(REQUEST_DONE);
+			println("Rimosso utente '" + param + "' dalla lista di waiting.");
 		}
 		catch (RemoteException e)
 		{
-			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			logger.debug(REQUEST_FAILED);
+			logger.error(NETWORK_ERROR);
+			error(NETWORK_ERROR);
+			return;
 		}
  	}
 }

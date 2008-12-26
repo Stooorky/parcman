@@ -37,7 +37,6 @@ public class Logger implements Serializable
 
 	protected Logger(Properties prop)
 	{
-		System.out.println(prop);
 		this._enable_ = "true".equals(prop.getProperty(LoggerProperties.ENABLE)) ? true : false;
 		setActiveLevels(prop.getProperty(LoggerProperties.LEVEL));
 		this.prop = prop;
@@ -60,7 +59,6 @@ public class Logger implements Serializable
 		Logger log = null;
 		if (!map.containsKey(channel))
 		{
-			System.out.println("il channel " + channel + " non e` stato ancora registrato, REGISTRO");
 			if (prop == null)
 				prop = new LoggerProperties().getDefaults();
 			log = new Logger(prop);
@@ -68,7 +66,6 @@ public class Logger implements Serializable
 		}
 		else 
 		{
-			System.out.println("il channel " + channel + " e` gia` stato registrato, LEGGO");
 			log = map.get(channel);
 		}
 
@@ -107,10 +104,7 @@ public class Logger implements Serializable
 					sbst.append("\t\t" + st[i] + "\n");
 				}
 				sbst.append("\n");
-				System.out.println("fine string buffer");
-				System.out.println(sbst.toString());
 				m.appendReplacement(sb, getColor(level, "EXCEPTION") + sbst.toString() + IOColor.NOCOLOR);
-				System.out.println("append finito");
 			}
 			else 
 			{

@@ -2,6 +2,7 @@ package parcmanclient;
 
 import java.util.*;
 import java.lang.*;
+import java.util.LinkedHashMap;
 import java.io.*;
 import java.io.PrintWriter;
 import java.io.File;
@@ -20,6 +21,7 @@ import io.Logger;
 import io.PropertyManager;
 import io.IO;
 import io.IOColor;
+import io.IOProperties;
 import remoteexceptions.*;
 import parcmanserver.RemoteParcmanServerUser;
 import database.beans.ShareBean;
@@ -27,6 +29,9 @@ import database.beans.SearchBean;
 
 public class ShellData extends PShellData
 {
+	public static final String NULL_VALUE = "null";
+	public static final String NETWORK_ERROR = "Si sono verificati degli errori di rete. Riprova in seguito.";
+
 	/**
 	 * Stub del ParcmanServer.
 	 */
@@ -76,11 +81,12 @@ public class ShellData extends PShellData
 		try
 		{
 			parcmanServerStub.ping();
-			io.println("Il MainServer della rete Parcman ha risposto con successo");
+			println("Il MainServer della rete Parcman ha risposto con successo");
 		}
 		catch (RemoteException e)
 		{
-			io.println("Impossibile eseguire il ping al MainServer", IOColor.RED);
+			logger.error("Impossibile eseguire il ping al MainServer");
+			error("Impossibile eseguire il ping al MainServer");
 			return;
 		}
 	}
@@ -115,17 +121,33 @@ public class ShellData extends PShellData
 			)
 	public void commandShareList (String param)
 	{
+		logger.debug(REQUEST_LOCAL_SENT);
 		Vector<ShareBean> shares = this.parcmanClient.getShares();
-
+		if (shares != null)
+			logger.debug(REQUEST_DONE);
+		else 
+			logger.debug(REQUEST_FAILED);
 		try
 		{
 			if (shares.size()==0)
-				io.println("Nessun file condiviso.");
+				println("Nessun file condiviso.");
 			else
 			{
-				io.println("Lista dei file condivisi:");
+				println("Lista dei file condivisi:");
+				logger.debug("size: " + shares.size());
 				for (int i=0; i<shares.size(); i++)
-					this.writeShare(i+1, shares.elementAt(i));
+				{
+					LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+					ShareBean s = shares.elementAt(i);
+					logger.debug(s.toString());
+					map.put("Nome file", s.getName() == null ? NULL_VALUE : s.getName());
+					map.put("ID", ""+s.getId());
+					map.put("Proprietario", s.getOwner() == null ? NULL_VALUE : s.getOwner());
+					map.put("Hash", s.getHash() == null ? NULL_VALUE : s.getHash());
+					map.put("keywords", s.getKeywordsToString());
+					//this.writeShare(i+1, shares.elementAt(i));
+					io.printMap(map, null);
+				}
 			}
 		}
 		catch(ArrayIndexOutOfBoundsException e)
@@ -149,24 +171,37 @@ public class ShellData extends PShellData
 	{
 		try
 		{
-			io.print("Inviata la richiesta di ricerca, attendere... ");
+			logger.debug(REQUEST_REMOTE_SENT);
 			Vector<SearchBean> result = parcmanServerStub.search(this.parcmanClient.getStub(), this.userName, param);
-			io.println("done.");
+			if (result != null)
+				logger.debug(REQUEST_DONE);
+			else
+				logger.debug(REQUEST_FAILED);
 
 			if (result == null || result.size() == 0)
 			{
-				io.println("La ricerca non ha prodotto risultati.");
+				println("La ricerca non ha prodotto risultati.");
 				return;
 			}
 
-			io.println("Risultato della ricerca:");
-			for (int i=0; i<result.size(); i++)
-				this.writeSearch(result.elementAt(i));
+			println("Risultato della ricerca:");
+			for (int i=0; i<result.size(); i++) 
+			{
+				SearchBean search = result.get(i);
+				LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+				map.put("ID", "" + search.getId());
+				map.put("Proprietario", search.getOwner());
+				map.put("Nome file", search.getName());
+				map.put("Keywords", search.getKeywordsToString());
+				io.printMap(map, null);
+				// this.writeSearch(result.elementAt(i));
+			}
 
 		}
 		catch (RemoteException e)
 		{
-			io.println("Fallito. Si sono verificati degli errori di rete. Ritenta.", IOColor.RED);
+			logger.error("Fallito. Si sono verificati degli errori di rete. Ritenta.");
+			error("Fallito. Si sono verificati degli errori di rete. Ritenta.");
 			return;
 		}
 	}
@@ -184,39 +219,40 @@ public class ShellData extends PShellData
 			)
 	public void commandScanCollection (String param)
 	{
-		io.print("Avvio la scansione della Directory dei file condivisi... ");
+		logger.debug(REQUEST_LOCAL_SENT);
 		this.parcmanClient.scanSharingDirectory();
-		io.println("Done.");
+		logger.debug(REQUEST_DONE);
+		println("Scan della directory dei file condivisi effettuata.");
 	}
 
-	/**
-	 * Stampa i dati di un file.
-	 *
-	 * @param index Indice del file
-	 * @param share ShareBean del file
-	 */
-	private void writeShare(int index, ShareBean share)
-	{
-		io.println(index + ") " + share.getName() +
-				"\n\tID: " + share.getId() +
-				"\n\tURL: " + share.getUrl() +
-				"\n\tProprietario: " + share.getOwner() +
-				"\n\tHash: " + share.getHash() +
-				"\n\tKeywords: " + share.getKeywordsToString());
-	}
+	// /**
+	//  * Stampa i dati di un file.
+	//  *
+	//  * @param index Indice del file
+	//  * @param share ShareBean del file
+	//  */
+	// private void writeShare(int index, ShareBean share)
+	// {
+	// 	io.println(index + ") " + share.getName() +
+	// 			"\n\tID: " + share.getId() +
+	// 			"\n\tURL: " + share.getUrl() +
+	// 			"\n\tProprietario: " + share.getOwner() +
+	// 			"\n\tHash: " + share.getHash() +
+	// 			"\n\tKeywords: " + share.getKeywordsToString());
+	// }
 
-	/**
-	 * Stampa i dati di un SearchBean.
-	 *
-	 * @param search SearchBean del file
-	 */
-	private void writeSearch(SearchBean search)
-	{
-		io.println("ID:" + search.getId() +
-				" Proprietario: " + search.getOwner() +
-				"\n\tNome: " + search.getName() +
-				" Keywords: " + search.getKeywordsToString());
-	}
+	// /**
+	//  * Stampa i dati di un SearchBean.
+	//  *
+	//  * @param search SearchBean del file
+	//  */
+	// private void writeSearch(SearchBean search)
+	// {
+	// 	io.println("ID:" + search.getId() +
+	// 			" Proprietario: " + search.getOwner() +
+	// 			"\n\tNome: " + search.getName() +
+	// 			" Keywords: " + search.getKeywordsToString());
+	// }
 
 	/**
 	 * Metodo per il comando scaninfo
@@ -232,7 +268,7 @@ public class ShellData extends PShellData
 	public void commandScanInfo (String param)
 	{
 		Date date = new Date(this.parcmanClient.getScanDirectoryTimerTask().scheduledExecutionTime());
-		io.println("Ultima scansione effettuata: " + date.toString());
+		println("Ultima scansione effettuata: " + date.toString());
 	}
 
 	/**
@@ -240,7 +276,7 @@ public class ShellData extends PShellData
 	 */
 	public void writePrompt()
 	{
-		io.print(this.userName + ">> ", IOColor.GREEN);
+		io.print(this.userName + " >> ", IOColor.GREEN);
 	}
 
 	/**
@@ -263,15 +299,16 @@ public class ShellData extends PShellData
 		}
 		catch (Exception e)
 		{
-			io.println("Fallito. '" + param + "' non e` valido.", IOColor.RED);
+			logger.error("Fallito. '" + param + "' non e` valido.");
+			error("Fallito. '" + param + "' non e` valido.");
 			return; 
 		}
 
-		io.println("Inviata la richiesta di download, attendere...");
-		io.print("Download of file with ID '" + params[1] + "' from user '" + params[0] + "' in corso.");
+		logger.debug(REQUEST_REMOTE_SENT);
+		println("Download del file ID '" + params[1] + "' dall'utente '" + params[0] + "' in corso.");
 
 		Timer timer = new Timer();
-		timer.schedule(new DownloadTimerTask(io, this.parcmanServerStub, this.parcmanClient, this.userName, params), 0);
+		timer.schedule(new DownloadTimerTask(io, logger, this.parcmanServerStub, this.parcmanClient, this.userName, params), 0);
 	}
 
 }
@@ -283,10 +320,12 @@ class DownloadTimerTask extends TimerTask
 	private String username;
 	private String[] data;
 	private IO io;
+	private Logger logger;
 
-	public DownloadTimerTask(IO io, RemoteParcmanServerUser server, ParcmanClient client, String username, String[] data)
+	public DownloadTimerTask(IO io, Logger logger, RemoteParcmanServerUser server, ParcmanClient client, String username, String[] data)
 	{
 		this.io= io;
+		this.logger = logger;
 		this.server = server;
 		this.client = client;
 		this.username = username;
@@ -298,28 +337,33 @@ class DownloadTimerTask extends TimerTask
 		try 
 		{
 			DownloadData downData = server.startDownload(client.getStub(), username, data);
-			io.println("Richiesta di download inviata al server...");
+			logger.debug("Richiesta di download inviata al server...");
 			RemoteParcmanClientUser remoteClient = downData.getStub();
 			byte[] bytes = remoteClient.getFile(downData.getShareBean().getId());
 			saveFile(downData.getShareBean().getName(), client.getSharingDirectory(), bytes);
-			io.println("Download terminato con successo.");
+			logger.debug("Download terminato con successo.");
+			io.println(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + "Download terminato con successo.");
 
 		}
 		catch (ParcmanServerRequestErrorRemoteException e)
 		{
-			io.println("Download fallito. " + e.getCause().getMessage(), IOColor.RED);
+			logger.error("Download fallito. " + e.getCause().getMessage());
+			error("Download fallito. " + e.getCause().getMessage());
 		}
 		catch (RemoteException e)
 		{
-			io.println("Download fallito. Si sono verificati degli errori di rete. Ritenta.", IOColor.RED);
+			logger.error("Download fallito. Si sono verificati degli errori di rete. Ritenta.");
+			error("Download fallito. Si sono verificati degli errori di rete. Ritenta.");
 		}
 		catch (FileNotFoundException e)
 		{
-			io.println("Download fallito. Non e` stato possibile creare il file. Constrollare di avere i persmessi necessari sulla propria cartella di condivisione.", IOColor.RED);
+			logger.error("Download fallito. Non e` stato possibile creare il file. Constrollare di avere i persmessi necessari sulla propria cartella di condivisione.");
+			error("Download fallito. Non e` stato possibile creare il file. Constrollare di avere i persmessi necessari sulla propria cartella di condivisione.");
 		}
 		catch (IOException e)
 		{
-			io.println("Download fallito. Si e` verificato un errore durante la fase di scrittura su disco.", IOColor.RED);
+			logger.error("Download fallito. Si e` verificato un errore durante la fase di scrittura su disco.");
+			error("Download fallito. Si e` verificato un errore durante la fase di scrittura su disco.");
 		}
 	}
 
@@ -350,5 +394,15 @@ class DownloadTimerTask extends TimerTask
 			filename = filename+"__"+count;
 		filename = pathToSearch+"/"+filename;
 		return filename;
+	}
+
+	/**
+	 * Wrapper per stampare un errore.
+	 */
+	protected void error(String msg)
+	{
+		io.println(	PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) 
+				+ msg, 
+				IOColor.getColor(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_COLOR_ERROR)));
 	}
 }

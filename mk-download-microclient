@@ -8,7 +8,7 @@ E_MC_INLCUDE_LOGLIB_MSG="Impossibile includere loglib.sh"
 # FFC is for FILES_FOR_CLIENT
 FFC_BASEPATH=./src
 FFC_NEEDED_BASH=( bash/argslib.sh bash/loglib.sh )
-FFC_NEEDED_COMMON=( src/io.properties \
+FFC_NEEDED_COMMON=( src/io-client.properties \
 	src/logger-client.properties \
 	src/client-start \
 	src/policy )
