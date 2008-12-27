@@ -6,8 +6,9 @@ import java.lang.reflect.*;
 
 import database.*;
 import database.beans.*;
-import plog.*;
 import database.exceptions.*;
+import io.Logger;
+import io.PropertyManager;
 
 /**
  * Gestore del database globale.
@@ -16,6 +17,11 @@ import database.exceptions.*;
  */
 public class DB
 {
+	/**
+	 * Logger
+	 */
+	private Logger logger;
+
 	/**
 	 * Path della directory contenente i file del database.
 	 */
@@ -40,6 +46,7 @@ public class DB
 	public DB(String dbDirectory) throws
 		ParcmanDBNotCreateException
 	{
+		this.logger = Logger.getLogger("database", PropertyManager.getInstance().get("logger-server.properties"));
 		this.dbDirectory = dbDirectory;
 
 		// Ottengo l'istanza di DBManager
@@ -55,7 +62,7 @@ public class DB
 		}
 		catch (ParcmanDBDirectoryMalformedException e)
 		{
-			PLog.err(e, "DB", "Impossibile creare un'istanza di DB.");
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBNotCreateException();
 		}
 	}
@@ -70,9 +77,10 @@ public class DB
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
-		PLog.info("DB.updateUsers", "Aggiornamento del database utenti completato.");
+		logger.info("Aggiornamento del database utenti completato.");
 	}
 
 	/**
@@ -106,19 +114,23 @@ public class DB
 		{
 			// Utente gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBUserExistException)
+			{
+				logger.error(DBConstants.E_DB_USER_EXISTS);
 				throw new ParcmanDBUserExistException();
+			}
 
 			throw new ParcmanDBErrorException();
 		}
 		catch (Exception e)
 		{
+			logger.error("Errore interno al database");
 			throw new ParcmanDBErrorException();
 		}
 
 		// Salvo il DB Utenti
 		dbManager.save("USERS");
 
-		PLog.info("DB.addUser", "Nuovo utente aggiunto al DB Utenti: " + user.getName());
+		logger.info("Nuovo utente aggiunto al DB Utenti: " + user.getName());
 	}
 
 	/**
@@ -149,10 +161,12 @@ public class DB
 			if (e.getTargetException() instanceof ParcmanDBUserNotExistException)
 				throw (ParcmanDBUserNotExistException) e.getTargetException();
 
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 	}
@@ -186,17 +200,24 @@ public class DB
 		{
 			// File gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBShareExistException)
+			{
+				logger.error(DBConstants.E_DB_FILE_EXISTS);
 				throw (ParcmanDBShareExistException) e.getTargetException();
+			}
 
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 
 		// Salvo il DB Sharings
 		dbManager.save("SHARINGS");
+
+		logger.info("File aggiunto al database dei file condivisi: " + share.getName());
 	}
 
 	/**
@@ -214,8 +235,11 @@ public class DB
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
+
+		logger.info("Il database degli utenti e` stato aggiornato.");
 	}
 
 	/**
@@ -233,8 +257,11 @@ public class DB
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
+
+		logger.info("Il database dei file condivisi e` stato aggiornato.");
 	}
 
 	/**
@@ -253,6 +280,7 @@ public class DB
 		} 
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 	}
@@ -281,17 +309,24 @@ public class DB
 		{
 			// File non presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBShareNotExistException)
+			{
+				logger.error(DBConstants.E_DB_FILE_NOEXISTS);
 				throw (ParcmanDBShareNotExistException) e.getTargetException();
+			}
 
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 
 		// Salvo il DB Sharings
 		dbManager.save("SHARINGS");
+
+		logger.info("Il file (id:" + id + ", owner:" + owner + ") e` stato rimosso.");
 	}
 
 	/**
@@ -318,12 +353,17 @@ public class DB
 		catch (InvocationTargetException e)
 		{
 			if (e.getTargetException() instanceof ParcmanDBShareNotExistException)
+			{
+				logger.error(DBConstants.E_DB_FILE_NOEXISTS);
 				throw (ParcmanDBShareNotExistException) e.getTargetException();
+			}
 
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 
@@ -349,12 +389,9 @@ public class DB
 		{
 			shares = (Vector<ShareBean>) dbManager.call("SHARINGS", "getSharings", args);
 		}
-		catch (InvocationTargetException e)
-		{
-			throw new ParcmanDBErrorException();
-		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 
@@ -382,10 +419,12 @@ public class DB
 		}
 		catch (InvocationTargetException e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL + "(0)");
 			throw new ParcmanDBErrorException();
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL + "(1)");
 			throw new ParcmanDBErrorException();
 		}
 
@@ -415,17 +454,24 @@ public class DB
 		{
 			// File gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBShareNotExistException)
+			{
+				logger.error(DBConstants.E_DB_INTERNAL);
 				throw (ParcmanDBShareNotExistException) e.getTargetException();
+			}
 
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 		catch (Exception e)
 		{
+			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();
 		}
 
 		// Salvo il DB Sharings
 		dbManager.save("SHARINGS");
+
+		logger.info("Il file (id:" + id + ") e` stato rimosso con successo.");
 	}
 
 
@@ -444,11 +490,11 @@ public class DB
 		// Controllo l'esistenza della directory
 		if (!dir.exists()) // La Directory non esiste
 		{
-			PLog.info("DB.fixDirectory", "Creazione della Directory " + dbDirectory);
+			logger.debug("Creazione della Directory " + dbDirectory);
 			// Creo la directory, comprese le directory nel PATH
 			dir.mkdirs();
 
-			PLog.info("DB.fixDirectory", "Creo i file \n\t" + DB_USERS_FILE + "\n\t" + DB_SHARINGS_FILE + "\nnella directory " + this.dbDirectory);
+			logger.debug("Creo i file \n\t" + DB_USERS_FILE + "\n\t" + DB_SHARINGS_FILE + "\nnella directory " + this.dbDirectory);
 			// Creo il file XML del DB Utenti invocando save della classe DBUsers
 			DBManager dbManager = DBManager.getInstance();
 
@@ -464,7 +510,7 @@ public class DB
 
 				if (!dbUsers.exists()) // Il file XML per il DB Utenti non esiste
 				{
-					PLog.info("DB.fixDirectory", "Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
+					logger.debug("Creo il file " + DB_USERS_FILE + " nella directory " + this.dbDirectory);
 					// Creo il file XML del DB Utenti invocando save della classe DBUsers
 					DBManager dbManager = DBManager.getInstance();
 
@@ -472,7 +518,7 @@ public class DB
 				}
 				else // Il file XML per il DB Utenti esiste
 				{
-					PLog.info("DB.fixDirectory", "Carico il DB Utenti");
+					logger.debug("Carico il DB Utenti");
 					// Carico il file XML del DB Utenti
 					DBManager dbManager = DBManager.getInstance();
 
@@ -481,7 +527,7 @@ public class DB
 
 				if (!dbSharings.exists()) // Il file XML per il DB Utenti non esiste
 				{
-					PLog.info("DB.fixDirectory", "Creo il file " + DB_SHARINGS_FILE + " nella directory " + this.dbDirectory);
+					logger.debug("Creo il file " + DB_SHARINGS_FILE + " nella directory " + this.dbDirectory);
 					// Creo il file XML del DB Utenti invocando save della classe DBUsers
 					DBManager dbManager = DBManager.getInstance();
 
@@ -489,7 +535,7 @@ public class DB
 				}
 				else // Il file XML per il DB Utenti esiste
 				{
-					PLog.info("DB.fixDirectory", "Carico il DB dei file condivisi");
+					logger.debug("Carico il DB dei file condivisi");
 					// Carico il file XML del DB Utenti
 					DBManager dbManager = DBManager.getInstance();
 
@@ -499,6 +545,7 @@ public class DB
 			}
 			else // Non e' una Directory
 			{
+				logger.error(this.dbDirectory + " non e' una directory.");
 				throw new ParcmanDBDirectoryMalformedException(this.dbDirectory + " non e' una directory.");
 			}
 		}

@@ -5,7 +5,8 @@ import java.util.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 
-import plog.*;
+import io.Logger;
+import io.PropertyManager;
 import database.beans.*;
 import database.xmlhandlers.*;
 import database.exceptions.*;
@@ -18,6 +19,11 @@ import database.exceptions.*;
 public class DBUsers 
 	implements DBFile
 {
+	/**
+	 * Logger
+	 */
+	private Logger logger;
+
 	/**
 	 * Path del file XML.
 	 */
@@ -35,6 +41,7 @@ public class DBUsers
 	 */
 	public DBUsers(String dbFile)
 	{
+		this.logger = Logger.getLogger("database", PropertyManager.getInstance().get("logger-server.properties"));
 		this.dbFile = dbFile;
 		this.users = new Vector<UserBean>();
 	}
@@ -53,7 +60,7 @@ public class DBUsers
 		}
 		catch(FileNotFoundException e)
 		{
-			PLog.err(e, "DBUsers.save", "Errore durante il salvataggio del DB Utenti");
+			logger.error("Errore durante il salvataggio del DB Utenti", e);
 			return;
 		}
 
@@ -97,16 +104,16 @@ public class DBUsers
 			parser = XMLReaderFactory.createXMLReader();
 			parser.setContentHandler(new UserContentHandler(this.users));
 			parser.parse(dbFile);
-			PLog.debug("DBUsers.load", "Caricamento DBUsers completato.");
 		}
 		catch (SAXException e)
 		{
-			PLog.err(e, "DBUsers.load", "Errore durante il parsing del database.");
+			logger.error(DBConstants.E_USRDB_PARSING, e);
 		}
 		catch (IOException e)
 		{
-			PLog.err(e, "DBUsers.load", "Impossibile eseguire il parsing del database. File non leggibile.");
+			logger.error(DBConstants.E_USRDB_FILE, e);
 		}
+		logger.info("Caricamento DBUsers completato.");
 	}
 
 	/**

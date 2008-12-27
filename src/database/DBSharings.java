@@ -5,7 +5,8 @@ import java.util.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 
-import plog.*;
+import io.Logger; 
+import io.PropertyManager;
 import database.beans.ShareBean;
 import database.beans.SearchBean;
 import database.xmlhandlers.ShareContentHandler;
@@ -19,6 +20,11 @@ import database.exceptions.*;
 public class DBSharings
 	implements DBFile
 {
+	/**
+	 * Logger
+	 */
+	private Logger logger;
+
 	/**
 	 * Path del file XML.
 	 */
@@ -36,6 +42,7 @@ public class DBSharings
 	 */
 	public DBSharings(String dbFile)
 	{
+		this.logger = Logger.getLogger("database", PropertyManager.getInstance().get("logger-server.properties"));
 		this.dbFile = dbFile;
 		this.sharings= new Vector<ShareBean>();
 	}
@@ -54,7 +61,7 @@ public class DBSharings
 		}
 		catch(FileNotFoundException e)
 		{
-			PLog.err(e, "DBSharings.save", "Errore durante il salvataggio del DB dei file condivisi.");
+			logger.error("Errore durante il salvataggio del DB dei file condivisi.", e);
 			return;
 		}
 
@@ -102,16 +109,17 @@ public class DBSharings
 			this.sharings.clear();
 			parser.setContentHandler(new ShareContentHandler(this.sharings));
 			parser.parse(dbFile);
-			PLog.debug("DBSharings.load", "Caricamento DBSharings completato.");
 		}
 		catch (SAXException e)
 		{
-			PLog.err(e, "DBUsers.load", "Errore durante il parsing del database dei file condivisi.");
+			logger.error(DBConstants.E_SHDB_PARSING, e);
 		}
 		catch (IOException e)
 		{
-			PLog.err(e, "DBUsers.load", "Impossibile eseguire il parsing del database dei file condivisi. File non leggibile.");
+			logger.error(DBConstants.E_SHDB_FILE, e);
 		}
+
+		logger.info("Caricamento DBSharings completato.");
 	}
 
 	/**
@@ -131,11 +139,13 @@ public class DBSharings
 		{
 			if (((ShareBean) i.next()).equals(share))
 			{
+				logger.error(DBConstants.E_DB_FILE_EXISTS);
 				throw new ParcmanDBShareExistException();
 			}
 		}
 		
 		this.sharings.add(share);
+		logger.info("File aggiunto correttamente.");
 	}
 
 	/**
@@ -150,17 +160,17 @@ public class DBSharings
 	public void removeShare(Integer id, String owner) throws
 		ParcmanDBShareNotExistException
 	{
-        for (int i = 0; i < this.sharings.size(); i++)
-        {
-            ShareBean share = this.sharings.get(i);
-	        if (share.getId() == id.intValue() && share.getOwner().equals(owner))
+		for (int i = 0; i < this.sharings.size(); i++)
+		{
+			ShareBean share = this.sharings.get(i);
+			if (share.getId() == id.intValue() && share.getOwner().equals(owner))
 			{
-                this.sharings.remove(i);
-                return;
+				this.sharings.remove(i);
+				return;
 			}
-        }
+		}
 
-        throw new ParcmanDBShareNotExistException();
+		throw new ParcmanDBShareNotExistException();
 	}
 
 	/**

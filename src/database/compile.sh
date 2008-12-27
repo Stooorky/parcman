@@ -5,6 +5,7 @@ sourcefile=(DB.java \
 		DBManager.java \ 
 		DBSharings.java \ 
 		DBUsers.java \ 
+		DBUsers.java \
 		)
 clpath=`pwd`"/../"
 dom="[DATABASE]"

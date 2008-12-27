@@ -3,7 +3,8 @@ package database;
 import java.util.*;
 import java.lang.reflect.*;
 
-import plog.*;
+import io.Logger;
+import io.PropertyManager;
 
 /**
  * Gestore dei DataBase.
@@ -12,6 +13,11 @@ import plog.*;
  */
 public class DBManager
 {
+	/**
+	 * Logger
+	 */
+	private Logger logger;
+
 	/**
 	 * Istanza di DBManager.
 	 */
@@ -27,6 +33,7 @@ public class DBManager
 	 */
 	private DBManager()
 	{
+		this.logger = Logger.getLogger("database", PropertyManager.getInstance().get("logger-server.properties"));
 		this.dbMap = new HashMap<String, DBFile>();
 	}
 
@@ -36,6 +43,7 @@ public class DBManager
 	 */
 	private DBManager(Map<String, DBFile> dbMap)
 	{
+		this.logger = Logger.getLogger("database", PropertyManager.getInstance().get("logger-server.properties"));
 		this.dbMap = dbMap;
 	}
 
@@ -230,17 +238,17 @@ public class DBManager
 		}
 		catch (SecurityException e)
 		{
-			PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
+			logger.error(DBConstants.E_DB_METHOD_CALL);
 			throw new SecurityException();
 		}
 		catch (NullPointerException e)
 		{
-			PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
+			logger.error(DBConstants.E_DB_METHOD_CALL);
 			return new NullPointerException();
 		}
 		catch (NoSuchMethodException e)
 		{
-			PLog.err(e, "DBManager.call", "Impossibile richiamare il metodo richiesto.");
+			logger.error(DBConstants.E_DB_METHOD_CALL);
 			return new NoSuchMethodException();
 		}
 		catch (InvocationTargetException e)
