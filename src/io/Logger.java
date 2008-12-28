@@ -24,6 +24,7 @@ public class Logger implements Serializable
 	private Pattern p; 
 	private SimpleDateFormat df;
 	private int[] levels;
+	private int depth = 2;
 
 	// TODO: trasformare LOG_LEVEL in enum o aggiungere a LoggerLevel
 	public static final String LOG_CLASS = "%C";
@@ -35,11 +36,12 @@ public class Logger implements Serializable
 	public static final String LOG_MESSAGE = "%S";
 	public static final String LOG_EXCEPTION = "%E";
 
-	protected Logger(Properties prop)
+	protected Logger(Properties prop, int depth)
 	{
 		this._enable_ = "true".equals(prop.getProperty(LoggerProperties.ENABLE)) ? true : false;
 		setActiveLevels(prop.getProperty(LoggerProperties.LEVEL));
 		this.prop = prop;
+		this.depth = depth;
 		this.p = Pattern.compile(	LOG_CLASS + "|" + LOG_METHOD + "|" 
 						+ LOG_FILE + "|" + LOG_LINE + "|"
 						+ LOG_DATE + "|" + LOG_LEVEL + "|"
@@ -47,12 +49,22 @@ public class Logger implements Serializable
 		this.df = new SimpleDateFormat(prop.getProperty(LoggerProperties.DATE_FORMAT));
 	}
 
-	public static Logger getLogger(String channel)
+	public static Logger getLogger(String channel, int depth)
 	{
-		return Logger.getLogger(channel, null);
+		return Logger.getLogger(channel, null, depth);
 	}
 
 	public static Logger getLogger(String channel, Properties prop)
+	{
+		return Logger.getLogger(channel, prop, 2);
+	}
+
+	public static Logger getLogger(String channel)
+	{
+		return Logger.getLogger(channel, null, 2);
+	}
+
+	public static Logger getLogger(String channel, Properties prop, int depth)
 	{
 		if (map == null)
 			map = new Hashtable<String, Logger>();
@@ -61,7 +73,7 @@ public class Logger implements Serializable
 		{
 			if (prop == null)
 				prop = new LoggerProperties().getDefaults();
-			log = new Logger(prop);
+			log = new Logger(prop, depth);
 			map.put(channel, log);
 		}
 		else 
@@ -154,7 +166,7 @@ public class Logger implements Serializable
 		Throwable t = new Throwable();
 		long time = System.currentTimeMillis();
 		StackTraceElement[] stack = t.getStackTrace();
-		String out = format(stack[2], time, level, msg[0], prop.getProperty(LoggerProperties.FORMAT_ERROR), e);
+		String out = format(stack[depth], time, level, msg[0], prop.getProperty(LoggerProperties.FORMAT_ERROR), e);
 		for (int i=1; i<msg.length; i++)
 		{
 			out += "\t" + msg[i];
@@ -168,7 +180,7 @@ public class Logger implements Serializable
 		Throwable t = new Throwable();
 		long time = System.currentTimeMillis();
 		StackTraceElement[] stack = t.getStackTrace();
-		String out = format(stack[2], time, level, msg, prop.getProperty(LoggerProperties.getPropertyName("FORMAT_" + level)), e);
+		String out = format(stack[depth], time, level, msg, prop.getProperty(LoggerProperties.getPropertyName("FORMAT_" + level)), e);
 		System.out.println(out);
 	}
 

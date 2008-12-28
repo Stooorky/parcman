@@ -6,7 +6,7 @@ import org.xml.sax.*;
 import java.lang.NumberFormatException;
 
 import database.beans.*;
-import plog.*;
+import io.Logger;
 
 /**
  * Xml Contenthandler per il parsing dei file condivisi.
@@ -16,6 +16,11 @@ import plog.*;
 public class ShareContentHandler
 	implements ContentHandler
 {
+	/**
+	 * Logger
+	 */
+	private Logger logger;
+
 	private static final String ELEMENT_FILE = "FILE";
 	private static final String ELEMENT_DB= "DB_SHARINGS";
 	private static final String ELEMENT_ID = "ID";
@@ -36,6 +41,7 @@ public class ShareContentHandler
 
 	public ShareContentHandler(Vector<ShareBean> sharings)
 	{
+		this.logger = Logger.getLogger("database");
 		this.sharings = sharings;
 	}
 
@@ -105,6 +111,7 @@ public class ShareContentHandler
 			&& !this.sharings.contains(this.bean))
 		{
 			this.sharings.add(this.bean);
+			logger.debug("Caricato nuovo file. Nome: " + this.bean.getName() + " Owner: " + this.bean.getOwner());
 		}
 	}
 

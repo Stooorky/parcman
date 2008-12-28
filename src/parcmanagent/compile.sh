@@ -26,6 +26,7 @@ local_clean()
 {
 	echo "$dom Remove '.class' files."
 	rm *.class 2> /dev/null
+	rm exceptions/*.class 2> /dev/null
 }
 
 # Compilation

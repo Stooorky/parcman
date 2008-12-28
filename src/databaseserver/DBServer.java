@@ -6,7 +6,7 @@ import java.util.*;
 import java.rmi.*;
 
 import database.*;
-import plog.*;
+import io.Logger;
 import database.exceptions.*;
 import database.beans.*;
 import remoteexceptions.*;
@@ -20,6 +20,11 @@ public class DBServer
 	extends UnicastRemoteObject
 	implements RemoteDBServer
 {
+	/**
+	 * Logger 
+	 */
+	private Logger logger;
+
 	/**
 	* Database
 	*/
@@ -41,13 +46,14 @@ public class DBServer
 		ParcmanDBServerErrorRemoteException,
 		RemoteException
 	{
+		this.logger = Logger.getLogger("server-side");
 		try
 		{
 			db = new DB(dbDirectory);
 		}
 		catch (ParcmanDBNotCreateException e)
 		{
-			PLog.err(e, "DBServer", "Impossibile istanziare il database.");
+			logger.error("Impossibile istanziare il database.");
 			throw new ParcmanDBServerErrorRemoteException();
 		}
 	}
@@ -359,11 +365,11 @@ public class DBServer
 	{
 		try
 		{
-			PLog.debug("DBServer.ping", "E' stata ricevuta una richiesta di ping da " + this.getClientHost());
+			logger.info("E' stata ricevuta una richiesta di ping da " + this.getClientHost());
 		}
 		catch(ServerNotActiveException e)
 		{
-			PLog.err(e, "DBServer.ping", "Errore di rete, ClientHost irraggiungibile.");
+			logger.error("Errore di rete, ClientHost irraggiungibile.", e);
 		}
 	}
 }

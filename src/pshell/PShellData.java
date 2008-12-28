@@ -9,7 +9,6 @@ import io.PropertyManager;
 import io.IOProperties;
 import io.IOColor;
 import io.Logger;
-import plog.*;
 
 /**
 * Contenitore dati di Shell

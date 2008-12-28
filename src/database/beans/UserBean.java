@@ -215,5 +215,17 @@ public class UserBean
 	{
 		aOutputStream.defaultWriteObject();
 	}
+
+	public String toString()
+	{
+		String out = "\n{\n" 
+			+ "\tname: '" + this.name + "',\n"
+			+ "\tpassword: '" + this.password + "',\n"
+			+ "\tprivilege: '" + this.privilege + "',\n"
+			+ "\tstatus: '" + this.status + "',\n"
+			+ "}\n";
+
+		return out;
+	}
 }
 

@@ -53,8 +53,8 @@ implements Serializable
 		this.version = version;
 		this.name = name;
 		this.stub = stub;
-        this.status = status;
-        this.updateList = null;
+		this.status = status;
+		this.updateList = null;
 	}
 
 	/**

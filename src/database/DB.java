@@ -159,7 +159,10 @@ public class DB
 		{
 			// Utente gia' presente nel DataBase
 			if (e.getTargetException() instanceof ParcmanDBUserNotExistException)
+			{
+				logger.error(DBConstants.E_DB_USER_NOEXISTS);
 				throw (ParcmanDBUserNotExistException) e.getTargetException();
+			}
 
 			logger.error(DBConstants.E_DB_INTERNAL);
 			throw new ParcmanDBErrorException();

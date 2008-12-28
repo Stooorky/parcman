@@ -8,6 +8,7 @@ import io.Logger;
 import io.PropertyManager;
 import io.IO;
 import io.IOProperties;
+import io.IOColor;
 import loginserver.RemoteLoginServer;
 import parcmanclient.RemoteParcmanClient;
 import remoteexceptions.*;
@@ -50,7 +51,6 @@ public class RemoteClientUser
 
 		io = new IO(new BufferedReader(new InputStreamReader(System.in)), new PrintWriter(System.out), PropertyManager.getInstance().get("io"));
 		logger = Logger.getLogger("client-side", PropertyManager.getInstance().get("logger"));
-		System.out.println("registro il logger client-side");
 
 		//InputStreamReader input = new InputStreamReader(System.in);
 		//BufferedReader myInput = new BufferedReader(input);
@@ -103,14 +103,17 @@ public class RemoteClientUser
 				}
 				catch(ParcmanDBServerUserExistRemoteException e)
 				{
+					error("Registrazione fallita, questo nome utente e' gia' in uso.");
 					logger.error("Registrazione fallita, questo nome utente e' gia' in uso.");
 				}
 				catch(ParcmanDBServerUserNotValidRemoteException e)
 				{
+					error("Registrazione fallita, nome utente o password non validi.");
 					logger.error("Registrazione fallita, nome utente o password non validi.");
 				}
 				catch(Exception e)
 				{
+					error("La rete Parcman non e' al momento raggiungibile.");
 					logger.error("La rete Parcman non e' al momento raggiungibile.");
 				}
 
@@ -149,32 +152,44 @@ public class RemoteClientUser
 		{
 			if (e.getCause() instanceof LoginServerUserInBlacklistRemoteException)
 			{
+				error("Richiesta di login rifiutata, l'utente e` stato inserito nella blacklist. Ritenta.");
 				logger.error("Richiesta di login rifiutata, l'utente e` stato inserito nella blacklist. Ritenta.");
 				// e.printStackTrace();
 			}
 			else if (e.getCause() instanceof LoginServerUserFailedRemoteException)
 			{
+				error("Richiesta di login rifiutata, username non corretto. Ritenta.");
 				logger.error("Richiesta di login rifiutata, username non corretto. Ritenta.");
 				// e.printStackTrace();
 			}
 			else if (e.getCause() instanceof LoginServerUserOrPasswordFailedRemoteException)
 			{
+				error("Richiesta di login rifiutata, username o password non corratti. Ritenta.");
 				logger.error("Richiesta di login rifiutata, username o password non corratti. Ritenta.");
 				// e.printStackTrace();
 			}
 			else if (e.getCause() instanceof LoginServerUserPrivilegeFailedRemoteException)
 			{
+				error("Richiesta di login rifiutata, l'utente non ha i privilegi adeguati. Ritenta.");
 				logger.error("Richiesta di login rifiutata, l'utente non ha i privilegi adeguati. Ritenta.");
 				// e.printStackTrace();
 			}
 			else if (e.getCause() instanceof LoginServerUserIsConnectRemoteException)
 			{
+				error("Richiesta di login rifiutata, l'utente e` gia` connesso alla rete.");
 				logger.error("Richiesta di login rifiutata, l'utente e` gia` connesso alla rete.");
 				// e.printStackTrace();
 			}
 			else if (e.getCause() instanceof LoginServerClientHostUnreachableRemoteException)
 			{
+				error("Impossibile eseguire il login. Il Login Server risulta irraggiungibile. (1)");
 				logger.error("Impossibile eseguire il login. Il Login Server risulta irraggiungibile. (1)");
+				// e.printStackTrace();
+			}
+			else if (e.getCause() instanceof LoginServerUserNotAuthorizedRemoteException)
+			{
+				error("Richiesta di login rifiutata, l'utente non e` autorizzato. Ritenta.");
+				logger.error("Richiesta di login rifiutata, l'utente non e` autorizzato. Ritenta.");
 				// e.printStackTrace();
 			}
 			else
@@ -184,10 +199,12 @@ public class RemoteClientUser
 		}
 		catch(RemoteException e)
 		{
+			error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");
 			logger.error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (0)", e);
 		}
 		catch(Exception e)
 		{
+			error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");
 			logger.error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (1)", e);
 		}
 	}
@@ -229,6 +246,16 @@ public class RemoteClientUser
 	protected void println(String msg)
 	{
 		io.println(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) + msg);
+	}
+
+	/**
+	 * Wrapper per stampare un errore.
+	 */
+	protected void error(String msg)
+	{
+		io.println(	PropertyManager.getInstance().getProperty("io", IOProperties.PROP_TAB_SPACE) 
+				+ msg, 
+				IOColor.getColor(PropertyManager.getInstance().getProperty("io", IOProperties.PROP_COLOR_ERROR)));
 	}
 }
 

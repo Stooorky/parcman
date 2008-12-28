@@ -5,7 +5,7 @@ import org.xml.sax.*;
 
 import database.beans.*;
 import database.exceptions.ParcmanDBUserInvalidStatusException;
-import plog.*;
+import io.Logger;
 
 /**
  * Xml ContentHandler per il parsing degli users.
@@ -15,6 +15,11 @@ import plog.*;
 public class UserContentHandler 
 	implements ContentHandler
 {
+	/**
+	 * Logger
+	 */
+	private Logger logger;
+
 	/** 
 	 * 'true' se stiamo indagando l'elemento <NAME></NAME>.
 	 */
@@ -52,6 +57,7 @@ public class UserContentHandler
 	 */
 	public UserContentHandler(Vector<UserBean> users)
 	{
+		this.logger = Logger.getLogger("database");
 		this.users = users;
 	}
 
@@ -81,7 +87,7 @@ public class UserContentHandler
 			}
 			catch (ParcmanDBUserInvalidStatusException e)
 			{
-				PLog.err("UserContentHandler.characters", "Stato utente non valido.");
+				logger.error("Stato utente non valido.");
 			}
 			this.inStatus = false;
 		}
@@ -104,8 +110,7 @@ public class UserContentHandler
 			&& !this.users.contains(this.bean))
 		{
 			this.users.add(this.bean);
-			PLog.debug("UserContentHandler.endElement",
-				"Caricato nuovo utente. Nome: " + this.bean.getName() + " Privilegi: " + this.bean.getPrivilege());
+			logger.debug("Caricato nuovo utente. Nome: " + this.bean.getName() + " Privilegi: " + this.bean.getPrivilege());
 		}
 	}
 

@@ -5,7 +5,7 @@ import java.io.*;
 import java.math.*;
 import java.rmi.*;
 
-import plog.*;
+import io.Logger;
 
 /**
  * Classe di supporto per la criptazione delle password.
@@ -14,6 +14,11 @@ import plog.*;
  */
 public class PasswordService
 {
+	/**
+	 * Logger
+	 */
+	private Logger logger;
+
 	/**
 	 * Instanza del singleton.
 	 */
@@ -32,6 +37,8 @@ public class PasswordService
 	private PasswordService() throws 
 		RemoteException
 	{
+		this.logger = Logger.getLogger("server-side");
+
 		String algorithmName = "SHA-512";
 		try
 		{
@@ -39,7 +46,7 @@ public class PasswordService
 		}
 		catch (NoSuchAlgorithmException e)
 		{
-			PLog.err(e, "PasswordService", "Algoritmo di criptazione " + algorithmName + " mancante.");
+			logger.error("Algoritmo di criptazione " + algorithmName + " mancante.");
 			throw new RemoteException();
 		}
 	}
@@ -77,7 +84,7 @@ public class PasswordService
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			PLog.err(e, "PasswordService.encrypt", "Encoding " + encoding + "non supportato");
+			logger.error("Encoding " + encoding + "non supportato");
 			throw new RemoteException();
 		}
 		byte digest[] = this.algorithm.digest();
