@@ -9,6 +9,7 @@ database/exceptions/*.java \
 database/xmlhandlers/*.java \
 databaseserver/*.java \
 indexingserver/*.java \
+logserver/*.java \
 loginserver/*.java \
 parcmanagent/*.java \
 parcmanagent/exceptions/*.java \

@@ -1,805 +1,24 @@
-INTRODUZIONE A PARCMAN PROJECT
-Il progetto Parcman è lo sviluppo di una rete di file-sharing utilizando le tecnologie messe a disposizione da Java e Java RMI.
-Parcman si divide essenzialmente in 3 componenti principali:
-	*	i servers
-	*	il parcmanagent
-	*	il client
-I servers sono la parte del progetto che si occupa di gestire la corretta connessione/autenticazione alla rete Parcman, la gestione dell'elenco dei files condivisi e la comunicazione tar i clients stessi durante la fase di file-sharing vera e propria.
-Il parcmanagent, il vero cuore del progetto, si tratta di un server, di tipo UnicastRemoteObject, che viene creato dall'IndexingServer con lo scopo di muoversi presso una lista di clients che gli viene assegnata al momento della sua creazione ed ottenere le informazioni relative allo stato delle condivisioni e quindi tornare al server con gli aggiornamenti del caso. Il parcmanagent viene creato ed inviato ad intervalli regolari e in un numero sufficiente perché tutta la rete dei clients sia efficientemente analizzata; al momento della creazione al singolo agent viene assegnato un sottoinsieme dei clients flaggati come connessi e quindi viene inviato al primo client della lista, al suo arrivo inizia una comunicazione tra agent e client per conoscre lo stato del client e i suoi attuali files condivisi; se non vi sono cambiamenti semplicemente la comunicazione si conclude con lo scabio di informazioni sulla attuale versione del server e l'agent passa al prossimo client. Quando il client ha effettuato delle modifiche alle sue condivisioni l'agent prende in consenga le informazioni sulle modifiche per portarle alla fine della visita della sua lista di client al server che si occuperà di aggiornare il database delle condivisioni.
-Ogni agent viene valorizzato con un timer, con questo sistema l'agent ha un tempo massimo per il 'rientro' presso il server che lo ha generato, se un agent arriva troppo tardi i suoi dati non vengono più considerati attendibili e quindi viene scartato.
-Il client è suddiviso in due componeneti principali:
-	*	il client minimale per il bootstrap, niente di più che una classe che carica codice da un host remoto per successivamente lanciare il vero e proprio client
-	* 	il remoteclient, si tratta del vero e proprio client che viene caricato dal client di bootstrap
-Una volta che l'utente si è connesso alla rete è in grado di effettuare una serie di operazioni per ottenere files da altri utenti o per aggiungere un file alla propria collezione.
-Tutte le comunicazioni avvengono tra client e server tranne nel momento in cui il client decide di ottenere una copia di un files condivisa da un'altro utente; in questo caso il trasferimento delle informazioni avviene direttamente tra i 2 client dei rispettivi utenti.
-Oltre al normale client è possibile connettere un utente con privilegi di amministratore, in questo modo è possibile performare operazioni di manutenzione e di controllo sullo stato dei server e sugli agents da remoto, senza agire direttamente in locale sui server.
+INTRODUZIONE A PARCMAN
+Il progetto Parcman consiste nello sviluppo di una rete di file-sharing utilizzando le tecnologie messe a disposizione da Java e Java RMI.
+Parcman si divide essenzialmente in 2 componenti principali:
+        *       infrastruttura persistente di rete
+        *       infrastruttura non persistente di rete
+Nella infrastruttura persistente di rete troviamo i seguenti server:
+    - server centrale (ParcmanServer)
+    - server di indicizzazione (IndexingServer)
+    - server di login (LoginServer)
+    - server database (DatabaseServer)
+    - server di log (LogServer)
+    - l'agente mobile di aggiornamento (ParcmanAgent)
+
+Nell'infrastruttura non persistente di rete troviamo:
+    - il client di bootstrap (ClientBootstrap)
+    - il client di servizio (RemoteClient)
+    - il client principale (ParcmanClient)
+
+IL SERVER CENTRALE
+Il ParcmanServer si occupa di gestire ogni richiesta degli utenti connessi, nonché di fornire ogni informazione sugli utenti al server di indicizzazione.
 
-UTILIZZO DEL SOFTWARE
-Per accedere alla rete di file-sharing di Parcman è necessario ottenere un accesso con login e password.
-Prima di poter ottenere o accedere è necessario avviare il client minimale di bootstrap, il client minimale è liberamente scaricabile e si preoccupa esclusivamente di caricare la classe remota che implementa il vero e proprio client da cui poi sarà effettuato il login.
-Per ottenere delle credenziali di accesso basta avviare il client e digitare 'NUOVO' alla richiesta di username, verrà lanciata una procedura che avvia una registrazione presso il database degli utenti e successivamente l'utente verrà abilitato al login da un amministratore.
-Superata con successo la fase del login l'utente accede alla ParcmanShell, una semplice shell con i comandi di base per controllare il proprio account presso i servers e per effettuare scambio di files con altri utenti. Nel caso che sia un amministratore a connettersi i comandi della shell si arricchiscono di alcune funzioni ad-hoc per ottenere il controllo dei servers, controllare il loro stato ed eventualmente intervenire sui parametri di funzionamento per ottimizare la rete.
-Questi sono i principali comandi della ParcmanShell:
-ping: consente di verificare se la connessione al server è attiva;
-sharelist: fornisce una lista dei pripri files condivisi;
-exit: effettua la disconnessione dalla rete di file-sharing;
-search: effettua una ricerca;
-scancollection: forza la scansione della cartella dei files condivisi;
-scaninfo: riporta informazioni sull'ultima scansione automatica dei file condivisi;
-scanfile: riporta informazioni sul file che si è passato come parametro.
-
-
-CLASSI RILEVANTI DEL PROGETTO
-
-clientbootstrap
-Class ClientBootstrap
-
-Object
-  extended by clientbootstrap.ClientBootstrap
-
-public class ClientBootstrap
-extends Object
-
-Client Minimale per il BootStrap. Specificare: remoteclient.loginserveradress, indirizzo del registro RMI su cui trovare il LoginServer
-
-Constructor
-ClientBootstrap()
- 
-Method Summary
-static void 	main(String[] args)
-
----------------------------->
-databaseserver
-Class DBServer
-
-Object
-  extended by RemoteObject
-      extended by RemoteServer
-          extended by UnicastRemoteObject
-              extended by databaseserver.DBServer
-public class DBServer
-extends UnicastRemoteObject
-implements RemoteDBServer
-
-Server Database 
-
-Constructor Summary
-DBServer(String dbDirectory)
-          Costruttore.
- 
-Method Summary
- void 	addShare(ShareBean share)
-          Aggiunge un file condiviso al database.
- void 	addUser(UserBean user)
-          Aggiunge un utente al database.
- ShareBean 	getShare(String owner, String id)
-          Ritorna un oggetto ShareBean contenente i dati del file condiviso.
- Vector<ShareBean> 	getSharings(String userName)
-          Restituisce la lista Sharings di un utente.
- UserBean 	getUser(String name)
-          Restituisce i dati di un utente a partire dal nome.
- void 	ping()
-          Metodo ping.
- void 	removeShare(int id, String owner)
-          Rimuove un file condiviso dal database.
- Vector<SearchBean> 	searchFiles(String keywords)
-          Esegue una ricerca di file sul database.
- void 	updateUsers()
-          Esegue il salvataggio del database utenti aggiornandolo.
- 
----------------------------->
-indexingserver
-Class IndexingServer
-
-Object
-  extended by RemoteObject
-      extended by RemoteServer
-          extended by UnicastRemoteObject
-              extended by indexingserver.IndexingServer
-
-public class IndexingServer
-extends UnicastRemoteObject
-implements RemoteIndexingServer
-
-Server di indicizzazione. 
-
-Constructor Summary
-IndexingServer(RemoteDBServer dBServer, RemoteParcmanServer parcmanServer, logserver.RemoteLogServer logServer)
-          Costruttore.
- 
-Method Summary
-private  void 	forceUserToReconnect(String userName)
-          Forza la disconnessione di un utente.
- double 	getAgentPeriodLaunchPercent()
-          Getter per agentPeriodLaunchPercent
- int 	getAgentTeamLaunchDelay()
-          Getter per agentTeamLaunchDelay
- int 	getAgentTeamLaunchPeriod()
-          Getter per agentTeamLaunchPeriod
- void 	ping()
-          Metodo ping.
-private  void 	run()
-          Inizia l'indicizzazione dei client.
- void 	sendUpdateLists(Map<String,ClientDataForAgent> updateLists, long validity, int identify)
-          Esegue l'update della lista di file condivisi a partire dalla mappa updateLists.
----------------------------->
-indexingserver
-Class SendAgentTimerTask
-
-Object
-  extended by TimerTask
-      extended by indexingserver.SendAgentTimerTask
-
-class SendAgentTimerTask
-extends TimerTask
-
-Constructor Summary
-SendAgentTimerTask(RemoteParcmanServer parcmanServer, IndexingServer is, logserver.RemoteLogServer logServer)
-           
- 
-Method Summary
-private  int 	ipSplitRate(int numConnectedClient)
-          Metodo che implementa l'algoritmo per scegliere quanti gruppi di indirizzi ip generare.
- void 	run() 
----------------------------->
-loginserver
-Class LoginServer
-
-Object
-  extended by RemoteObject
-      extended by RemoteServer
-          extended by Activatable
-              extended by loginserver.LoginServer
-
-public class LoginServer
-extends Activatable
-implements RemoteLoginServer, Unreferenced
-
-Server di login.
-
-Constructor Summary
-LoginServer(ActivationID id, MarshalledObject atDate)
-          Costruttore.
- 
-Method Summary
- void 	createAccount(String name, String password)
-          Esegue la registrazione di un nuovo account.
- RemoteParcmanClient 	login(String name, String password)
-          Esegue il login di un Client alla rete Parcman.
- void 	ping()
-          Metodo ping.
- void 	unreferenced()
-          Dereferenziazione del Server.
----------------------------->
-loginserver
-Class LoginServerAtDate
-
-Object
-  extended by loginserver.LoginServerAtDate
-
-
-public class LoginServerAtDate
-extends Object
-implements Serializable
-
-Dati di sessione per la riattivazione del server di Login. 
-
-Constructor Summary
-LoginServerAtDate(int activationsCount, RemoteParcmanServer parcmanServerStub, RemoteDBServer dBServerStub)
-          Costruttore.
- 
-Method Summary
- int 	getActivationsCount()
-          Ritorna il valore del contatore del numero di attivazioni.
- RemoteDBServer 	getDBServerStub()
-          Ritorna lo Stub del DBServer.
- RemoteParcmanServer 	getParcmanServerStub()
-          Ritorna lo Stub del ParcmanServer.
- void 	setActivationsCount(int activationsCount)
-          Assegna un valore al numero di attivazioni.
- void 	setDBServerStub(RemoteDBServer dBServerStub)
-          Assegna lo Stub del DBServer.
- void 	setParcmanServerStub(RemoteParcmanServer parcmanServerStub)
-          Assegna lo Stub del ParcmanServer.
----------------------------->
-parcmanagent
-Class ParcmanAgent
-
-Object
-  extended by RemoteObject
-      extended by RemoteServer
-          extended by UnicastRemoteObject
-              extended by parcmanagent.ParcmanAgent
-
-public class ParcmanAgent
-extends UnicastRemoteObject
-implements RemoteParcmanAgent, Serializable
-
-Parcman Agent. 
-
-Constructor Summary
-ParcmanAgent(RemoteIndexingServer iServer, long validity, Vector<ClientDataForAgent> clients, int identify, logserver.RemoteLogServer logServer)
-           
- 
-Method Summary
-private  void 	goNext()
-           
-private  void 	log(String str)
-           
- void 	run()
-          Avvia l'esecuzione del ParcmanAgent.
-private  void 	saveUpdateList(UpdateList list)
-           
- void 	start()
-           
-private  void 	transfer()
----------------------------->
-parcmanagent
-Class ClientDataForAgent
-
-Object
-  extended by parcmanagent.ClientDataForAgent
-
-public class ClientDataForAgent
-extends Object
-implements Serializable
-
-Contenitore per i dati di un Client trasportati dal ParcmanAgent.
-
-Constructor Summary
-ClientDataForAgent(String name, RemoteParcmanClientAgent stub, int version, int status)
-          Costruttore.
- 
-Method Summary
- String 	getName()
-          Ritorna il nome utente.
- int 	getStatus()
-          Ritorna lo stato del contenitore ClientDataForAgent.
- RemoteParcmanClientAgent 	getStub()
-          Ritorna lo Stub.
- UpdateList 	getUpdateList()
-          Ritorna la lista degli aggiornamenti attualmente il possesso del contentitore.
- int 	getVersion()
-          Ritorna la versione della lista dei file condivisi.
- void 	setName(String name)
-          Assegna il nome utente.
- void 	setStatus(int status)
-          Assegna lo status del contenitore ClientDataForAgent.
- void 	setStub(RemoteParcmanClientAgent stub)
-          Assegna lo Stub.
- void 	setUpdateList(UpdateList updateList)
-          Assegna la lista di aggiornamento di tipo UpdateList.
- void 	setVersion(int version)
-          Assegna la versione della lista dei file condivisi.
----------------------------->
-parcmanagent
-Class UpdateList
-
-Object
-  extended by parcmanagent.UpdateList
-
-public class UpdateList
-extends Object
-implements Serializable
-
-Contenitore dati per il trasporto dei nuovi file condivisi tra client e server attraverso ParcmanAgent. 
-
-Constructor Summary
-UpdateList()
-          Costruttore.
- 
-Method Summary
- void 	addRemovableId(int id)
-          Aggiunge un nuovo ID alla lista degli ID dei file da rimuovere.
- void 	addShareBean(ShareBean bean)
-          Aggiunge un nuovo ShareBean
- Vector<ShareBean> 	getAddList()
-          Ritorna la lista dei nuovi file condivisi.
- Vector<Integer> 	getRemoveList()
-          Ritorna la lista dei file da eliminare dalla condivisione.
- Vector<ShareBean> 	getUpdatedSharesList(Vector<ShareBean> list)
-          Restituisce l'update della lista passata come argomento.
- int 	getVersion()
-          Ritorna la versione.
- void 	setAddList(Vector<ShareBean> addList)
-          Setta la lista dei nuovi file condivisi.
- void 	setRemoveList(Vector<Integer> removeList)
-          Setta la lista dei file da eliminare dalla condivisione.
- void 	setVersion(int version)
-          Setta la versione.
- String 	toString()
-          Restituisce una stringa rappresentante l'oggetto.
----------------------------->
-parcmanagent.exceptions
-Class UpdateSharesListErrorException
-
-Object
-  extended by Throwable
-      extended by Exception
-          extended by parcmanagent.exceptions.UpdateSharesListErrorException
-
-public class UpdateSharesListErrorException
-extends Exception
-
-Impossibile eseguire l'Update, errore di versione. 
-
-Constructor Summary
-UpdateSharesListErrorException()
-          Costruttore.
-UpdateSharesListErrorException(String message)
-          Costruttore parametrizzato con un messaggio di errore.
----------------------------->
-parcmanclient
-Class ParcmanClient
-
-Object
-  extended by RemoteObject
-      extended by RemoteServer
-          extended by UnicastRemoteObject
-              extended by parcmanclient.ParcmanClient
-
-public class ParcmanClient
-extends UnicastRemoteObject
-implements RemoteParcmanClient, Serializable
-
-Mobile server in esecuzione presso il Client. 
-
-Constructor Summary
-ParcmanClient(RemoteParcmanServerUser parcmanServerStub, String userName, boolean isAdmin)
-          Costruttore.
- 
-Method Summary
- void 	disconnect(String message)
-          Disconnette il client.
- void 	exit()
-          Esegue la disconnessione dalla rete.
-private  void 	fixSharingDirectory()
-          Controlla l'esistenza/Crea la directory condivisa.
- byte[] 	getFile(int id)
-          Trasmette il file richiesto come stream di byte.
-private  int 	getNewId(Vector<ShareBean> newList)
-           
- TimerTask 	getScanDirectoryTimerTask()
-          Restituisce il TimerTask dello scan della directory condivisa.
- Vector<ShareBean> 	getShares()
-          Restituisce la lista dei file condivisi.
- String 	getSharingDirectory()
-          Restituisce il PATH assoluto della directory condivisa.
- RemoteParcmanClient 	getStub()
-          Restituisce lo stub del ParcmanClient.
- UpdateList 	getUpdateList(int version)
-          Restituisce la lista di Update a partire dalla versione.
- String 	getUserName()
-          Ritorna il nome utente del proprietario della sessione.
- boolean 	haveAnUpdate(int version)
-          Restituisce true se il ParcmanClient ha bisogno di eseguire un update, cioe' l'UpdateList per la versione fornita non e' vuota.
- void 	ping()
-          Metodo ping.
- void 	reconnect()
-          Forza la riconnessione del client.
- void 	scanSharingDirectory()
-          Esegue la scansione ricorsiva della directory dei file condivisi.
-private  void 	scanSharingDirectory(File dir, Vector<ShareBean> newList)
-          Esegue la scansione ricorsiva della directory dei file condivisi.
- void 	startConnection()
-          Lancia la connessione alla rete Parcman.
- void 	transferAgent(RemoteParcmanAgentClient parcmanAgent)
-          Permette il trasferimento di un agente remoto.
----------------------------->
-parcmanclient
-Class DownloadData
-
-Object
-  extended by parcmanclient.DownloadData
-
-public class DownloadData
-extends Object
-implements Serializable
-
-Contenitore dei dati del file che si intende scaricare.
-
-Constructor Summary
-DownloadData(RemoteParcmanClientUser rclient, ShareBean bean)
-           
- 
-Method Summary
- ShareBean 	getShareBean()
-          Ritorna lo ShareBean contente i dati del file. 
- RemoteParcmanClientUser 	getStub()
-	  Ritorna lo Stub del client da cui ottenere il file.
----------------------------->
-parcmanclient
-Class ShellData
-
-Object
-  extended by pshell.PShellData
-      extended by parcmanclient.ShellData
-
-public class ShellData
-extends PShellData
-
-Constructor Summary
-ShellData(RemoteParcmanServerUser parcmanServerStub, ParcmanClient parcmanClient, String userName)
-          Costruttore.
- 
-Method Summary
- void 	commandExit(String param)
-          Metodo per il comando di shell exit.
- void 	commandGetFile(String param)
-          Metodo per il comando di shell get.
- void 	commandPing(String param)
-          Metodo per il comando di shell ping.
- void 	commandScanCollection(String param)
-          Metodo per il comando di scancollection
- void 	commandScanInfo(String param)
-          Metodo per il comando scaninfo
- void 	commandSearchFile(String param)
-          Metodo per il comando di shell sharelist.
- void 	commandShareList(String param)
-          Metodo per il comando di shell sharelist.
- void 	writePrompt()
-          Stampa il prompt della shell.
-private  void 	writeSearch(SearchBean search)
-          Stampa i dati di un SearchBean.
-private  void 	writeShare(int index, ShareBean share)
-          Stampa i dati di un file.
----------------------------->
-parcmanclient
-Class ShellDataAdmin
-
-Object
-  extended by pshell.PShellData
-      extended by parcmanclient.ShellData
-          extended by parcmanclient.ShellDataAdmin
-
-public class ShellDataAdmin
-extends ShellData
-
-Constructor Summary
-ShellDataAdmin(RemoteParcmanServerUser parcmanServerStub, ParcmanClient parcmanClient, String userName)
-          Costruttore.
- 
-Method Summary
- void 	commandAddToBlacklist(String param)
-          Metodo per il comando di shell addToBlacklist.
- void 	commandDelFromBlacklist(String param)
-          Metodo per il comando di shell delFromBlacklist.
- void 	commandDisableAgentSystem(String param)
-          Metodo per il comando di shell disableAgentSystem.
- void 	commandEnableAgentSystem(String param)
-          Metodo per il comando di shell enableAgentSystem.
- void 	commandGetConnectUsersList(String param)
-          Metodo per il comando di shell getConnectUsersList.
----------------------------->
-parcmanserver
-Class ParcmanServer
-
-Object
-  extended by RemoteObject
-      extended by RemoteServer
-          extended by UnicastRemoteObject
-              extended by parcmanserver.ParcmanServer
-
-public class ParcmanServer
-extends UnicastRemoteObject
-implements RemoteParcmanServer
-
-Server centrale per la gestione degli utenti. 
-
-Constructor Summary
-ParcmanServer(RemoteDBServer dbServer)
-          Costruttore.
- 
-Method Summary
- void 	addToBlacklist(RemoteParcmanClient parcmanClientStub, String userName, String userForBlacklist)
-          Aggiunge un utente in blacklist.
-private  void 	checkAdminPrivileges(ClientData user)
-          Check if the client is an admin client.
-private  void 	checkHacking(RemoteParcmanClient stub, String userName)
-          Check hacking attack!
- void 	checkUsers()
-          Controlla lo stato degli utenti connessi disconnettendo tutti quelli che risultano irraggiungibili.
- void 	connect(RemoteParcmanClient parcmanClientStub, String userName)
-          Esegue la connessione di un nuovo RemoteParcmanClient alla rete Parcman.
- void 	connectAttemp(String username, String host)
-          Esegue l'aggiunta di un nuovo client alla lista dei tentativi di connessione.
- void 	delFromBlacklist(RemoteParcmanClient parcmanClientStub, String userName, String userForBlacklist)
-          Rimuove un utente dalla blacklist.
- void 	disconnect(RemoteParcmanClient parcmanClientStub, String userName)
-          Esegue la disconnessione di RemoteParcmanClient dalla rete Parcman.
- void 	forceUserToReconnect(String userName)
-          Forza la riconnessione di un utente.
- boolean 	getAgentSystemStatus(RemoteIndexingServer ris)
-          Ritorna lo stato del sistema di gestione degli agenti remoti.
- boolean 	getAgentSystemStatus(RemoteParcmanClient parcmanClientStub, String userName)
-          Ritorna lo stato del sistema di gestione degli agenti remoti.
- Map<String,ClientData> 	getConnectedUsers(RemoteIndexingServer ris)
-          Restituisce la lista degli utenti connessi al sistema E' necessario possedere lo stub del server di indicizzazione per poter fare questa richiesta.
- Vector<String> 	getConnectUsersList(RemoteParcmanClient parcmanClientStub, String userName)
-          Restituisce la lista degli utenti connessi.
- Vector<ShareBean> 	getSharings(RemoteParcmanClient parcmanClientStub, String userName)
-          Restituisce la lista file condivisi dell'utente.
- int 	getSharingsVersion(RemoteParcmanClient parcmanClientStub, String userName)
-          Restituisce il numero di versione dei file condivisi dell'utente.
- void 	ping()
-          Metodo ping.
-private  void 	removeUserFromAttempList(String username)
-          Esegue la rimozione di un utente dalla lista degli utenti di attemp.
-private  void 	removeUserFromConnectList(String username)
-          Esegue la rimozione di un utente dalla lista degli utenti connessi.
- Vector<SearchBean> 	search(RemoteParcmanClient parcmanClientStub, String userName, String keywords)
-          Restituisce il risultato di una ricerca sul database.
- void 	setAgentSystemStatus(RemoteParcmanClient parcmanClientStub, String userName, boolean status)
-          Imposta lo stato del sistema di gestione degli agenti remoti.
- void 	setShareListVersionOfUser(String username, int version)
-          Setta la versione dei file condivisi di un utente.
- DownloadData 	startDownload(RemoteParcmanClient parcmanClientStub, String userName, String[] fileData)
-          Inizializza il download di un file.
----------------------------->
-remoteclient
-Class RemoteClientUser
-
-Object
-  extended by remoteclient.RemoteClientUser
-
-public class RemoteClientUser
-extends Object
-implements RemoteClient
-
-Client remoto per utenti. 
-
-Constructor Summary
-RemoteClientUser()
-           
- 
-Method Summary
- void 	echo(boolean on)
-          Accende o spegne l'echo sul terminale.
- void 	run()
-          Avvia il Client remoto.
-
-ECCEZIONI GESTISTE NEL PROGETTO
-
-Package remoteexceptions
-	Tutte le classi delle eccezioni implementano l'interfaccia Serializable.
-
-IndexingServerRequestAfterTimeOutRemoteException
-	Richiesta inviata oltre il TimeOut.
-LoginServerClientHostUnreachableRemoteException
-	client host irraggiungibile.
-LoginServerUserFailedRemoteException
-	Username non corrisponde.
-LoginServerUserInBlacklistRemoteException
-	Utente in blacklist.
-LoginServerUserIsConnectRemoteException
-	Utente gia` connesso.
-LoginServerUserOrPasswordFailedRemoteException
-	Username o password non corrispondono.
-LoginServerUserPrivilegeFailedRemoteException
-	Utente non ha i privilegi necessari.
-ParcmanClientFileErrorRemoteException
-	Errore nella creazione del buffer.
-ParcmanClientFileNotExistsRemoteException
-	File non presente.
-ParcmanDBServerErrorRemoteException
-	Errore interno del database.
-ParcmanDBServerShareExistRemoteException
-	File presente all'interno del database.
-ParcmanDBServerShareNotExistRemoteException
-	File non presente all'interno del database.
-ParcmanDBServerShareNotValidRemoteException
-	I dati del file non sono validi.
-ParcmanDBServerUserExistRemoteException
-	Utente presente all'interno del database.
-ParcmanDBServerUserNotExistRemoteException
-	Utente non presente all'interno del database.
-ParcmanDBServerUserNotValidRemoteException
-	I dati dell'utente non sono validi.
-ParcmanServerHackWarningRemoteException
-	Tentativo di Hacking.
-ParcmanServerRequestErrorRemoteException
-	Richiesta non esaudita.
-ParcmanServerUserIsConnectRemoteException
-	Utente gia' connesso alla rete.
-ParcmanServerWrongPrivilegesRemoteException
-	Privilegi errati.
-
----------------------------->
-PARCMANAGENT EXCEPTIONs
-
-parcmanagent.exceptions
-Class UpdateSharesListErrorException
-
-Object
-  extended by Throwable
-      extended by Exception
-          extended by parcmanagent.exceptions.UpdateSharesListErrorException
-
-public class UpdateSharesListErrorException
-extends Exception
-
-Impossibile eseguire l'Update, errore di versione. 
-
-
-INTERFACCE
-
-database
-Interface DBFile
-
-public interface DBFile
-
-Interfaccia database di gestione file.
-
-Method Summary
- String getDbFile()
-          Restituisce il file gestito dal database.
- void 	load()
-          Carica in memoria il database.
- void 	save()
-          Salva il database su file.
- void 	setDbFile(String dbFile)
-          Setta il file gestito dal database.
-
------------------------------>
-
-databaseserver
-Interface RemoteDBServer
-
-public interface RemoteDBServer
-extends Remote
-
-Interfaccia remota del DBServer.
-
-Method Summary
- void 	addShare(ShareBean share)
-          Aggiunge un file condiviso al database.
- void 	addUser(UserBean user)
-          Aggiunge un utente al database.
- ShareBean 	getShare(String owner, String id)
-          Restituisce lo ShareBean di un utente.
- Vector<ShareBean> 	getSharings(String userName)
-          Restituisce la lista Sharings di un utente.
- UserBean 	getUser(String name)
-          Restituisce i dati di un utente a partire dal nome.
- void 	ping()
-          Ping.
- void 	removeShare(int id, String owner)
-          Rimuove un file condiviso dal database.
- Vector<SearchBean> 	searchFiles(String keywords)
-          Esegue una ricerca di file sul database.
- void 	updateUsers()
-          Esegue il salvataggio del database utenti aggiornandolo.
-
------------------------------>
-
-indexingserver
-Interface RemoteIndexingServer
-
-public interface RemoteIndexingServer
-extends RemoteIndexingServerAgent, Remote
-
-Interfaccia remota del ParcmanServer.
-
------------------------------>
-
-indexingserver
-Interface RemoteIndexingServerAgent
-
-public interface RemoteIndexingServerAgent
-extends Remote
-
-Interfaccia remota del ParcmanServer per il ParcmanAgent.
-
-Method Summary
- void 	ping()
-          Ping.
- void 	sendUpdateLists(Map<String,ClientDataForAgent> updateLists, long validity, int identify)
-          Esegue l'update della lista di file condivisi a partire dalla mappa updateLists.
-
-
------------------------------>
-
-loginserver
-Interface RemoteLoginServer
-
-public interface RemoteLoginServer
-extends Remote
-
-Interfaccia remota del LoginServer.
-
-Method Summary
- void 	createAccount(String name, String password)
-          Esegue la registrazione di un nuovo account.
- RemoteParcmanClient 	login(String name, String password)
-          Esegue il login di un Client alla rete Parcman.
- void 	ping()
-          Ping.
-
------------------------------>
-
-parcmanagent
-Interface RemoteParcmanAgent
-
-public interface RemoteParcmanAgent
-extends RemoteParcmanAgentClient, Remote
-
-Interfaccia remota del ParmanAgent
-
-Method Summary
- void 	start() 
-         Esegue l'invio del ParcmanAgent al prossimo client. 
-
------------------------------>
-
-parcmanagent
-Interface RemoteParcmanAgentClient
-
-public interface RemoteParcmanAgentClient
-extends Remote
-
-Interfaccia remota del ParmanAgent
-
-Method Summary
- void 	run()
-          Avvia l'esecuzione del ParcmanAgent.
-
------------------------------>
-
-parcmanclient
-Interface RemoteParcmanClient
-
-public interface RemoteParcmanClient
-extends RemoteParcmanClientUser, RemoteParcmanClientAgent, Remote, Serializable
-
-Interfaccia remota del ParcmanClient.
-
-Method Summary
- void 	ping()
-          Ping.
- void 	reconnect()
-          Forza la riconnessione del client.
- void 	startConnection()
-          Lancia la connessione alla rete Parcman.
-
------------------------------>
-
-parcmanclient
-Interface RemoteParcmanClientAgent
-
-public interface RemoteParcmanClientAgent
-extends Remote, Serializable
-
-Interfaccia remota del ParcmanClient per l'agente remoto.
-
-Method Summary
- UpdateList 	getUpdateList(int version)
-          Restituisce la lista di Update a partire dalla versione.
- boolean 	haveAnUpdate(int version)
-          Restituisce true se il ParcmanClient ha bisogno di eseguire un update, cioe' l'UpdateList per la versione fornita non e' vuota.
- void 	transferAgent(RemoteParcmanAgentClient parcmanAgent)
-          Permette il trasferimento di un agente remoto.
-
------------------------------>
-
-parcmanclient
-Interface RemoteParcmanClientUser
-
-public interface RemoteParcmanClientUser
-extends Remote, Serializable
-
-Interfaccia remota del ParcmanClient a livello utente.
-
-Method Summary
- void 	disconnect(String message)
-          Disconnette il client.
- byte[] 	getFile(int id)
-          Trasmette il file richiesto come stream di byte.
- String 	getUserName()
-          Ritorna il nome utente del proprietario della sessione.
-
------------------------------>
-
-parcmanserver
 Interface RemoteParcmanServer
 
 public interface RemoteParcmanServer
@@ -833,9 +52,6 @@ Method Summary
  DownloadData 	startDownload(RemoteParcmanClient parcmanClientStub, String userName, String[] fileData)
           Inizializza il download di un file.
 
------------------------------>
-
-parcmanserver
 Interface RemoteParcmanServerUser
 
 public interface RemoteParcmanServerUser
@@ -865,17 +81,167 @@ Method Summary
  DownloadData 	startDownload(RemoteParcmanClient parcmanClientStub, String userName, String[] fileData)
           Inizializza il download di un file.
 
------------------------------>
+SERVER DI INDICIZZAZIONE
+L'IndexingServer si occupa della gestione dell'indicizzazione dei file presenti attualmente nella rete; invia ad intervalli regolari degli agenti remoti nella rete parcman per raccogliere informazioni presso i client connessi; informazioni che, dopo un adeguato parsing, verranno inserite all'interno del database.
 
-remoteclient
-Interface RemoteClient
+Interface RemoteIndexingServer
 
-public interface RemoteClient
-extends Runnable, Serializable
+public interface RemoteIndexingServer
+extends RemoteIndexingServerAgent, Remote
 
-Interfaccia dei Client remoti.
+Interfaccia remota del ParcmanServer.
+
+Interface RemoteIndexingServerAgent
+
+public interface RemoteIndexingServerAgent
+extends Remote
+
+Interfaccia remota del ParcmanServer per il ParcmanAgent.
 
 Method Summary
- void 	run()
-          Avvia il Client remoto.
+ void 	ping()
+          Ping.
+ void 	sendUpdateLists(Map<String,ClientDataForAgent> updateLists, long validity, int identify)
+          Esegue l'update della lista di file condivisi a partire dalla mappa updateLists.
+
+SERVER DI LOGIN
+Come suggerisce il nome, tale server si occupa del login degli utenti alla rete parcman, permettendo anche la creazione di nuovi utenti.
+
+Interface RemoteLoginServer
+
+public interface RemoteLoginServer
+extends java.rmi.Remote
+
+Interfaccia remota del LoginServer.
+
+Method Summary
+ void   createAccount(java.lang.String name, java.lang.String password)
+          Esegue la registrazione di un nuovo account.
+ RemoteParcmanClient    login(java.lang.String name, java.lang.String password)
+          Esegue il login di un Client alla rete Parcman.
+ void   ping()
+          Ping.
+
+SERVER DI DATABASE
+Tale server si occupa di gestire le informazioni degli utenti, dati di autenticazione e informazioni sui file condivisi.
+Il salvataggio delle informazioni avviene su file XML.
+
+Interface RemoteDBServer
+
+public interface RemoteDBServer
+extends java.rmi.Remote
+
+Interfaccia remota del DBServer.
+
+Method Summary
+ void   addShare(ShareBean share)
+          Aggiunge un file condiviso al database.
+ void   addUser(UserBean user)
+          Aggiunge un utente al database.
+ ShareBean      getShare(java.lang.String owner, java.lang.String id)
+          Restituisce lo ShareBean di un utente.
+ java.util.Vector<ShareBean>    getSharings(java.lang.String userName)
+          Restituisce la lista Sharings di un utente.
+ UserBean       getUser(java.lang.String name)
+          Restituisce i dati di un utente a partire dal nome.
+ java.util.Vector<UserBean>     getUsers()
+          Ritorna la lista degli utenti registrati nel database.
+ void   ping()
+          Ping.
+ void   reloadShares()
+          Aggiorna il database dei file condivisi.
+ void   reloadUsers()
+          Aggiorna il database degli utenti.
+ void   removeShare(int id, java.lang.String owner)
+          Rimuove un file condiviso dal database.
+ java.util.Vector<SearchBean>   searchFiles(java.lang.String keywords)
+          Esegue una ricerca di file sul database.
+ void   updateUsers()
+          Esegue il salvataggio del database utenti aggiornandolo.
+
+SERVER DI LOG
+Il server di log, permette la centralizzaizone dei log remoti; questo server è progettato per l'uso durante la fase implementativa e di debug.
+Dato che crea una comunicazione tra i parcmanAgent e l'infratruttura presente sulle macchine server, il suo uso è sconsigliato in un ambiente produttivo.
+
+Interface RemoteLogServer
+
+public interface RemoteLogServer
+extends java.rmi.Remote, java.io.Serializable
+
+Interfaccia remota del server di log.
+
+Method Summary
+ void   debug(java.lang.String msg)
+           
+ void   debug(java.lang.String[] msg)
+           
+ void   debug(java.lang.String[] msg, java.lang.Throwable e)
+           
+ void   debug(java.lang.String msg, java.lang.Throwable e)
+           
+ void   error(java.lang.String msg)
+           
+ void   error(java.lang.String[] msg)
+           
+ void   error(java.lang.String[] msg, java.lang.Throwable e)
+           
+ void   error(java.lang.String msg, java.lang.Throwable e)
+           
+ void   info(java.lang.String msg)
+           
+ void   info(java.lang.String[] msg)
+           
+ void   info(java.lang.String[] msg, java.lang.Throwable e)
+           
+ void   info(java.lang.String msg, java.lang.Throwable e)
+           
+ void   log(java.lang.String msg)
+           
+ void   log(java.lang.String[] msg)
+           
+ void   log(java.lang.String[] msg, java.lang.Throwable e)
+           
+ void   log(java.lang.String msg, java.lang.Throwable e)
+           
+ void   warning(java.lang.String msg)
+           
+ void   warning(java.lang.String[] msg)
+           
+ void   warning(java.lang.String[] msg, java.lang.Throwable e)
+           
+ void   warning(java.lang.String msg, java.lang.Throwable e)
+
+L'AGENTE MOBILE
+Il ParcmanAgent, cuore del sistema di indicizzazione, è un agente remoto il cui scopo è la raccolta di informazioni presso i client connessi alla rete parcman.
+Tutte le informazioni specifiche sul sistema di indicizzazione sono esposte in dettaglio nella spiegazione del sistema stesso.
+
+Interface RemoteParcmanAgent
+
+public interface RemoteParcmanAgent
+extends RemoteParcmanAgentClient, java.rmi.Remote
+
+Interfaccia remota del ParmanAgent
+
+Method Summary
+ void   start() 
+
+Interface RemoteParcmanAgentClient
+
+public interface RemoteParcmanAgentClient
+extends java.rmi.Remote
+
+Interfaccia remota del ParmanAgent
+
+Method Summary
+ void   run()
+          Avvia l'esecuzione del ParcmanAgent.
+
+UTILIZZO DEL SOFTWARE
+
+- SISTEMA DI LOGIN
+
+- SISTEMA DI INDICIZZAZIONE
+
+- STRUTTURA DEL DATABASE
+
 
