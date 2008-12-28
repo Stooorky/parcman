@@ -420,6 +420,7 @@ function mk_tar()
 		micro-client/src/logger-client.properties \
 		micro-client/src/io-client.properties \
 		micro-client/src/policy \
+		micro-client/src/keystore \
 		micro-client/bash/loglib.sh \
 		micro-client/bash/argslib.sh )
 	tar cfp "$1" ${files[@]}

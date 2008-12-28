@@ -7,6 +7,7 @@ import java.rmi.activation.*;
 import java.rmi.registry.*;
 import java.rmi.server.*;
 import java.util.Properties;
+import javax.rmi.ssl.*;
 
 import databaseserver.*;
 import parcmanserver.*;
@@ -61,6 +62,8 @@ public final class Setup
 		prop.put("java.security.policy", policyGroup);
 		prop.put("java.class.path", "no_classpath");
 		prop.put("java.rmi.dgc.leaseValue", 60000);
+		prop.put("javax.net.ssl.keyStore", "keystore");
+		prop.put("javax.net.ssl.keyStorePassword", "parcman");
 
 		try
 		{
@@ -87,7 +90,8 @@ public final class Setup
 			logger.info("L'identificazione del primo gruppo di attivazione e': " + groupID + ".");
 
 			// Creo il MashalledObject per il LoginServer
-			LoginServerAtDate loginServerAtDate = new LoginServerAtDate(0, parcmanServer, dBServer);
+			SslRMIClientSocketFactory csf = new SslRMIClientSocketFactory();
+			LoginServerAtDate loginServerAtDate = new LoginServerAtDate(0, parcmanServer, dBServer, csf);
 			ActivationDesc actDesc = new ActivationDesc(groupID, loginServerClass, implCodebase, new MarshalledObject(loginServerAtDate));
 
 			// Creo e registro il LoginServer
@@ -101,17 +105,17 @@ public final class Setup
 		}
 		catch(ParcmanDBServerErrorRemoteException e)
 		{
-			logger.info("Impossibile inizializzare il DBServer. (0)");
+			logger.error("Impossibile inizializzare il DBServer. (0)", e);
 			return;
 		}
 		catch(RemoteException e)
 		{
-			logger.info("Impossibile eseguire il Setup del sistema. (1)");
+			logger.error("Impossibile eseguire il Setup del sistema. (1)", e);
 			return;
 		}
 		catch(Throwable t)
 		{
-			logger.info("Impossibile eseguire il Setup del sistema. (2)");
+			logger.error("Impossibile eseguire il Setup del sistema. (2)", t);
 			return;
 		}
 	}

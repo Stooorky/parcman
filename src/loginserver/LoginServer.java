@@ -7,6 +7,7 @@ import java.io.*;
 import java.rmi.activation.*;
 import java.lang.*;
 import java.security.*;
+import javax.rmi.ssl.*;
 
 import io.Logger;
 import remoteexceptions.*;
@@ -66,7 +67,11 @@ public class LoginServer
 		IOException,
 		ClassNotFoundException
 	{
-		super(id, 38990);
+		super(id, 38990, 
+			((LoginServerAtDate)(atDate.get())).getClientSocketFactory(),
+			new SslRMIServerSocketFactory());
+
+
 		this.logger = Logger.getLogger("server-side");
 
 		// Ricavo l'ActivationSystem
@@ -75,18 +80,23 @@ public class LoginServer
 		ActivationDesc actDesc = actSystem.getActivationDesc(id);
 
 		logger.info("Inizializzo il LoginServer.");
-		logger.info("Ripristino e aggiornamento dei dati di sessione.");
 
 		// Ricavo dall'atDate i dati della sessione
 		LoginServerAtDate onAtDate = (LoginServerAtDate)(atDate.get());
 		this.parcmanServerStub = onAtDate.getParcmanServerStub();
 		this.dBServerStub = onAtDate.getDBServerStub();
 		this.activationsCount = onAtDate.getActivationsCount();
+		RMIClientSocketFactory csf = onAtDate.getClientSocketFactory();
+		logger.info("Ho ripristinato e aggiornato i dati di sessione.");
+
 
 		// Creo un nuovo LoginServerAtDate con i dati di sessione aggiornati
-		LoginServerAtDate newAtDate = new LoginServerAtDate(this.activationsCount+1, this.parcmanServerStub, this.dBServerStub);
+		LoginServerAtDate newAtDate = new LoginServerAtDate(this.activationsCount+1, this.parcmanServerStub, this.dBServerStub, csf);
+		logger.info("Ho creato un nuovo LoginServerAtDate.");
 		ActivationDesc newActDesc = new ActivationDesc(actDesc.getGroupID(), actDesc.getClassName(), actDesc.getLocation(), new MarshalledObject(newAtDate));
+		logger.info("Ho creato un nuovo activation descriptop.");
 		actDesc = actSystem.setActivationDesc(id, newActDesc);
+		logger.info("Ho impostato il nuovo activation descriptor.");
 	}
 
 	/**

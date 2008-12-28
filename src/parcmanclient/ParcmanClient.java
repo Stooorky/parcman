@@ -304,11 +304,11 @@ public class ParcmanClient
 		// Fixo e ricontrollo la directory di condivisione.
 		this.fixSharingDirectory();
 
-		Timer timer = new Timer();
-		this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
-		// La scansione della directory condivisa viene effettuata ogni 60 secondi
-		// con una attesa iniziale di 10 secondi.
-		timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
+		// Timer timer = new Timer();
+		// this.scanDirectoryTimerTask = new ScanDirectoryTimerTask(this);
+		// // La scansione della directory condivisa viene effettuata ogni 60 secondi
+		// // con una attesa iniziale di 10 secondi.
+		// timer.schedule(this.scanDirectoryTimerTask, 10000, 60000);
 
 		ready = true;
 

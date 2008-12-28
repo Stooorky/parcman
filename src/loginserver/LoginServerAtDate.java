@@ -1,6 +1,7 @@
 package loginserver;
 
 import java.io.*;
+import java.rmi.server.*;
 
 import parcmanserver.RemoteParcmanServer;
 import databaseserver.RemoteDBServer;
@@ -8,7 +9,7 @@ import databaseserver.RemoteDBServer;
 /**
  * Dati di sessione per la riattivazione del server di Login.
  *
- * @author PAarcman Tm
+ * @author Parcman Tm
  */
 public class LoginServerAtDate
 implements Serializable
@@ -29,6 +30,11 @@ implements Serializable
 	private RemoteDBServer dBServerStub;
 
 	/**
+	 * RMIClientSocketFactory
+	 */
+	private RMIClientSocketFactory csf;
+
+	/**
 	 * serialVersionUID per la serializzazione.
 	 */
 	private static final long serialVersionUID = 42L;
@@ -43,8 +49,10 @@ implements Serializable
 	public LoginServerAtDate(
 		int activationsCount,
 		RemoteParcmanServer parcmanServerStub,
-		RemoteDBServer dBServerStub)
+		RemoteDBServer dBServerStub, 
+		RMIClientSocketFactory csf)
 	{
+		this.csf = csf;
 		this.activationsCount = activationsCount;
 		this.parcmanServerStub = parcmanServerStub;
 		this.dBServerStub = dBServerStub;
@@ -109,4 +117,13 @@ implements Serializable
 	{
 		this.dBServerStub = dBServerStub;
 	}
+
+	/**
+	 * getter per RMIClientSocketFactory.
+	 */
+	public RMIClientSocketFactory getClientSocketFactory()
+	{
+		return this.csf;
+	}
+
 }

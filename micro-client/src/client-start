@@ -65,5 +65,7 @@ bt_info_inline " 3) clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P
 bt_info_nl "java -Xdebug \
 -Dremoteclient.loginserveradress=//$P_ADDRESS:1098/LoginServer \
 -Djava.security.policy=$P_POLICY \
+-Djavax.net.ssl.trustStore=keystore \
+-Djavax.net.ssl.trustStorePassword=parcman \
 -Djava.rmi.dgc.leaseValue=30000 \
 clientbootstrap.ClientBootstrap http://$P_ADDRESS:$P_PORT/$P_REMOTE_PATH remoteclient.RemoteClientUser" "run client" $G_LOGPOS

@@ -182,6 +182,8 @@ public class RemoteClientUser
 			}
 			else if (e.getCause() instanceof LoginServerClientHostUnreachableRemoteException)
 			{
+			e.printStackTrace();
+			e.getCause().printStackTrace();
 				error("Impossibile eseguire il login. Il Login Server risulta irraggiungibile. (1)");
 				logger.error("Impossibile eseguire il login. Il Login Server risulta irraggiungibile. (1)");
 				// e.printStackTrace();
@@ -199,13 +201,17 @@ public class RemoteClientUser
 		}
 		catch(RemoteException e)
 		{
-			error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");
-			logger.error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (0)", e);
+			e.printStackTrace();
+			e.getCause().printStackTrace();
+			error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (2)");
+			logger.error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (2)", e);
 		}
 		catch(Exception e)
 		{
-			error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile.");
-			logger.error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (1)", e);
+			e.printStackTrace();
+			e.getCause().printStackTrace();
+			error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (3)");
+			logger.error("Impossibile eseguire il Login. Il Login Server risulta irraggiungibile. (3)", e);
 		}
 	}
 
