@@ -6,8 +6,9 @@ P_SVN_CMD=/usr/bin/svn
 #P_JAVA_EXEC=/usr/bin/java
 P_JAVA_COMPILER=javac
 P_JAVA_EXEC=java
-P_SVN_URL="http://svn2.assembla.com/svn/parcman"
+P_SVN_URL="http://parcman.googlecode.com/svn/"
 P_SVN_PATH_MC="micro-client"
+P_SVN_PATH_SRC="$P_SVN_PATH_MC"/src
 P_SVN_PATH_BASH="bash"
 P_SAVE_PATH="$(pwd)"
 P_COMPILE="true"
@@ -76,8 +77,48 @@ P_ACTUAL_DIR=$(pwd)
 
 bt_info "mkdir -p $P_TMP_DIR" "preparazione ambiente ($P_TMP_DIR)" $LOG_POSITION
 cd "$P_TMP_DIR"
-bt_info_nl "$P_SVN_CMD co $P_SVN_COMPLETE_PATH_MC " "download micro-client from svn" $LOG_POSITION
-bt_info_nl "$P_SVN_CMD co $P_SVN_COMPLETE_PATH_BASH " "download necessary bash scripting from svn" $LOG_POSITION
+bt_info_nl "$P_SVN_CMD export $P_SVN_COMPLETE_PATH_MC " "download micro-client from svn" $LOG_POSITION
+bt_info_nl "$P_SVN_CMD export $P_SVN_COMPLETE_PATH_BASH " "download necessary bash scripting from svn" $LOG_POSITION
+
+cd "$P_SVN_PATH_SRC"
+
+function mk_policy_file() {
+	echo "grant {" > policy
+	echo -en "\t" >> policy
+	echo 'permission java.net.SocketPermission "server-ip:8003", "connect, resolve";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.net.SocketPermission "server-ip:1098", "connect, resolve";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.net.SocketPermission "server-ip:30000-", "connect, resolve, accept";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.net.SocketPermission "my-ip:30000-", "connect, resolve, accept";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.net.SocketPermission "*:30000-", "connect, resolve";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.util.PropertyPermission "remoteclient.loginserveradress", "read";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.util.PropertyPermission "javax.rmi.ssl.client.enabledCipherSuites", "read";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.util.PropertyPermission "javax.rmi.client.enabledProtocols", "read";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.io.FilePermission "/bin/sh", "execute";'>> policy
+	echo -en "\t" >> policy
+	echo -n 'permission java.io.FilePermission "'>> policy
+	echo -n "$HOME">> policy
+	echo '/ParcmanShare", "read";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.lang.RuntimePermission "getenv.HOME";'>> policy
+	echo "};">> policy
+}
+
+
+bt_info "touch policy" "creazione file di policy" $LOG_POSITION
+bt_info "chmod 755 policy" "setting permessi file di policy" $LOG_POSITION
+bt_info "mk_policy_file" "building... " $LOG_POSITION
+cd ..
+cd ..
+
+
 cd "$P_SVN_PATH_MC"
 
 if [ "$P_COMPILE" == "true" ]; then

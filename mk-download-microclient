@@ -11,8 +11,7 @@ FFC_NEEDED_BASH=( bash/argslib.sh bash/loglib.sh )
 FFC_NEEDED_COMMON=( src/io-client.properties \
 	src/logger-client.properties \
 	src/client-start \
-	src/keystore \
-	src/policy )
+	src/keystore )
 FFC_NEEDED_JAVA=( src/io/IOColor.java \
 	src/io/Logger.java \
 	src/io/LoggerConstants.java \
