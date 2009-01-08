@@ -321,7 +321,7 @@ public class IndexingServer
 	{
 		logger.debug("Avvio SendAgentTimerTask");
 		Timer timer = new Timer();
-		timer.schedule(new SendAgentTimerTask(this.logger, this.parcmanServer, this, this.logServer), agentTeamLaunchDelay, agentTeamLaunchPeriod);
+		timer.schedule(new SendAgentTimerTask(this.parcmanServer, this, this.logServer), agentTeamLaunchDelay, agentTeamLaunchPeriod);
 	}
 
 	/**
@@ -361,9 +361,9 @@ extends TimerTask
 	private int identify;
 	private Logger logger;
 
-	public SendAgentTimerTask(Logger logger, RemoteParcmanServer parcmanServer, IndexingServer is, RemoteLogServer logServer)
+	public SendAgentTimerTask(RemoteParcmanServer parcmanServer, IndexingServer is, RemoteLogServer logServer)
 	{
-		this.logger = logger;
+		this.logger = Logger.getLogger("server-side");
 		this.parcmanServer = parcmanServer;
 		this.is = is;
 		this.logServer = logServer;
@@ -404,7 +404,7 @@ extends TimerTask
 		}
 		catch (RemoteException e)
 		{
-			logger.error("Impossibile ottenere la lista degli utenti connessi dal ParcmanServer", e);
+			logger.error("Impossibile ottenere la lista degli utenti connessi dal ParcmanServer");
 			return;
 		}
 
