@@ -93,7 +93,7 @@ function mk_policy_file() {
 	echo -en "\t" >> policy
 	echo 'permission java.net.SocketPermission "my-ip:30000-", "connect, resolve, accept";'>> policy
 	echo -en "\t" >> policy
-	echo 'permission java.net.SocketPermission "*:30000-", "connect, resolve";'>> policy
+	echo 'permission java.net.SocketPermission "*:30000-", "accept, connect, resolve";'>> policy
 	echo -en "\t" >> policy
 	echo 'permission java.util.PropertyPermission "remoteclient.loginserveradress", "read";'>> policy
 	echo -en "\t" >> policy
@@ -105,7 +105,7 @@ function mk_policy_file() {
 	echo -en "\t" >> policy
 	echo -n 'permission java.io.FilePermission "'>> policy
 	echo -n "$HOME">> policy
-	echo '/ParcmanShare", "read";'>> policy
+	echo '/ParcmanShare", "read, write";'>> policy
 	echo -en "\t" >> policy
 	echo -n 'permission java.io.FilePermission "'>> policy
 	echo -n "$HOME">> policy
