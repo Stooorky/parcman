@@ -2,6 +2,7 @@
 
 sourcefile=(RemoteIndexingServer.java \
 	IndexingServer.java \
+	IndexingServerAtDate.java \
     RemoteIndexingServerAgent.java)
 
 clpath=`pwd`"/../"

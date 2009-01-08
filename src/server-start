@@ -89,6 +89,7 @@ bt_info_inline " -Djava.security.policy="$P_POLICY"" $G_LOGPOS
 bt_info_inline " -Djava.rmi.server.hostname=$P_HOSTNAME" $G_LOGPOS
 bt_info_inline " -Dsetup.implCodebase="$P_IMPL_CODEBASE_PATH"" $G_LOGPOS
 bt_info_inline " -Dsetup.loginServerClass=loginserver.LoginServer" $G_LOGPOS
+bt_info_inline " -Dsetup.indexingServerClass=indexingserver.IndexingServer" $G_LOGPOS
 bt_info_inline " -Dsetup.policyGroup="$P_POLICY_GROUP"" $G_LOGPOS
 bt_info_inline " -Dsetup.dbDirectory="$P_DATABASE_DIR"" $G_LOGPOS
 bt_info_inline " setup.Setup" $G_LOGPOS

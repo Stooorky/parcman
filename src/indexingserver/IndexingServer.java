@@ -3,6 +3,7 @@ package indexingserver;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.*;
+import java.rmi.activation.*;
 import java.io.*;
 import java.lang.*;
 import java.util.Timer;
@@ -26,8 +27,8 @@ import logserver.RemoteLogServer;
  * @author Parcman Tm
  */
 public class IndexingServer
-	extends UnicastRemoteObject
-	implements RemoteIndexingServer
+	extends Activatable
+	implements RemoteIndexingServer, Unreferenced
 {
 	/**
 	 * Logger
@@ -82,14 +83,44 @@ public class IndexingServer
 	 * @param parcmanServer Stub del server centrale
 	 * @throws RemoteException Eccezione remota
 	 */
-	public IndexingServer(RemoteDBServer dBServer, RemoteParcmanServer parcmanServer, RemoteLogServer logServer) throws
-		RemoteException
+	public IndexingServer(ActivationID id, MarshalledObject atDate) throws
+		ActivationException,
+		IOException,
+		ClassNotFoundException
 	{
+		super(id, 38997);
+
 		this.logger = Logger.getLogger("server-side");
 		this.dBServer = dBServer;
 		this.parcmanServer = parcmanServer;
 		this.logServer = logServer;
 		this.run();
+
+		// Ricavo l'ActivationSystem
+		ActivationSystem actSystem = ActivationGroup.getSystem();
+		// Ricavo l'ActivationDesc dall'ActivationSystem
+		ActivationDesc actDesc = actSystem.getActivationDesc(id);
+
+		logger.info("Inizializzo l'IndexingServer.");
+
+		// Ricavo dall'atDate i dati della sessione
+		IndexingServerAtDate onAtDate = (IndexingServerAtDate)(atDate.get());
+		this.parcmanServer = onAtDate.getParcmanServerStub();
+		this.dBServer = onAtDate.getDBServerStub();
+		this.logServer = onAtDate.getLogServerStub();
+		boolean isRun = onAtDate.getIsRun();
+		logger.info("Ho ripristinato e aggiornato i dati di sessione.");
+
+		if (!isRun)
+			this.run();
+
+		// Creo un nuovo IndexingServerAtDate con i dati di sessione aggiornati
+		IndexingServerAtDate newAtDate = new IndexingServerAtDate(this.parcmanServer, this.dBServer, this.logServer, true);
+		logger.info("Ho creato un nuovo IndexingServerAtDate.");
+		ActivationDesc newActDesc = new ActivationDesc(actDesc.getGroupID(), actDesc.getClassName(), actDesc.getLocation(), new MarshalledObject(newAtDate));
+		logger.info("Ho creato un nuovo activation descriptor.");
+		actDesc = actSystem.setActivationDesc(id, newActDesc);
+		logger.info("Ho impostato il nuovo activation descriptor.");
 	}
 
 	/**
@@ -296,6 +327,31 @@ public class IndexingServer
 		Timer timer = new Timer();
 		timer.schedule(new SendAgentTimerTask(this.logger, this.parcmanServer, this, this.logServer), agentTeamLaunchDelay, agentTeamLaunchPeriod);
 	}
+
+	/**
+	 * Dereferenziazione del Server.
+	 * Chiamato dal sistema Rmid.
+	 */
+	public void unreferenced()
+	{
+		try
+		{
+			logger.info("Disattivazione dell'IndexingServer in corso");
+			// Rendo inattivo l'IndexingServer
+			this.inactive(getID());
+
+			// Invoco il Garbage Collector
+			System.gc();
+
+			logger.info("Disattivazione avvenuta con successo");
+		}
+		catch (Exception e)
+		{
+			logger.error("Impossibile disattivare l'IndexingServer");
+			System.out.close();
+		}
+	}
+
 }
 
 

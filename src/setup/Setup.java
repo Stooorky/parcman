@@ -44,6 +44,7 @@ public final class Setup
 		String dbDirectory = System.getProperty("setup.dbDirectory");
 		String implCodebase = System.getProperty("setup.implCodebase");
 		String loginServerClass = System.getProperty("setup.loginServerClass");
+		String indexingServerClass = System.getProperty("setup.indexingServerClass");
 
 		// Inizializzo le properties
 		try
@@ -79,24 +80,34 @@ public final class Setup
 			RemoteParcmanServer parcmanServer = new ParcmanServer(dBServer);
 			logger.info("Ho creato un'istanza del ParcmanServer.");
 
-			// Creo l'IndexingServer
-			RemoteIndexingServer indexingServer = new IndexingServer(dBServer, parcmanServer, logServer);
-			logger.info("Ho creato un'istanza dell'IndexingServer.");
+			// Creo e registro il primo gruppo di attivazione
+			ActivationGroupDesc groupDesc1 = new ActivationGroupDesc(prop, null);
+			ActivationGroupID groupID1 = ActivationGroup.getSystem().registerGroup(groupDesc1);
+			logger.info("Ho creato e registrato il primo gruppo di attivazione.");
+			logger.info("L'identificazione del primo gruppo di attivazione e': " + groupID1 + ".");
+
+			// Creo il MashalledObject per l'IndexingServer
+			IndexingServerAtDate indexingServerAtDate = new IndexingServerAtDate(parcmanServer, dBServer, logServer, false);
+			ActivationDesc actDesc1 = new ActivationDesc(groupID1, indexingServerClass, implCodebase, new MarshalledObject(indexingServerAtDate));
+
+			// Creo e registro il LoginServer
+			RemoteIndexingServer indexingServer = (RemoteIndexingServer)Activatable.register(actDesc1);
+			logger.info("Ho creato un'istanza dell'IndexingServer e l'ho registrata al primo gruppo di attivazione.");
 
 			// Creo e registro il primo gruppo di attivazione
-			ActivationGroupDesc groupDesc = new ActivationGroupDesc(prop, null);
-			ActivationGroupID groupID = ActivationGroup.getSystem().registerGroup(groupDesc);
-			logger.info("Ho creato e registrato il primo gruppo di attivazione.");
-			logger.info("L'identificazione del primo gruppo di attivazione e': " + groupID + ".");
+			ActivationGroupDesc groupDesc2 = new ActivationGroupDesc(prop, null);
+			ActivationGroupID groupID2 = ActivationGroup.getSystem().registerGroup(groupDesc2);
+			logger.info("Ho creato e registrato il secondo gruppo di attivazione.");
+			logger.info("L'identificazione del secondo gruppo di attivazione e': " + groupID2 + ".");
 
 			// Creo il MashalledObject per il LoginServer
 			SslRMIClientSocketFactory csf = new SslRMIClientSocketFactory();
 			LoginServerAtDate loginServerAtDate = new LoginServerAtDate(0, parcmanServer, dBServer, csf);
-			ActivationDesc actDesc = new ActivationDesc(groupID, loginServerClass, implCodebase, new MarshalledObject(loginServerAtDate));
+			ActivationDesc actDesc2 = new ActivationDesc(groupID2, loginServerClass, implCodebase, new MarshalledObject(loginServerAtDate));
 
 			// Creo e registro il LoginServer
-			RemoteLoginServer loginServer = (RemoteLoginServer)Activatable.register(actDesc);
-			logger.info("Ho creato un'istanza del LoginServer e l'ho registrata al primo gruppo di attivazione.");
+			RemoteLoginServer loginServer = (RemoteLoginServer)Activatable.register(actDesc2);
+			logger.info("Ho creato un'istanza del LoginServer e l'ho registrata al secondo gruppo di attivazione.");
 
 			// Registro il LoginServer sul registro RMI avviato dal servizio Rmid
 			Naming.rebind("//:1098/LoginServer", loginServer);
