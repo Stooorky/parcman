@@ -404,6 +404,7 @@ extends TimerTask
 		}
 		catch (RemoteException e)
 		{
+            e.printStackTrace();
 			logger.error("Impossibile ottenere la lista degli utenti connessi dal ParcmanServer");
 			return;
 		}

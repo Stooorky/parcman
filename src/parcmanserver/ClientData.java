@@ -1,5 +1,7 @@
 package parcmanserver;
 
+import java.io.Serializable;
+
 import parcmanclient.RemoteParcmanClient;
 
 /**
@@ -8,6 +10,7 @@ import parcmanclient.RemoteParcmanClient;
  * @author Parcman Tm
  */
 public class ClientData
+	implements Serializable
 {
     /**
      * Indirizzo IP o URL del Client.
