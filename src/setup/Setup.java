@@ -94,6 +94,7 @@ public final class Setup
 			RemoteIndexingServer indexingServer = (RemoteIndexingServer)Activatable.register(actDesc1);
 			logger.info("Ho creato un'istanza dell'IndexingServer e l'ho registrata al primo gruppo di attivazione.");
 
+            indexingServer.ping();
 			// Creo e registro il primo gruppo di attivazione
 			ActivationGroupDesc groupDesc2 = new ActivationGroupDesc(prop, null);
 			ActivationGroupID groupID2 = ActivationGroup.getSystem().registerGroup(groupDesc2);
@@ -126,7 +127,7 @@ public final class Setup
 		}
 		catch(Throwable t)
 		{
-			logger.error("Impossibile eseguire il Setup del sistema. (2)", t);
+			logger.error("Impossibile eseguire il Setup del sistema. (2)");
 			return;
 		}
 	}

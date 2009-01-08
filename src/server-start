@@ -100,6 +100,7 @@ bt_info_nl "java -classpath :. \
 -Djava.rmi.server.hostname=$P_HOSTNAME \
 -Dsetup.implCodebase="$P_IMPL_CODEBASE_PATH" \
 -Dsetup.loginServerClass=loginserver.LoginServer \
+-Dsetup.indexingServerClass=indexingserver.IndexingServer \
 -Dsetup.policyGroup="$P_POLICY_GROUP" \
 -Dsetup.dbDirectory="$P_DATABASE_DIR" \
 setup.Setup" "start parcman server" "server-start" $BT_OUT_TYPE_NORMAL $BT_TYPE_EQ_TO 130

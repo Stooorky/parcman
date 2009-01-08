@@ -91,10 +91,6 @@ public class IndexingServer
 		super(id, 38997);
 
 		this.logger = Logger.getLogger("server-side");
-		this.dBServer = dBServer;
-		this.parcmanServer = parcmanServer;
-		this.logServer = logServer;
-		this.run();
 
 		// Ricavo l'ActivationSystem
 		ActivationSystem actSystem = ActivationGroup.getSystem();

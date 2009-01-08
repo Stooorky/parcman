@@ -12,7 +12,8 @@ G_LOGPOS=$(basename $0)
 #		indexingserver.IndexingServer \
 #		parcmanclient.ParcmanClient )
 G_RMIC_FILES=(	parcmanserver.ParcmanServer \
-		loginserver.LoginServer )
+		loginserver.LoginServer \
+        indexingserver.IndexingServer)
 G_PUBLIC_HTML=$HOME/public_html/common/
 G_CODEBASE_FILES=(	parcmanserver/RemoteParcmanServer.class \
 			parcmanserver/RemoteParcmanServerUser.class \
