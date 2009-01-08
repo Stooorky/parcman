@@ -413,13 +413,21 @@ function mk_policy_file() {
 	echo -en "\t" >> policy
 	echo 'permission java.util.PropertyPermission "javax.rmi.ssl.client.enabledCipherSuites", "read";'>> policy
 	echo -en "\t" >> policy
-	echo 'permission java.util.PropertyPermission "javax.rmi.client.enabledProtocols", "read";'>> policy
+	echo 'permission java.util.PropertyPermission "javax.rmi.ssl.client.enabledProtocols", "read";'>> policy
 	echo -en "\t" >> policy
 	echo 'permission java.io.FilePermission "/bin/sh", "execute";'>> policy
 	echo -en "\t" >> policy
 	echo -n 'permission java.io.FilePermission "'>> policy
 	echo -n "$HOME">> policy
 	echo '/ParcmanShare", "read";'>> policy
+	echo -en "\t" >> policy
+	echo -n 'permission java.io.FilePermission "'>> policy
+	echo -n "$HOME">> policy
+	echo '/uclient/micro-client/src/io-client.properties", "read";'>> policy
+	echo -en "\t" >> policy
+	echo -n 'permission java.io.FilePermission "'>> policy
+	echo -n "$HOME">> policy
+	echo '/uclient/micro-client/src/logger-client.properties", "read";'>> policy
 	echo -en "\t" >> policy
 	echo 'permission java.lang.RuntimePermission "getenv.HOME";'>> policy
 	echo "};">> policy
