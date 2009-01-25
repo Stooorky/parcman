@@ -117,12 +117,12 @@ public final class Setup
 		}
 		catch(ParcmanDBServerErrorRemoteException e)
 		{
-			logger.error("Impossibile inizializzare il DBServer. (0)", e);
+			logger.error("Impossibile inizializzare il DBServer. (0)");
 			return;
 		}
 		catch(RemoteException e)
 		{
-			logger.error("Impossibile eseguire il Setup del sistema. (1)", e);
+			logger.error("Impossibile eseguire il Setup del sistema. (1)");
 			return;
 		}
 		catch(Throwable t)

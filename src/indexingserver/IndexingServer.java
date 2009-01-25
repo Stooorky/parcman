@@ -347,7 +347,6 @@ public class IndexingServer
 			System.out.close();
 		}
 	}
-
 }
 
 
@@ -430,8 +429,8 @@ extends TimerTask
 				{
 					rpa = new ParcmanAgent(this.is, validity, clients, this.identify, this.logServer);
 					logger.debug("Inviato un nuovo agente Identify:" + this.identify);
-					UnicastRemoteObject.unexportObject(rpa, true);
-					rpa.start();
+					Timer timer = new Timer();
+					timer.schedule(new StartAgentTimerTask(rpa), 0);
 					this.identify++;
 				} 
 				catch (RemoteException e)
@@ -444,42 +443,32 @@ extends TimerTask
 			}
 			x++;
 		}
-		/*
-		   while (this.numberOfAgent != 0)
-		   {
-		   long validity = (long) (System.currentTimeMillis() + this.is.getAgentTeamLaunchPeriod() * this.is.getAgentPeriodLaunchPercent());
-		   Vector<ClientData> _clients = new Vector<ClientData>(
-		   Arrays.asList(
-		   (List<ClientData>) (Arrays.copyOfRange(
-		   this.connectedClients.values().toArray(), 
-		   last, 
-		   interval)
-		   )
-		   )
-		   );
+	}
+}
 
-		   Vector<ClientDataForAgent> clients = new Vector<ClientDataForAgent>();
-		   for (int i=0; i < _clients.size(); i++)
-		   clients.add(new ClientDataForAgent(_clients.get(i).getName(), (RemoteParcmanClientAgent) _clients.get(i).getStub(), _clients.get(i).getVersion())); 
+class StartAgentTimerTask 
+extends TimerTask
+{
+	private RemoteParcmanAgent agent;
+	private Logger logger;
 
-		   ParcmanAgent rpa = null;
-		   try 
-		   {
-		   logger.debug("Inviato un nuovo agente");
-		   rpa = new ParcmanAgent(this.is, validity, clients);
-		   } 
-		   catch (RemoteException e)
-		   {
-		   logger.error("Non e` possibile creare il ParcmanAgent.", e);
-		   continue;
-		   }
+	public StartAgentTimerTask(RemoteParcmanAgent agent)
+	{
+		this.logger = Logger.getLogger("server-side");
+		this.agent = agent;
+	}
 
-		// RemoteParcmanAgentClient rpac = ... lookup ...
-		// rpac.go();
-
-		this.numberOfAgent--;
+	public void run() 
+	{
+		try 
+		{
+			UnicastRemoteObject.unexportObject(this.agent, true);
+			this.agent.start();
+		} 
+		catch (RemoteException e)
+		{
+			logger.error("Non e` possibile lanciare il ParcmanAgent.");
 		}
-		*/
 	}
 }
 
