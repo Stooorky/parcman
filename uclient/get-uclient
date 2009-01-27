@@ -417,19 +417,23 @@ function mk_policy_file() {
 	echo -en "\t" >> policy
 	echo 'permission java.io.FilePermission "/bin/sh", "execute";'>> policy
 	echo -en "\t" >> policy
-	echo -n 'permission java.io.FilePermission "'>> policy
-	echo -n "$HOME">> policy
-	echo '/ParcmanShare", "read, write";'>> policy
+	echo -n 'permission java.io.FilePermission "io-client.properties", "read";'>> policy
+	echo -en "\t" >> policy
+	echo -n 'permission java.io.FilePermission "logger-client.properties", "read";'>> policy
 	echo -en "\t" >> policy
 	echo -n 'permission java.io.FilePermission "'>> policy
 	echo -n "$HOME">> policy
-	echo '/uclient/micro-client/src/io-client.properties", "read";'>> policy
+	echo '/ParcmanShare", "read,write";'>> policy
 	echo -en "\t" >> policy
 	echo -n 'permission java.io.FilePermission "'>> policy
 	echo -n "$HOME">> policy
-	echo '/uclient/micro-client/src/logger-client.properties", "read";'>> policy
+	echo '/ParcmanShare/-", "read,write";'>> policy
 	echo -en "\t" >> policy
 	echo 'permission java.lang.RuntimePermission "getenv.HOME";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.util.PropertyPermission "user.timezone" "write";'>> policy
+	echo -en "\t" >> policy
+	echo 'permission java.lang.RuntimePermission "exitVM.0";'>> policy
 	echo "};">> policy
 }
 
